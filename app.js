@@ -1,5 +1,6 @@
 // Configures Express app, middleware, and routes
 const express = require('express');
+const dataManagement = require('./src/routes/data-management');
 const app = express();
 
 app.use(express.json());
@@ -55,6 +56,8 @@ app.get('/external', async (req, res) => {
     const posts = await fetchPost(userId, limit);
     res.json({ ok: true, data: posts, params: { userId, limit } });
 });
+
+app.use(dataManagement);
 
 // Global Error Middleware
 app.use((err, req, res, next) => {
