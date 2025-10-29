@@ -13,7 +13,7 @@ router.get('/api/auth/logout', function (req, res) {
     res.redirect('/');
 });
 
-router.get('/api/auth/callback', authCallbackMiddleware, function (req, res) {
+router.get('/api/callback', authCallbackMiddleware, function (req, res) {
     res.redirect('/');
 });
 
