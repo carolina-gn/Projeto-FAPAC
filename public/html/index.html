@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Example App</title>
     <link rel="stylesheet" href="/css/style.css">
+    <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js"></script>
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css">
 </head>
 <body>
     <h1>Example App</h1>
@@ -59,5 +61,15 @@
 
         checkAuthStatus();
     </script>
+    <h2>Model Viewer</h2>
+    <div id="modelControls">
+        <input type="text" id="modelUrn" placeholder="Insert model URN...">
+        <button id="loadModelBtn">Load Model</button>
+    
+    </div>
+    <div id="viewerContainer">
+    </div>
+    <script src="/js/auth.js"></script>
+    <script src="/js/viewer.js"></script>
 </body>
 </html>
