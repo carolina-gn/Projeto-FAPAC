@@ -1,56 +1,34 @@
-async function checkAuthStatus() {
+async function checkAuthStatusTandem() {
+    const statusEl = document.getElementById('authStatus');
     try {
-        const response = await fetch('/api/auth/profile');
+        // Fetch 2-legged token from backend
+        const response = await fetch('/api/tandem/token');
+        if (!response.ok) throw new Error('Failed to get token');
+        const data = await response.json();
+
+        const accessToken = data.access_token;
+        if (!accessToken) throw new Error('No access token returned');
+
+        statusEl.textContent = 'Authenticated (Tandem)';
         
-        const statusEl = document.getElementById('authStatus');
-        const userNameEl = document.getElementById('userName');
-        const userNameValueEl = document.getElementById('userNameValue');
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-
-        if (response.ok) {
-            const data = await response.json();
-            statusEl.textContent = 'Authenticated';
-            userNameValueEl.textContent = data.name;
-            userNameEl.classList.remove('hidden');
-            loginBtn.classList.add('hidden');
-            logoutBtn.classList.remove('hidden');
-
-            // ✅ Fetch Forge token and initialize viewer
-            await initializeForgeViewer();
-
-        } else {
-            statusEl.textContent = 'Not authenticated';
-            userNameEl.classList.add('hidden');
-            loginBtn.classList.remove('hidden');
-            logoutBtn.classList.add('hidden');
-        }
-    } catch (error) {
-        console.error('Auth error:', error);
-        document.getElementById('authStatus').textContent = 'Error';
-        document.getElementById('loginBtn').classList.remove('hidden');
-    }
-}
-
-async function initializeForgeViewer() {
-    try {
-        const tokenResponse = await fetch('/api/auth/token');
-        const tokenData = await tokenResponse.json();
-        if (!tokenData.access_token) {
-            console.error('No access token found.');
-            return;
-        }
-
-        // ✅ Call your viewer.js function
-        initializeViewer(tokenData.access_token);
-        console.log('Viewer initialized with Forge token.');
-
-        // Optionally enable the Load button now that viewer is ready
+        // Initialize Tandem Viewer
+        await initializeTandemViewer(accessToken);
+        
         document.getElementById('loadModelBtn').disabled = false;
+
     } catch (err) {
-        console.error('Failed to initialize viewer:', err);
+        console.error('Tandem auth error:', err);
+        statusEl.textContent = 'Not authenticated';
+        document.getElementById('loadModelBtn').disabled = true;
     }
 }
 
-// Run the auth check on page load
-checkAuthStatus();
+// Initializes Tandem Viewer
+async function initializeTandemViewer(token) {
+    const div = document.getElementById('viewerContainer');
+    const tandem = await new tandemViewer(div, token);
+    window.tandemViewerInstance = tandem; // optional global reference
+}
+
+// Run on page load
+checkAuthStatusTandem();

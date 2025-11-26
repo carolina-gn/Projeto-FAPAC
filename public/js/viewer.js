@@ -1,52 +1,51 @@
 // viewer.js
+async function main() {
+    const div = document.getElementById("viewerContainer");
 
-let viewer;
-let accessToken;
-let urna;
+    // Initialize Tandem Viewer
+    const tandem = await new tandemViewer(div);
 
-function initializeViewer(token) {
-    accessToken = token;
+    // Fetch all facilities shared with your Client ID
+    const facilities = await tandem.fetchFacilities();
 
-    const options = {
-        env: 'AutodeskProduction2',
-        api: 'streamingV2',
-        getAccessToken: function (onTokenReady) {
-            const timeInSeconds = 3600;
-            onTokenReady(accessToken, timeInSeconds);
-        }
-    };
-
-    Autodesk.Viewing.Initializer(options, function () {
-        const containerDiv = document.getElementById('viewerContainer');
-        viewer = new Autodesk.Viewing.GuiViewer3D(containerDiv);
-        viewer.start();
-        console.log('Viewer initialized.');
-    });
+    // Open the first facility (or let user select)
+    await tandem.openFacility(facilities[0]);
 }
 
-function loadModel() {
-    urna = document.getElementById('modelUrn').value.trim();
-    if (!urna) {
-        alert('Please enter a version URN.');
-        return;
+class tandemViewer {
+    constructor(div, token) {
+        return new Promise(async resolve => {
+            const _access_token = token;
+
+            const options = {
+                env: "DtProduction",
+                api: 'dt',
+                productId: 'Digital Twins',
+                corsWorker: true,
+            };
+
+            const av = Autodesk.Viewing;
+            av.Initializer(options, () => {
+                this.viewer = new av.GuiViewer3D(div, {
+                    extensions: ['Autodesk.BoxSelection'],
+                    screenModeDelegate: av.NullScreenModeDelegate,
+                    theme: 'light-theme',
+                });
+                this.viewer.start();
+                av.endpoint.HTTP_REQUEST_HEADERS['Authorization'] = `Bearer ${_access_token}`;
+                this.app = new Autodesk.Tandem.DtApp();
+                resolve(this);
+            });
+        });
     }
-    if (!viewer) {
-        alert('Viewer not initialized.');
-        return;
+
+    async fetchFacilities() {
+        const shared = await this.app.getCurrentTeamsFacilities();
+        const mine = await this.app.getUsersFacilities();
+        return [...shared, ...mine];
     }
 
-    const documentId = `urn:${urna}`;
-    Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
+    async openFacility(facility) {
+        await this.app.displayFacility(facility, false, this.viewer);
+    }
 }
-
-function onDocumentLoadSuccess(doc) {
-    const model = doc.getRoot().getDefaultGeometry();
-    viewer.loadDocumentNode(doc, model);
-    console.log('Model loaded successfully.');
-}
-
-function onDocumentLoadFailure(errCode) {
-    console.error('Error loading document:', errCode);
-}
-
-document.getElementById('loadModelBtn').addEventListener('click', loadModel);
