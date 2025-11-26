@@ -1,38 +1,30 @@
-// viewer.js
-async function main() {
-    const div = document.getElementById("viewerContainer");
-
-    // Initialize Tandem Viewer
-    const tandem = await new tandemViewer(div);
-
-    // Fetch all facilities shared with your Client ID
-    const facilities = await tandem.fetchFacilities();
-
-    // Open the first facility (or let user select)
-    await tandem.openFacility(facilities[0]);
-}
-
 class tandemViewer {
     constructor(div, token) {
-        return new Promise(async resolve => {
-            const _access_token = token;
+        this.div = div;
+        this.token = token;
+    }
 
-            const options = {
-                env: "DtProduction",
-                api: 'dt',
-                productId: 'Digital Twins',
-                corsWorker: true,
-            };
+    async init() {
+        const av = Autodesk.Viewing;
 
-            const av = Autodesk.Viewing;
+        // Set the token BEFORE Initializer
+        av.endpoint.HTTP_REQUEST_HEADERS['Authorization'] = `Bearer ${this.token}`;
+
+        const options = {
+            env: "DtProduction",
+            api: 'dt',
+            productId: 'Digital Twins',
+            corsWorker: true,
+        };
+
+        return new Promise(resolve => {
             av.Initializer(options, () => {
-                this.viewer = new av.GuiViewer3D(div, {
+                this.viewer = new av.GuiViewer3D(this.div, {
                     extensions: ['Autodesk.BoxSelection'],
                     screenModeDelegate: av.NullScreenModeDelegate,
                     theme: 'light-theme',
                 });
                 this.viewer.start();
-                av.endpoint.HTTP_REQUEST_HEADERS['Authorization'] = `Bearer ${_access_token}`;
                 this.app = new Autodesk.Tandem.DtApp();
                 resolve(this);
             });

@@ -1,34 +1,58 @@
-async function checkAuthStatusTandem() {
-    const statusEl = document.getElementById('authStatus');
+async function checkAuthStatus() {
     try {
-        // Fetch 2-legged token from backend
-        const response = await fetch('/api/tandem/token');
-        if (!response.ok) throw new Error('Failed to get token');
-        const data = await response.json();
-
-        const accessToken = data.access_token;
-        if (!accessToken) throw new Error('No access token returned');
-
-        statusEl.textContent = 'Authenticated (Tandem)';
+        const response = await fetch('/api/auth/profile');
         
-        // Initialize Tandem Viewer
-        await initializeTandemViewer(accessToken);
-        
-        document.getElementById('loadModelBtn').disabled = false;
+        const statusEl = document.getElementById('authStatus');
+        const userNameEl = document.getElementById('userName');
+        const userNameValueEl = document.getElementById('userNameValue');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
 
-    } catch (err) {
-        console.error('Tandem auth error:', err);
-        statusEl.textContent = 'Not authenticated';
-        document.getElementById('loadModelBtn').disabled = true;
+        if (response.ok) {
+            const data = await response.json();
+            statusEl.textContent = 'Authenticated';
+            userNameValueEl.textContent = data.name;
+            userNameEl.classList.remove('hidden');
+            loginBtn.classList.add('hidden');
+            logoutBtn.classList.remove('hidden');
+
+            // ✅ Fetch 3-legged token and initialize Tandem Viewer
+            await initializeTandemViewer();
+
+        } else {
+            statusEl.textContent = 'Not authenticated';
+            userNameEl.classList.add('hidden');
+            loginBtn.classList.remove('hidden');
+            logoutBtn.classList.add('hidden');
+        }
+    } catch (error) {
+        console.error('Auth error:', error);
+        statusEl.textContent = 'Error';
+        loginBtn.classList.remove('hidden');
     }
 }
 
-// Initializes Tandem Viewer
-async function initializeTandemViewer(token) {
-    const div = document.getElementById('viewerContainer');
-    const tandem = await new tandemViewer(div, token);
-    window.tandemViewerInstance = tandem; // optional global reference
+async function initializeTandemViewer() {
+    try {
+        const tokenResponse = await fetch('/api/auth/token');
+        const tokenData = await tokenResponse.json();
+        if (!tokenData.access_token) {
+            console.error('No access token found.');
+            return;
+        }
+
+        // Initialize Tandem Viewer with the 3-legged token
+        const div = document.getElementById('viewerContainer');
+        const viewerInstance = new tandemViewer(div, tokenData.access_token);
+        await viewerInstance.init(); // ⚠️ This is crucial
+        window.tandemViewerInstance = viewerInstance;
+
+        document.getElementById('loadModelBtn').disabled = false;
+        console.log('Tandem viewer initialized.');
+
+    } catch (err) {
+        console.error('Failed to initialize Tandem viewer:', err);
+    }
 }
 
-// Run on page load
-checkAuthStatusTandem();
+checkAuthStatus();
