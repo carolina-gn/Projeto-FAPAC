@@ -1,7 +1,7 @@
 // Configures Express app, middleware, and routes
 const express = require('express');
 const dataManagement = require('./src/routes/data-management');
-const tandemManagement = require('./src/routes/tandem-management');
+const tandemAuth = require('./src/routes/tandem-auth');
 const app = express();
 
 app.use(express.json());
@@ -58,7 +58,7 @@ app.get('/external', async (req, res) => {
     res.json({ ok: true, data: posts, params: { userId, limit } });
 });
 
-app.use(tandemManagement);
+app.use(tandemAuth);
 app.use(dataManagement);
 
 // Global Error Middleware
