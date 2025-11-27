@@ -45,3 +45,8 @@ li {
     font-family: monospace;
 }
 
+#viewerContainer {
+    width: 800px;
+    height: 500px;
+    position: relative;
+}

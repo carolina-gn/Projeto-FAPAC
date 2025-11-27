@@ -1,52 +1,91 @@
-// viewer.js
+class tandemViewer {
+    constructor(div, token) {
+        return new Promise(resolve => {
+            const av = Autodesk.Viewing;
 
-let viewer;
-let accessToken;
-let urna;
+            const options = {
+                env: "DtProduction",
+                api: 'dt',
+                productId: 'Digital Twins',
+                corsWorker: true,
+            };
 
-function initializeViewer(token) {
-    accessToken = token;
+            av.Initializer(options, async () => {
+                this.viewer = new av.GuiViewer3D(div, {
+                    extensions: ['Autodesk.BoxSelection'],
+                    screenModeDelegate: av.NullScreenModeDelegate,
+                    theme: 'light-theme',
+                });
+                this.viewer.start();
 
-    const options = {
-        env: 'AutodeskProduction2',
-        api: 'streamingV2',
-        getAccessToken: function (onTokenReady) {
-            const timeInSeconds = 3600;
-            onTokenReady(accessToken, timeInSeconds);
+                av.endpoint.HTTP_REQUEST_HEADERS['Authorization'] = `Bearer ${token}`;
+
+                this.app = new Autodesk.Tandem.DtApp();
+
+                resolve(this);
+            });
+        });
+    }
+
+    async fetchFacilities() {
+        try {
+            const shared = await this.app.getSharedFacilities();
+            const teams = await this.app.getCurrentTeamsFacilities();
+            return [...(shared || []), ...(teams || [])];
+        } catch (err) {
+            console.error('Failed to fetch facilities:', err);
+            alert('Unable to fetch facilities. Check your permissions or token.');
+            return [];
         }
-    };
-
-    Autodesk.Viewing.Initializer(options, function () {
-        const containerDiv = document.getElementById('viewerContainer');
-        viewer = new Autodesk.Viewing.GuiViewer3D(containerDiv);
-        viewer.start();
-        console.log('Viewer initialized.');
-    });
-}
-
-function loadModel() {
-    urna = document.getElementById('modelUrn').value.trim();
-    if (!urna) {
-        alert('Please enter a version URN.');
-        return;
-    }
-    if (!viewer) {
-        alert('Viewer not initialized.');
-        return;
     }
 
-    const documentId = `urn:${urna}`;
-    Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
+    async openFacility(facility) {
+    try {
+        await this.app.displayFacility(facility, false, this.viewer);
+
+        // Poll until the model is in the viewer.impl.modelQueue
+        const impl = this.viewer.impl;
+        const waitForModel = () => new Promise(resolve => {
+            const interval = setInterval(() => {
+                if (impl.modelQueue.length > 0) {
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, 100);
+        });
+        await waitForModel();
+
+        // Fit the facility safely
+        Autodesk.Viewing.Private.fitToView(this.viewer.impl);
+        this.viewer.impl.invalidate(true);
+
+    } catch (err) {
+        console.error('Failed to open facility:', err);
+        alert('Failed to open facility. See console for details.');
+    }
+}
 }
 
-function onDocumentLoadSuccess(doc) {
-    const model = doc.getRoot().getDefaultGeometry();
-    viewer.loadDocumentNode(doc, model);
-    console.log('Model loaded successfully.');
+async function loadModelFromInput() {
+    const input = document.getElementById('modelUrn').value.trim();
+    if (!input) return alert('Please enter a facility URN');
+
+    const facilities = await window.tandemViewerInstance.fetchFacilities();
+
+    console.log('Facilities:', facilities);
+
+    // Match the facility by twinId
+    const facility = facilities.find(f => f.twinId === input);
+
+    if (!facility) return alert('Invalid facility URN');
+
+    try {
+        await window.tandemViewerInstance.openFacility(facility);
+    } catch (err) {
+        console.error('Failed to open facility:', err);
+        alert('Failed to open facility. Check console for details.');
+    }
 }
 
-function onDocumentLoadFailure(errCode) {
-    console.error('Error loading document:', errCode);
-}
-
-document.getElementById('loadModelBtn').addEventListener('click', loadModel);
+// Attach to button
+document.getElementById('loadModelBtn').addEventListener('click', loadModelFromInput);
