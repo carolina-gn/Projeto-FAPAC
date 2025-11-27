@@ -40,13 +40,30 @@ class tandemViewer {
     }
 
     async openFacility(facility) {
-        try {
-            await this.app.displayFacility(facility, false, this.viewer);
-        } catch (err) {
-            console.error('Failed to open facility:', err);
-            alert('Failed to open facility. See console for details.');
-        }
+    try {
+        await this.app.displayFacility(facility, false, this.viewer);
+
+        // Poll until the model is in the viewer.impl.modelQueue
+        const impl = this.viewer.impl;
+        const waitForModel = () => new Promise(resolve => {
+            const interval = setInterval(() => {
+                if (impl.modelQueue.length > 0) {
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, 100);
+        });
+        await waitForModel();
+
+        // Fit the facility safely
+        Autodesk.Viewing.Private.fitToView(this.viewer.impl);
+        this.viewer.impl.invalidate(true);
+
+    } catch (err) {
+        console.error('Failed to open facility:', err);
+        alert('Failed to open facility. See console for details.');
     }
+}
 }
 
 async function loadModelFromInput() {
