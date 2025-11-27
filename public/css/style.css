@@ -45,3 +45,9 @@ li {
     font-family: monospace;
 }
 
+#viewerContainer {
+    width: 80%;
+    height: 500px;
+    max-width: 1200px;
+    margin: auto;
+}

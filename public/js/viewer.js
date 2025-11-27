@@ -1,43 +1,74 @@
 class tandemViewer {
     constructor(div, token) {
-        this.div = div;
-        this.token = token;
-    }
-
-    async init() {
-        const av = Autodesk.Viewing;
-
-        // Set the token BEFORE Initializer
-        av.endpoint.HTTP_REQUEST_HEADERS['Authorization'] = `Bearer ${this.token}`;
-
-        const options = {
-            env: "DtProduction",
-            api: 'dt',
-            productId: 'Digital Twins',
-            corsWorker: true,
-        };
-
         return new Promise(resolve => {
-            av.Initializer(options, () => {
-                this.viewer = new av.GuiViewer3D(this.div, {
+            const av = Autodesk.Viewing;
+
+            const options = {
+                env: "DtProduction",
+                api: 'dt',
+                productId: 'Digital Twins',
+                corsWorker: true,
+            };
+
+            av.Initializer(options, async () => {
+                this.viewer = new av.GuiViewer3D(div, {
                     extensions: ['Autodesk.BoxSelection'],
                     screenModeDelegate: av.NullScreenModeDelegate,
                     theme: 'light-theme',
                 });
                 this.viewer.start();
+
+                av.endpoint.HTTP_REQUEST_HEADERS['Authorization'] = `Bearer ${token}`;
+
                 this.app = new Autodesk.Tandem.DtApp();
+
                 resolve(this);
             });
         });
     }
 
     async fetchFacilities() {
-        const shared = await this.app.getCurrentTeamsFacilities();
-        const mine = await this.app.getUsersFacilities();
-        return [...shared, ...mine];
+        try {
+            const shared = await this.app.getSharedFacilities();
+            const teams = await this.app.getCurrentTeamsFacilities();
+            return [...(shared || []), ...(teams || [])];
+        } catch (err) {
+            console.error('Failed to fetch facilities:', err);
+            alert('Unable to fetch facilities. Check your permissions or token.');
+            return [];
+        }
     }
 
     async openFacility(facility) {
-        await this.app.displayFacility(facility, false, this.viewer);
+        try {
+            await this.app.displayFacility(facility, false, this.viewer);
+        } catch (err) {
+            console.error('Failed to open facility:', err);
+            alert('Failed to open facility. See console for details.');
+        }
     }
 }
+
+async function loadModelFromInput() {
+    const input = document.getElementById('modelUrn').value.trim();
+    if (!input) return alert('Please enter a facility URN');
+
+    const facilities = await window.tandemViewerInstance.fetchFacilities();
+
+    console.log('Facilities:', facilities);
+
+    // Match the facility by twinId
+    const facility = facilities.find(f => f.twinId === input);
+
+    if (!facility) return alert('Invalid facility URN');
+
+    try {
+        await window.tandemViewerInstance.openFacility(facility);
+    } catch (err) {
+        console.error('Failed to open facility:', err);
+        alert('Failed to open facility. Check console for details.');
+    }
+}
+
+// Attach to button
+document.getElementById('loadModelBtn').addEventListener('click', loadModelFromInput);

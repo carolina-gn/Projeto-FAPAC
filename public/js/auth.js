@@ -1,12 +1,12 @@
 async function checkAuthStatus() {
+    const statusEl = document.getElementById('authStatus');
+    const userNameEl = document.getElementById('userName');
+    const userNameValueEl = document.getElementById('userNameValue');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
     try {
         const response = await fetch('/api/auth/profile');
-        
-        const statusEl = document.getElementById('authStatus');
-        const userNameEl = document.getElementById('userName');
-        const userNameValueEl = document.getElementById('userNameValue');
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
 
         if (response.ok) {
             const data = await response.json();
@@ -16,7 +16,7 @@ async function checkAuthStatus() {
             loginBtn.classList.add('hidden');
             logoutBtn.classList.remove('hidden');
 
-            // ✅ Fetch 3-legged token and initialize Tandem Viewer
+            // Initialize Tandem Viewer with 3-legged token
             await initializeTandemViewer();
 
         } else {
@@ -36,23 +36,23 @@ async function initializeTandemViewer() {
     try {
         const tokenResponse = await fetch('/api/auth/token');
         const tokenData = await tokenResponse.json();
+
         if (!tokenData.access_token) {
             console.error('No access token found.');
             return;
         }
 
-        // Initialize Tandem Viewer with the 3-legged token
         const div = document.getElementById('viewerContainer');
-        const viewerInstance = new tandemViewer(div, tokenData.access_token);
-        await viewerInstance.init(); // ⚠️ This is crucial
-        window.tandemViewerInstance = viewerInstance;
+        // ⚠ Wait for the viewer to initialize before using
+        window.tandemViewerInstance = await new tandemViewer(div, tokenData.access_token);
 
         document.getElementById('loadModelBtn').disabled = false;
         console.log('Tandem viewer initialized.');
-
     } catch (err) {
         console.error('Failed to initialize Tandem viewer:', err);
+        alert('Failed to initialize viewer. Check console for details.');
     }
 }
 
+// Run on page load
 checkAuthStatus();
