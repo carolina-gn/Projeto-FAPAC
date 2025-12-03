@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Example App</title>
+    <title>DTGE</title>
     <link rel="stylesheet" href="/css/style.css">
     <script src="https://tandem.autodesk.com/viewer/viewer3D.min.js"></script>
     <link href="https://tandem.autodesk.com/viewer/style.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Example App</h1>
-    
+    <h1>DTGE - Home</h1>
+
+    <h3>[Autodesk authentication - to be removed]</h3>
     <div class="status">
         <p><strong>Status:</strong> <span id="authStatus">Checking...</span></p>
         <p id="userName" class="hidden"><strong>User:</strong> <span id="userNameValue"></span></p>
@@ -20,6 +21,8 @@
         <a href="/api/auth/login" class="button hidden" id="loginBtn">Login</a>
         <a href="/api/auth/logout" class="button logout hidden" id="logoutBtn">Logout</a>
     </div>
+
+    <button onclick="window.location.href='/logout'">Application Logout</button>
 
     <h2>API Endpoints</h2>
     <ul>
