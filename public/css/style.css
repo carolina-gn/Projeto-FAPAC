@@ -16,7 +16,7 @@ html, body {
 
 body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: linear-gradient(135deg, #f5f7fb, #ecf4ff);
+    background: linear-gradient(135deg, #eef2ff, #e0f2fe, #fef9c3);
     color: #1f2933;
     display: flex;
     justify-content: center;
@@ -257,12 +257,14 @@ li {
     margin-bottom: 4px;
 }
 
+.sidepanel-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
 .sidepanel-logo img {
-    max-width: 90px;        /* limite seguro */
-    height: auto;           /* mantém proporções */
-    display: block;
-    margin: 0 auto;
-    object-fit: contain;    /* impede distorção */
+    width: 120px;
     opacity: 0.95;
 }
 
@@ -339,3 +341,4 @@ li {
     color: #b91c1c !important;
     font-weight: 500;
 }
+
