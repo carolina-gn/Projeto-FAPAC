@@ -257,6 +257,15 @@ li {
     margin-bottom: 4px;
 }
 
+.sidepanel-logo img {
+    max-width: 90px;        /* limite seguro */
+    height: auto;           /* mantém proporções */
+    display: block;
+    margin: 0 auto;
+    object-fit: contain;    /* impede distorção */
+    opacity: 0.95;
+}
+
 /* Inputs no painel (por ex. URN do Twin) */
 .side-panel input[type="text"] {
     width: 100%;
