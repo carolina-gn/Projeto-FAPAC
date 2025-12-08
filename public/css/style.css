@@ -25,6 +25,19 @@ body {
     min-height: 100vh; /* CORRIGIDO */
 }
 
+.centered-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;   /* volta a centrar */
+    min-height: 100vh;     /* ocupar ecrã todo */
+    padding: 20px;
+}
+
+.centered-page .page-container,
+.centered-page .card {
+    margin: 0 auto;        /* garante centragem perfeita */
+}
+
 /* Wrapper geral para cada página (login, validação, home) */
 .page-container {
     width: 100%;
