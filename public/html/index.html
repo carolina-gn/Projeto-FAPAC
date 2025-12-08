@@ -8,41 +8,81 @@
     <script src="https://tandem.autodesk.com/viewer/viewer3D.min.js"></script>
     <link href="https://tandem.autodesk.com/viewer/style.min.css" rel="stylesheet">
 </head>
+
 <body>
-    <h1>DTGE - Home</h1>
 
-    <h3>[Autodesk authentication - to be removed]</h3>
-    <div class="status">
-        <p><strong>Status:</strong> <span id="authStatus">Checking...</span></p>
-        <p id="userName" class="hidden"><strong>User:</strong> <span id="userNameValue"></span></p>
+    <div class="page-container">
+
+        <!-- LAYOUT EM DUAS COLUNAS: PAINEL LATERAL + VIEWER -->
+        <div class="app-layout">
+
+            <!-- ======================== -->
+            <!-- PAINEL LATERAL (side-panel) -->
+            <!-- ======================== -->
+            <div class="side-panel">
+
+                <!-- AUTENTICAÇÃO -->
+                <div>
+                    <div class="side-panel-section-title">Autenticação</div>
+
+                    <div class="status-box">
+                        <strong>Status:</strong>
+                        <span id="authStatus">Checking...</span><br>
+
+                        <span id="userName" class="hidden">
+                            <strong>Utilizador:</strong>
+                            <span id="userNameValue"></span>
+                        </span>
+                    </div>
+
+                    <div class="button-group-vertical">
+                        <a href="/api/auth/login" class="btn hidden" id="loginBtn">Login</a>
+                        <a href="/api/auth/logout" class="btn logout hidden" id="logoutBtn">Logout</a>
+                        <button onclick="window.location.href='/logout'" class="btn-secondary" style="margin-top: 4px;">
+                            Terminar Sessão 
+                        </button>
+                    </div>
+                </div>
+
+
+
+                <!-- CARREGAMENTO DO MODELO -->
+                <div>
+                    <div class="side-panel-section-title">Modelo Digital Twin</div>
+
+                    <h2 class="page-title" style="margin-bottom: 8px;">Painel de Controlo</h2>
+                    <p class="helper-text" style="margin-bottom: 20px;">Gerir autenticação e carregamento do modelo</p>
+
+                    <input
+                        type="text"
+                        id="modelUrn"
+                        class="form-input"
+                        placeholder="Insira o Twin ID..."
+                        style="margin-bottom: 8px;"
+                    >
+
+                    <button id="loadModelBtn" class="btn" disabled>
+                        Carregar Modelo
+                    </button>
+
+                    <p id="loadStatus" class="helper-text"></p>
+                </div>
+            </div>
+
+            <!-- ======================== -->
+            <!-- ÁREA DO VIEWER -->
+            <!-- ======================== -->
+            <div class="viewer-wrapper">
+                <div id="viewerContainer"></div>
+            </div>
+
+        </div>
+
     </div>
 
-    <div id="authButtons">
-        <a href="/api/auth/login" class="button hidden" id="loginBtn">Login</a>
-        <a href="/api/auth/logout" class="button logout hidden" id="logoutBtn">Logout</a>
-    </div>
-
-    <button onclick="window.location.href='/logout'">Application Logout</button>
-
-    <h2>API Endpoints</h2>
-    <ul>
-        <li>GET /api/auth/login</li>
-        <li>GET /api/auth/logout</li>
-        <li>GET /api/auth/profile</li>
-        <li>GET /api/auth/token</li>
-    </ul>
-
-    <h2>Model Viewer</h2>
-    <div id="modelControls">
-    <input type="text" id="modelUrn" placeholder="Insert Twin ID...">
-    <button id="loadModelBtn" disabled>Load Twin</button>
-    <p id="loadStatus" style="color:red;"></p>
-    </div>
-
-    </div>
-    <div id="viewerContainer">
-    </div>
+    <!-- JS EXISTENTE (NÃO ALTERADO) -->
     <script src="/js/auth.js"></script>
     <script src="/js/viewer.js"></script>
 </body>
+
 </html>
