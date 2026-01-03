@@ -1,10 +1,3 @@
-async function checkAuthStatus() {
-    const statusEl = document.getElementById('authStatus');
-    const userNameEl = document.getElementById('userName');
-    const userNameValueEl = document.getElementById('userNameValue');
-    const loginBtn = document.getElementById('loginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-
     try {
         const response = await fetch('/api/auth/profile');
 
@@ -30,7 +23,7 @@ async function checkAuthStatus() {
         statusEl.textContent = 'Error';
         loginBtn.classList.remove('hidden');
     }
-}
+
 
 async function initializeTandemViewer() {
     try {
@@ -54,5 +47,4 @@ async function initializeTandemViewer() {
     }
 }
 
-// Run on page load
-checkAuthStatus();
+initializeTandemViewer();
