@@ -1,14 +1,31 @@
 const { Scopes } = require('@aps_sdk/authentication');
-require('dotenv').config();
+require('dotenv').config(); // Load .env once here
 
-let { APS_CLIENT_ID, APS_CLIENT_SECRET, SERVER_SESSION_SECRET, PORT } = process.env;
-if (!APS_CLIENT_ID || !APS_CLIENT_SECRET || !SERVER_SESSION_SECRET) {
-    console.warn('Missing some of the environment variables.');
+// Pull environment variables
+let {
+    APS_CLIENT_ID,
+    APS_CLIENT_SECRET,
+    SERVER_SESSION_SECRET,
+    PORT,
+    MONGO_URI
+} = process.env;
+
+// Check required variables (2-legged auth → no callback URL)
+if (
+    !APS_CLIENT_ID ||
+    !APS_CLIENT_SECRET ||
+    !SERVER_SESSION_SECRET ||
+    !MONGO_URI
+) {
+    console.warn('❌ Missing some required environment variables.');
     process.exit(1);
 }
 
+// Define APS scopes (2-legged)
 const INTERNAL_TOKEN_SCOPES = [Scopes.DataRead, Scopes.ViewablesRead];
 const PUBLIC_TOKEN_SCOPES = [Scopes.ViewablesRead];
+
+// Default port
 PORT = PORT || 3001;
 
 module.exports = {
@@ -17,5 +34,6 @@ module.exports = {
     SERVER_SESSION_SECRET,
     INTERNAL_TOKEN_SCOPES,
     PUBLIC_TOKEN_SCOPES,
-    PORT
+    PORT,
+    MONGO_URI
 };
