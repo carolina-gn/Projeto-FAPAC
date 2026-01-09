@@ -3,6 +3,7 @@ const session = require('cookie-session');
 const path = require('path');
 const mongoose = require('mongoose');
 const { PORT, SERVER_SESSION_SECRET, MONGO_URI } = require('./config.js');
+const User = require('./src/models/user.js'); // import the User model
 
 // Create Express app
 const app = express();
@@ -21,15 +22,27 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'html', 'login.html'));
 });
 
-app.post('/login', (req, res) => {
-    const { username, password } = req.body;
-    const VALID_USER = "admin";
-    const VALID_PASS = "admin";
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body; // now using username
 
-    if (username === VALID_USER && password === VALID_PASS) {
-        req.session.user = username;
-        res.redirect('/login-validation?status=success');
-    } else {
+    try {
+        // Find user by username
+        const user = await User.findOne({ username });
+        if (user && user.passwordHash === password) {
+            req.session.user = { id: user._id, name: user.name, username: user.username, role: user.role };
+            return res.redirect('/login-validation?status=success');
+        }
+
+        // Optional: fallback admin
+        if (username === "admin" && password === "admin") {
+            req.session.user = { id: "admin", name: "Administrator", username: "admin", role: "owner" };
+            return res.redirect('/login-validation?status=success');
+        }
+
+        res.redirect('/login-validation?status=fail');
+
+    } catch (err) {
+        console.error(err);
         res.redirect('/login-validation?status=fail');
     }
 });
@@ -66,5 +79,5 @@ mongoose.connect(MONGO_URI)
     })
     .catch(err => {
         console.error('❌ MongoDB connection error:', err);
-        process.exit(1); // Stop server if DB connection fails
+        process.exit(1);
     });
