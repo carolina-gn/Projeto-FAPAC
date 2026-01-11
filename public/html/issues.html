@@ -1,20 +1,149 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <title>DTGE — Issues</title>
-    <link rel="stylesheet" href="/css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DTGE — Todos os Issues</title>
+  <link rel="stylesheet" href="/css/style.css" />
 </head>
 
 <body>
-    <div class="page-container page-container--full">
+  <div class="page-container page-container--full">
 
-        <h1 class="page-title">Todos os Issues</h1>
+    <!-- Header -->
+    <header class="issues-page-header">
+      <div class="issues-brand">
+        <img class="issues-logo" src="/images/logo.png" alt="DTGE Logo">
+        <div>
+          <h1 class="page-title issues-page-title">Todos os issues</h1>
+          <p class="issues-page-subtitle">Por Estado</p>
+        </div>
+      </div>
 
-        <div class="card">
-            <p>🚧 Página de listagem de issues (em construção)</p>
+      <div class="issues-page-actions">
+        <a class="btn" href="/">Voltar ao viewer</a>
+      </div>
+    </header>
+
+    <!-- 4 painéis -->
+    <section class="issues-board">
+
+      <!-- ABERTAS -->
+      <div class="card issues-column">
+        <div class="issues-column-header">
+          <div class="issues-column-title">
+            <span class="issue-dot issue-dot--open"></span>
+            <span>Abertas</span>
+          </div>
+          <span class="issues-count">3</span>
         </div>
 
-    </div>
+        <div class="issues-column-list">
+          <button class="issue-item" type="button">
+            <span class="issue-dot issue-dot--open"></span>
+            <div class="issue-main">
+              <div class="issue-title">Fuga de água no WC</div>
+              <div class="issue-meta">Piso 2 · WC Norte</div>
+            </div>
+            <span class="issue-badge issue-badge--high">Alta</span>
+          </button>
+
+          <button class="issue-item" type="button">
+            <span class="issue-dot issue-dot--open"></span>
+            <div class="issue-main">
+              <div class="issue-title">Tomada sem energia</div>
+              <div class="issue-meta">Piso 1 · Sala 1.05</div>
+            </div>
+            <span class="issue-badge issue-badge--medium">Média</span>
+          </button>
+
+          <button class="issue-item" type="button">
+            <span class="issue-dot issue-dot--open"></span>
+            <div class="issue-main">
+              <div class="issue-title">Ruído anormal no AVAC</div>
+              <div class="issue-meta">Cobertura · Máquina 02</div>
+            </div>
+            <span class="issue-badge issue-badge--critical">Crítica</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- EM PROGRESSO -->
+      <div class="card issues-column">
+        <div class="issues-column-header">
+          <div class="issues-column-title">
+            <span class="issue-dot issue-dot--progress"></span>
+            <span>Em progresso</span>
+          </div>
+          <span class="issues-count">2</span>
+        </div>
+
+        <div class="issues-column-list">
+          <button class="issue-item" type="button">
+            <span class="issue-dot issue-dot--progress"></span>
+            <div class="issue-main">
+              <div class="issue-title">Temperatura elevada</div>
+              <div class="issue-meta">Sala 1.12 · AVAC</div>
+            </div>
+            <span class="issue-badge issue-badge--high">Alta</span>
+          </button>
+
+          <button class="issue-item" type="button">
+            <span class="issue-dot issue-dot--progress"></span>
+            <div class="issue-main">
+              <div class="issue-title">Lâmpadas a falhar</div>
+              <div class="issue-meta">Piso 0 · Corredor</div>
+            </div>
+            <span class="issue-badge issue-badge--low">Baixa</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- RESOLVIDAS -->
+      <div class="card issues-column">
+        <div class="issues-column-header">
+          <div class="issues-column-title">
+            <span class="issue-dot issue-dot--resolved"></span>
+            <span>Resolvidas</span>
+          </div>
+          <span class="issues-count">1</span>
+        </div>
+
+        <div class="issues-column-list">
+          <button class="issue-item" type="button">
+            <span class="issue-dot issue-dot--resolved"></span>
+            <div class="issue-main">
+              <div class="issue-title">Luz a piscar</div>
+              <div class="issue-meta">Piso 1 · Corredor</div>
+            </div>
+            <span class="issue-badge issue-badge--medium">Média</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- FECHADAS -->
+      <div class="card issues-column">
+        <div class="issues-column-header">
+          <div class="issues-column-title">
+            <span class="issue-dot issue-dot--closed"></span>
+            <span>Fechadas</span>
+          </div>
+          <span class="issues-count">1</span>
+        </div>
+
+        <div class="issues-column-list">
+          <button class="issue-item" type="button">
+            <span class="issue-dot issue-dot--closed"></span>
+            <div class="issue-main">
+              <div class="issue-title">Inspeção concluída</div>
+              <div class="issue-meta">Edifício A · Piso 2</div>
+            </div>
+            <span class="issue-badge issue-badge--low">Baixa</span>
+          </button>
+        </div>
+      </div>
+
+    </section>
+  </div>
 </body>
 </html>
