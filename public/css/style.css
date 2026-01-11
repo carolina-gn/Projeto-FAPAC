@@ -571,7 +571,7 @@ li {
 
     /* importante: o painel não “rebenta” a página */
     overflow-y: auto;
-    max-height: calc(100vh - 60px);
+    max-height: calc(100vh - 20px);
 }
 
 .issue-panel::before {
