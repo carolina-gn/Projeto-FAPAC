@@ -964,3 +964,8 @@ textarea { resize: vertical; }
   flex-wrap: wrap;
 }
 
+.issues-page-footer{
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
