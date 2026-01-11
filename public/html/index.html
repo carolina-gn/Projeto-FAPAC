@@ -48,6 +48,60 @@
                     <p id="loadStatus" class="sideblock-error"></p>
                 </div>
 
+                <!-- CARD 2 — ISSUES -->
+                <div class="side-card">
+
+                    <div class="issues-header">
+                        <p class="side-card-title">Issues</p>
+
+                        <div class="issues-filters">
+                            <select class="form-input issues-filter">
+                                <option value="" selected>Todas</option>
+                                <option value="open">Abertas</option>
+                                <option value="in_progress">Em progresso</option>
+                                <option value="resolved">Resolvidas</option>
+                                <option value="closed">Fechadas</option>
+                            </select>
+
+                            <button class="btn btn-secondary issues-new" type="button">
+                                + Nova
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="issues-list">
+
+                        <button class="issue-item" type="button">
+                            <span class="issue-dot issue-dot--open"></span>
+                            <div class="issue-main">
+                                <div class="issue-title">Fuga de água no WC</div>
+                                <div class="issue-meta">Piso 2 · WC Norte</div>
+                            </div>
+                            <span class="issue-badge issue-badge--high">Alta</span>
+                        </button>
+
+                        <button class="issue-item" type="button">
+                            <span class="issue-dot issue-dot--progress"></span>
+                            <div class="issue-main">
+                                <div class="issue-title">Temperatura elevada</div>
+                                <div class="issue-meta">Sala 1.12 · AVAC</div>
+                            </div>
+                            <span class="issue-badge issue-badge--medium">Média</span>
+                        </button>
+
+                        <button class="issue-item" type="button">
+                            <span class="issue-dot issue-dot--resolved"></span>
+                            <div class="issue-main">
+                                <div class="issue-title">Luz a piscar</div>
+                                <div class="issue-meta">Piso 1 · Corredor</div>
+                            </div>
+                            <span class="issue-badge issue-badge--low">Baixa</span>
+                        </button>
+
+                    </div>
+
+                </div>
+
             </div>
 
             <!-- ======================== -->
