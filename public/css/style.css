@@ -969,3 +969,18 @@ textarea { resize: vertical; }
   display: flex;
   justify-content: flex-end;
 }
+
+.issues-column {
+  min-height: calc(100vh - 160px); /* ajusta se quiseres */
+}
+
+.issues-column-list::-webkit-scrollbar {
+  width: 6px;
+}
+.issues-column-list::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.22);
+  border-radius: 999px;
+}
+.issues-column-list::-webkit-scrollbar-track {
+  background: transparent;
+}
