@@ -284,7 +284,10 @@ li {
 /* Layout principal para a página do modelo */
 .app-layout {
     display: grid;
-    grid-template-columns: minmax(260px, 320px) 1fr;
+    grid-template-columns:
+    minmax(260px, 320px)   /* painel esquerdo */
+    1fr                    /* viewer */
+    minmax(320px, 380px);  /* painel issues */
     gap: 20px;
 
     /* CORRIGIDO: garante que a coluna do viewer ocupa o ecrã todo */
