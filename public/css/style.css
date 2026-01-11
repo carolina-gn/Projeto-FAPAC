@@ -931,3 +931,36 @@ textarea { resize: vertical; }
     min-height: auto;
   }
 }
+
+.issues-filters-bar {
+  display: inline-flex;
+  align-items: end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.issues-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.issues-filter-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.issues-page-header{
+  flex-wrap: wrap;               /* permite quebrar sem estragar */
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.issues-page-actions{
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+

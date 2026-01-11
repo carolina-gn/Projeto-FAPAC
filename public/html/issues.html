@@ -12,18 +12,35 @@
 
     <!-- Header -->
     <header class="issues-page-header">
-      <div class="issues-brand">
-        <img class="issues-logo" src="/images/logo.png" alt="DTGE Logo">
-        <div>
-          <h1 class="page-title issues-page-title">Todos os issues</h1>
-          <p class="issues-page-subtitle">Por Estado</p>
-        </div>
-      </div>
 
-      <div class="issues-page-actions">
-        <a class="btn" href="/">Voltar ao viewer</a>
-      </div>
-    </header>
+        <div class="issues-brand">
+            <img class="issues-logo" src="/images/logo.png" alt="DTGE Logo">
+            <div>
+            <h1 class="page-title issues-page-title">Todos os issues</h1>
+            <p class="issues-page-subtitle">Por Estado</p>
+            </div>
+        </div>
+
+        <div class="issues-page-actions">
+            <div class="issues-filters-bar">
+            <label class="issues-filter">
+                <span class="issues-filter-label">Edifício</span>
+                <select class="form-input" id="buildingFilter">
+                <option value="all" selected>Todos</option>
+                <option value="Edifício A">Edifício A</option>
+                <option value="Edifício B">Edifício B</option>
+                </select>
+            </label>
+
+            <button class="btn btn-secondary" type="button" id="clearBuildingFilter">
+                Limpar
+            </button>
+            </div>
+
+            <a class="btn" href="/">Voltar ao viewer</a>
+        </div>
+
+        </header>
 
     <!-- 4 painéis -->
     <section class="issues-board">
