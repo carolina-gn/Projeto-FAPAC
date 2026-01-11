@@ -54,19 +54,104 @@
                     <div class="issues-header">
                         <p class="side-card-title">Issues</p>
 
-                        <div class="issues-filters">
-                            <select class="form-input issues-filter">
-                                <option value="" selected>Todas</option>
-                                <option value="open">Abertas</option>
-                                <option value="in_progress">Em progresso</option>
-                                <option value="resolved">Resolvidas</option>
-                                <option value="closed">Fechadas</option>
-                            </select>
+                        <details class="filters-sheet">
+                        <summary class="filters-trigger">Filtros</summary>
 
-                            <button class="btn btn-secondary issues-new" type="button">
-                                + Nova
-                            </button>
+                        <div class="filters-panel">
+
+                            <!-- Cabeçalho -->
+                            <div class="filters-top">
+                            <div class="filters-title">Todos os filtros</div>
+                            <button class="filters-close" type="button" aria-label="Fechar">×</button>
+                            </div>
+
+                            <!-- Lista de categorias (cada uma abre as opções) -->
+                            <div class="filters-list">
+
+                            <details class="filter-group">
+                                <summary class="filter-row-link">
+                                <span>Estado</span>
+                                <span class="chev">›</span>
+                                </summary>
+                                <div class="filter-options">
+                                <label class="opt"><input type="checkbox"> Aberta</label>
+                                <label class="opt"><input type="checkbox"> Em progresso</label>
+                                <label class="opt"><input type="checkbox"> Resolvida</label>
+                                <label class="opt"><input type="checkbox"> Fechada</label>
+                                </div>
+                            </details>
+
+                            <details class="filter-group">
+                                <summary class="filter-row-link">
+                                <span>Prioridade</span>
+                                <span class="chev">›</span>
+                                </summary>
+                                <div class="filter-options">
+                                <label class="opt"><input type="checkbox"> Baixa</label>
+                                <label class="opt"><input type="checkbox"> Média</label>
+                                <label class="opt"><input type="checkbox"> Alta</label>
+                                <label class="opt"><input type="checkbox"> Crítica</label>
+                                </div>
+                            </details>
+
+                            <details class="filter-group">
+                                <summary class="filter-row-link">
+                                <span>Tipo</span>
+                                <span class="chev">›</span>
+                                </summary>
+                                <div class="filter-options">
+                                <label class="opt"><input type="checkbox"> Avaria</label>
+                                <label class="opt"><input type="checkbox"> Pedido</label>
+                                <label class="opt"><input type="checkbox"> Inspeção</label>
+                                </div>
+                            </details>
+
+                            <details class="filter-group">
+                                <summary class="filter-row-link">
+                                <span>Edifício</span>
+                                <span class="chev">›</span>
+                                </summary>
+                                <div class="filter-options">
+                                <label class="opt"><input type="checkbox"> Edifício A</label>
+                                <label class="opt"><input type="checkbox"> Edifício B</label>
+                                </div>
+                            </details>
+
+                            <details class="filter-group">
+                                <summary class="filter-row-link">
+                                <span>Piso</span>
+                                <span class="chev">›</span>
+                                </summary>
+                                <div class="filter-options">
+                                <label class="opt"><input type="checkbox"> Piso 0</label>
+                                <label class="opt"><input type="checkbox"> Piso 1</label>
+                                <label class="opt"><input type="checkbox"> Piso 2</label>
+                                <label class="opt"><input type="checkbox"> Piso 3</label>
+                                </div>
+                            </details>
+
+                            <details class="filter-group">
+                                <summary class="filter-row-link">
+                                <span>Técnico atribuído</span>
+                                <span class="chev">›</span>
+                                </summary>
+                                <div class="filter-options">
+                                <label class="opt"><input type="checkbox"> Carolina</label>
+                                <label class="opt"><input type="checkbox"> Leonor</label>
+                                <label class="opt"><input type="checkbox"> Catarina</label>
+                                </div>
+                            </details>
+
+                            </div>
+
+                            <!-- Rodapé -->
+                            <div class="filters-actions">
+                            <button class="btn btn-secondary" type="button">Limpar</button>
+                            <button class="btn" type="button">Aplicar</button>
+                            </div>
+
                         </div>
+                        </details>
                     </div>
 
                     <div class="issues-list">

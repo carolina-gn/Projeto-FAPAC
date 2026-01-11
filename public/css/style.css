@@ -709,3 +709,123 @@ textarea { resize: vertical; }
 .issue-badge--medium { }
 .issue-badge--high { }
 .issue-badge--critical { }
+
+.filters-trigger {
+  list-style: none;
+  cursor: pointer;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.22);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.filters-trigger::-webkit-details-marker { display: none; }
+
+.filters-sheet { position: relative; }
+
+.filters-panel {
+  margin-top: 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.20);
+  overflow: hidden;
+}
+
+.filters-top {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  padding: 12px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.30);
+  background: rgba(255,255,255,0.18);
+}
+
+.filters-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #374151;
+  text-align: center;
+}
+
+.filters-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.30);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.filters-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-group { border-bottom: 1px solid rgba(255,255,255,0.22); }
+
+.filter-row-link {
+  list-style: none;
+  cursor: pointer;
+  padding: 12px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  color: #374151;
+  background: rgba(255,255,255,0.10);
+}
+
+.filter-row-link::-webkit-details-marker { display: none; }
+
+.filter-row-link:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+.chev {
+  font-size: 18px;
+  color: #6b7280;
+}
+
+.filter-options {
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(255,255,255,0.12);
+}
+
+.opt {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.22);
+  font-size: 0.88rem;
+  color: #374151;
+}
+
+.opt input {
+  width: 16px;
+  height: 16px;
+}
+
+.filters-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px solid rgba(255,255,255,0.30);
+  background: rgba(255,255,255,0.18);
+}
+
+.side-panel .side-card {
+    max-height: 290px;   
+    overflow-y: auto;
+}
