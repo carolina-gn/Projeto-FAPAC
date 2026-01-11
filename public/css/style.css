@@ -41,8 +41,8 @@ body {
 /* Wrapper geral para cada página (login, validação, home) */
 .page-container {
     width: 100%;
-    max-width: 1200px;
-    padding: 32px 24px;
+    max-width: none;   
+    padding: 12px;    
 }
 
 /* Títulos genéricos */
@@ -608,3 +608,5 @@ li {
     font-size: 0.8rem;
     color: #6b7280;
 }
+
+textarea { resize: vertical; }
