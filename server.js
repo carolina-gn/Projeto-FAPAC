@@ -70,6 +70,7 @@ app.get('/logout', (req, res) => {
 // --- Your Routes ---
 app.use(require('./src/routes/auth.js'));
 app.use(require('./src/routes/data-management.js'));
+app.use(require('./src/routes/projects.js'));
 
 // --- Connect to MongoDB and start server ---
 mongoose.connect(MONGO_URI)
