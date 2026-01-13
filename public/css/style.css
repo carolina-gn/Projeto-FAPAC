@@ -1106,9 +1106,6 @@ textarea { resize: vertical; }
   -webkit-backdrop-filter: blur(12px) saturate(140%);
 }
 
-
-
-
 /* Título mais legível */
 .modal-title {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -1163,4 +1160,16 @@ textarea { resize: vertical; }
 
 .modal-value{
   color: #111827;
+}
+
+.modal-field .form-input{
+  width: 100%;
+}
+.modal-desc .form-input{
+  width: 100%;
+}
+
+.modal-field .form-input,
+.modal-desc .form-input{
+  width: 100%;
 }
