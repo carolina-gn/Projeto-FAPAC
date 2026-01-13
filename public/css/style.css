@@ -1173,3 +1173,14 @@ textarea { resize: vertical; }
 .modal-desc .form-input{
   width: 100%;
 }
+
+.sidepanel-logout {
+  position: absolute;
+  bottom: 5px;
+  left: 20px;
+  right: 20px;   /* 👈 isto é importante */
+}
+
+.sidepanel-logout button {
+  width: 100%;
+}
