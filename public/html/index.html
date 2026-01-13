@@ -60,10 +60,10 @@
                                     <span class="chev">›</span>
                                     </summary>
                                     <div class="filter-options">
-                                    <label class="opt"><input type="checkbox"> Aberta</label>
-                                    <label class="opt"><input type="checkbox"> Em progresso</label>
-                                    <label class="opt"><input type="checkbox"> Resolvida</label>
-                                    <label class="opt"><input type="checkbox"> Fechada</label>
+                                    <label class="opt"><input type="checkbox" name="status" value="aberta"> Aberta</label>
+                                    <label class="opt"><input type="checkbox" name="status" value="em_progresso"> Em progresso</label>
+                                    <label class="opt"><input type="checkbox" name="status" value="resolvida"> Resolvida</label>
+                                    <label class="opt"><input type="checkbox" name="status" value="fechada"> Fechada</label>
                                     </div>
                                 </details>
 
@@ -73,10 +73,10 @@
                                     <span class="chev">›</span>
                                     </summary>
                                     <div class="filter-options">
-                                    <label class="opt"><input type="checkbox"> Baixa</label>
-                                    <label class="opt"><input type="checkbox"> Média</label>
-                                    <label class="opt"><input type="checkbox"> Alta</label>
-                                    <label class="opt"><input type="checkbox"> Crítica</label>
+                                    <label class="opt"><input type="checkbox" name="priority" value="baixa"> Baixa</label>
+                                    <label class="opt"><input type="checkbox" name="priority" value="media"> Média</label>
+                                    <label class="opt"><input type="checkbox" name="priority" value="alta"> Alta</label>
+                                    <label class="opt"><input type="checkbox" name="priority" value="critica"> Crítica</label>
                                     </div>
                                 </details>
 
@@ -86,9 +86,9 @@
                                     <span class="chev">›</span>
                                     </summary>
                                     <div class="filter-options">
-                                    <label class="opt"><input type="checkbox"> Avaria</label>
-                                    <label class="opt"><input type="checkbox"> Pedido</label>
-                                    <label class="opt"><input type="checkbox"> Inspeção</label>
+                                    <label class="opt"><input type="checkbox" name="type" value="avaria"> Avaria</label>
+                                    <label class="opt"><input type="checkbox" name="type" value="pedido"> Pedido</label>
+                                    <label class="opt"><input type="checkbox" name="type" value="inspecao"> Inspeção</label>
                                     </div>
                                 </details>
 
@@ -98,8 +98,8 @@
                                     <span class="chev">›</span>
                                     </summary>
                                     <div class="filter-options">
-                                    <label class="opt"><input type="checkbox"> Edifício A</label>
-                                    <label class="opt"><input type="checkbox"> Edifício B</label>
+                                    <label class="opt"><input type="checkbox" name="building" value="Palacete"> Palacete</label>
+                                    <label class="opt"><input type="checkbox" name="building" value="BNU"> BNU</label>
                                     </div>
                                 </details>
 
@@ -109,10 +109,10 @@
                                     <span class="chev">›</span>
                                     </summary>
                                     <div class="filter-options">
-                                    <label class="opt"><input type="checkbox"> Piso 0</label>
-                                    <label class="opt"><input type="checkbox"> Piso 1</label>
-                                    <label class="opt"><input type="checkbox"> Piso 2</label>
-                                    <label class="opt"><input type="checkbox"> Piso 3</label>
+                                    <label class="opt"><input type="checkbox" name="floor" value="Piso 0"> Piso 0</label>
+                                    <label class="opt"><input type="checkbox" name="floor" value="Piso 1"> Piso 1</label>
+                                    <label class="opt"><input type="checkbox" name="floor" value="Piso 2"> Piso 2</label>
+                                    <label class="opt"><input type="checkbox" name="floor" value="Piso 3"> Piso 3</label>
                                     </div>
                                 </details>
 
@@ -122,16 +122,16 @@
                                     <span class="chev">›</span>
                                     </summary>
                                     <div class="filter-options">
-                                    <label class="opt"><input type="checkbox"> Carolina</label>
-                                    <label class="opt"><input type="checkbox"> Leonor</label>
-                                    <label class="opt"><input type="checkbox"> Catarina</label>
+                                    <label class="opt"><input type="checkbox" name="assignedToName" value="Carolina"> Carolina</label>
+                                    <label class="opt"><input type="checkbox" name="assignedToName" value="Leonor"> Leonor</label>
+                                    <label class="opt"><input type="checkbox" name="assignedToName" value="Catarina"> Catarina</label>
                                     </div>
                                 </details>
-                            </div>
+                                </div>
 
                             <div class="filters-actions">
-                                <button class="btn btn-secondary" type="button">Limpar</button>
-                                <button class="btn" type="button">Aplicar</button>
+                                <button class="btn btn-secondary" type="button" id="filtersClearBtn">Limpar</button>
+                                <button class="btn" type="button" id="filtersApplyBtn">Aplicar</button>
                             </div>
                         </div>
                     </details>

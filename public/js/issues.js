@@ -103,6 +103,9 @@ document.getElementById("btnCreateIssue")
       alert("Issue criada!");
       clearIssueForm();
 
+      ALL_ISSUES.unshift(data);
+      renderIssues(ALL_ISSUES);
+
     } catch (err) {
       console.error(err);
       alert("Erro de ligação ao servidor (backend).");
@@ -114,7 +117,7 @@ document.getElementById("btnCreateIssue")
   if (status === "aberta") return "issue-dot--open";
   if (status === "em_progresso") return "issue-dot--progress";
   if (status === "resolvida") return "issue-dot--resolved";
-  if (status === "fechada") return "issue-dot--closed"; // se não existir no CSS, usamos fallback abaixo
+  if (status === "fechada") return "issue-dot--closed"; 
   return "issue-dot--open";
 }
 
@@ -187,6 +190,8 @@ function escapeHtml(str) {
     .replaceAll("'", "&#039;");
 }
 
+let ALL_ISSUES = [];
+
 async function loadIssues() {
   try {
     const res = await fetch("/api/issues");
@@ -198,12 +203,70 @@ async function loadIssues() {
       return;
     }
 
-    renderIssues(data);
+    ALL_ISSUES = Array.isArray(data) ? data : [];
+    renderIssues(ALL_ISSUES); // sem filtros ao abrir
+
   } catch (err) {
     console.error(err);
     alert("Não foi possível ligar ao backend para carregar issues.");
   }
 }
 
+function getCheckedValues(name) {
+  return Array.from(document.querySelectorAll(`input[type="checkbox"][name="${name}"]:checked`))
+    .map(cb => cb.value);
+}
+
+function applyFilters() {
+  const statuses = getCheckedValues("status");
+  const priorities = getCheckedValues("priority");
+  const types = getCheckedValues("type");
+  const buildings = getCheckedValues("building");
+  const floors = getCheckedValues("floor");
+  const assignees = getCheckedValues("assignedToName");
+
+  const filtered = ALL_ISSUES.filter((issue) => {
+    if (statuses.length && !statuses.includes(issue.status)) return false;
+    if (priorities.length && !priorities.includes(issue.priority)) return false;
+    if (types.length && !types.includes(issue.type)) return false;
+
+    const building = issue?.location?.building || "";
+    const floor = issue?.location?.floor || "";
+    const assigned = issue?.assignedToName || "";
+
+    if (buildings.length && !buildings.includes(building)) return false;
+    if (floors.length && !floors.includes(floor)) return false;
+    if (assignees.length && !assignees.includes(assigned)) return false;
+
+    return true;
+  });
+
+  renderIssues(filtered);
+
+  // fecha o painel de filtros (opcional)
+  const details = document.querySelector(".filters-sheet");
+  if (details) details.open = false;
+}
+
+function clearFilters() {
+  document.querySelectorAll('.filters-panel input[type="checkbox"]').forEach(cb => cb.checked = false);
+  renderIssues(ALL_ISSUES);
+
+  const details = document.querySelector(".filters-sheet");
+  if (details) details.open = false;
+}
+
 // carrega assim que a página abre
-window.addEventListener("DOMContentLoaded", loadIssues);
+
+window.addEventListener("DOMContentLoaded", () => {
+  loadIssues();
+
+  document.getElementById("filtersApplyBtn")?.addEventListener("click", applyFilters);
+  document.getElementById("filtersClearBtn")?.addEventListener("click", clearFilters);
+
+  // botão X fechar (se quiseres)
+  document.querySelector(".filters-close")?.addEventListener("click", () => {
+    const details = document.querySelector(".filters-sheet");
+    if (details) details.open = false;
+  });
+});
