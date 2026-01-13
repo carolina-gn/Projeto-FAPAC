@@ -1,91 +1,78 @@
-class tandemViewer {
-    constructor(div, token) {
-        return new Promise(resolve => {
-            const av = Autodesk.Viewing;
+class TandemViewer {
+    constructor(container, token) {
+        return new Promise((resolve, reject) => {
+            try {
+                const av = Autodesk.Viewing;
 
-            const options = {
-                env: "DtProduction",
-                api: 'dt',
-                productId: 'Digital Twins',
-                corsWorker: true,
-            };
+                const options = {
+                    env: "DtProduction",
+                    api: 'dt',
+                    productId: 'Digital Twins',
+                    corsWorker: true,
+                };
 
-            av.Initializer(options, async () => {
-                this.viewer = new av.GuiViewer3D(div, {
-                    extensions: ['Autodesk.BoxSelection'],
-                    screenModeDelegate: av.NullScreenModeDelegate,
-                    theme: 'light-theme',
+                av.Initializer(options, async () => {
+                    // Initialize GuiViewer3D
+                    this.viewer = new av.GuiViewer3D(container, {
+                        extensions: ['Autodesk.BoxSelection'],
+                        screenModeDelegate: av.NullScreenModeDelegate,
+                        theme: 'light-theme',
+                    });
+                    this.viewer.start();
+
+                    // Set Authorization header for Tandem API
+                    av.endpoint.HTTP_REQUEST_HEADERS['Authorization'] = `Bearer ${token}`;
+
+                    // Initialize Tandem app
+                    this.app = new Autodesk.Tandem.DtApp();
+
+                    resolve(this);
                 });
-                this.viewer.start();
-
-                av.endpoint.HTTP_REQUEST_HEADERS['Authorization'] = `Bearer ${token}`;
-
-                this.app = new Autodesk.Tandem.DtApp();
-
-                resolve(this);
-            });
+            } catch (err) {
+                console.error('Viewer initialization error:', err);
+                reject(err);
+            }
         });
-    }
-
-    async fetchFacilities() {
-        try {
-            const shared = await this.app.getSharedFacilities();
-            const teams = await this.app.getCurrentTeamsFacilities();
-            return [...(shared || []), ...(teams || [])];
-        } catch (err) {
-            console.error('Failed to fetch facilities:', err);
-            alert('Unable to fetch facilities. Check your permissions or token.');
-            return [];
-        }
     }
 
     async openFacility(facility) {
-    try {
-        await this.app.displayFacility(facility, false, this.viewer);
+        try {
+            // facility must have twinId
+            if (!facility || !facility.twinId) throw new Error('Facility must have twinId');
 
-        // Poll until the model is in the viewer.impl.modelQueue
-        const impl = this.viewer.impl;
-        const waitForModel = () => new Promise(resolve => {
-            const interval = setInterval(() => {
-                if (impl.modelQueue.length > 0) {
-                    clearInterval(interval);
-                    resolve();
-                }
-            }, 100);
-        });
-        await waitForModel();
+            // Fetch available facilities from Tandem
+            const allFacilities = [
+                ...(await this.app.getSharedFacilities()) || [],
+                ...(await this.app.getCurrentTeamsFacilities()) || []
+            ];
 
-        // Fit the facility safely
-        Autodesk.Viewing.Private.fitToView(this.viewer.impl);
-        this.viewer.impl.invalidate(true);
+            // Match the twinId
+            const target = allFacilities.find(f => f.urn === facility.twinId || f.twinId === facility.twinId);
+            if (!target) throw new Error(`Facility with twinId "${facility.twinId}" not found in Tandem`);
 
-    } catch (err) {
-        console.error('Failed to open facility:', err);
-        alert('Failed to open facility. See console for details.');
-    }
-}
-}
+            await this.app.displayFacility(target, false, this.viewer);
 
-async function loadModelFromInput() {
-    const input = document.getElementById('modelUrn').value.trim();
-    if (!input) return alert('Please enter a facility URN');
+            // Wait until model queue has at least one model
+            const impl = this.viewer.impl;
+            await new Promise(resolve => {
+                const interval = setInterval(() => {
+                    if (impl.modelQueue.length > 0) {
+                        clearInterval(interval);
+                        resolve();
+                    }
+                }, 100);
+            });
 
-    const facilities = await window.tandemViewerInstance.fetchFacilities();
+            Autodesk.Viewing.Private.fitToView(this.viewer.impl);
+            this.viewer.impl.invalidate(true);
 
-    console.log('Facilities:', facilities);
-
-    // Match the facility by twinId
-    const facility = facilities.find(f => f.twinId === input);
-
-    if (!facility) return alert('Invalid facility URN');
-
-    try {
-        await window.tandemViewerInstance.openFacility(facility);
-    } catch (err) {
-        console.error('Failed to open facility:', err);
-        alert('Failed to open facility. Check console for details.');
+            console.log(`Facility "${facility.name}" loaded successfully.`);
+        } catch (err) {
+            console.error('Failed to open facility:', err);
+            alert(`Falha ao abrir o modelo "${facility.name}". Veja console.`);
+        }
     }
 }
 
-// Attach to button
-document.getElementById('loadModelBtn').addEventListener('click', loadModelFromInput);
+// Attach globally
+window.TandemViewer = TandemViewer;

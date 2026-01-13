@@ -7,16 +7,16 @@ async function createDummyUser() {
         // Modern Mongoose connection (no extra options)
         await mongoose.connect(MONGO_URI);
 
-        const existing = await User.findOne({ email: "viewer@example.com" });
+        const existing = await User.findOne({ email: "viewer2@example.com" });
         if (existing) {
             console.log("Dummy user already exists");
             return process.exit(0);
         }
 
         const user = new User({
-    name: "Test Viewer",
-    username: "testviewer",    // new field
-    email: "viewer@example.com",
+    name: "Test Viewer 2",
+    username: "testviewer2",    // new field
+    email: "viewer2@example.com",
     passwordHash: "password123",
     role: "viewer"
     });

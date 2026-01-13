@@ -28,7 +28,7 @@ app.post('/login', async (req, res) => {
     try {
         // Find user by username
         const user = await User.findOne({ username });
-        if (user && user.passwordHash === password) {
+        if (user && await user.validatePassword(password)) {
             req.session.user = { id: user._id, name: user.name, username: user.username, role: user.role };
             return res.redirect('/login-validation?status=success');
         }
@@ -70,6 +70,7 @@ app.get('/logout', (req, res) => {
 // --- Your Routes ---
 app.use(require('./src/routes/auth.js'));
 app.use(require('./src/routes/data-management.js'));
+app.use(require('./src/routes/projects.js'));
 
 // --- Connect to MongoDB and start server ---
 mongoose.connect(MONGO_URI)
