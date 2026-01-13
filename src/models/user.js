@@ -6,13 +6,15 @@ const userSchema = new mongoose.Schema({
     username: { type: String, unique: true, required: true },
     email: { type: String, unique: true, required: true },
     passwordHash: { type: String, required: true },
-    role: { type: String, default: 'user' }
+    role: { type: String, enum: ['owner', 'user', 'general'], default: 'user' }
 }, { timestamps: true });
 
+// Hash password
 userSchema.methods.setPassword = async function (password) {
     this.passwordHash = await bcrypt.hash(password, 10);
 };
 
+// Compare password
 userSchema.methods.validatePassword = function (password) {
     return bcrypt.compare(password, this.passwordHash);
 };
