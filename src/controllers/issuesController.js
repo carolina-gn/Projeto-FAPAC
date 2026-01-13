@@ -7,7 +7,7 @@ exports.createIssue = async (req, res) => {
     const issue = await Issue.create(req.body);
     return res.status(201).json(issue);
   } catch (err) {
-    // Se a tua validation do Mongo recusar algo, normalmente vem um erro aqui
+    // Se a validation do Mongo recusar algo, vem um erro aqui
     return res.status(400).json({
       message: "Erro ao criar issue",
       error: err.messages
@@ -15,7 +15,7 @@ exports.createIssue = async (req, res) => {
   }
 };
 
-// GET /api/issues (opcional, mas dá jeito para listar)
+// GET /api/issues 
 exports.listIssues = async (req, res) => {
   try {
     const { status } = req.query;
