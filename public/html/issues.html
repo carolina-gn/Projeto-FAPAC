@@ -103,6 +103,29 @@
 
   </div>
 
+  <!-- Modal de detalhes da Issue -->
+    <div class="modal-backdrop" id="issueModalBackdrop" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="issueModalTitle">
+        <div class="modal-header">
+        <div class="modal-title" id="issueModalTitle">Detalhes da Issue</div>
+        <button class="modal-close" type="button" id="issueModalClose" aria-label="Fechar">×</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="modal-grid" id="issueModalGrid"></div>
+
+            <div class="modal-desc">
+                <div class="modal-label">Descrição</div>
+                <div class="modal-value" id="issueModalDesc">—</div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+        <button class="btn" type="button" id="issueModalClose2">Fechar</button>
+        </div>
+    </div>
+    </div>
+
   <!-- JS desta página -->
   <script src="/js/issues-board.js"></script>
 </body>

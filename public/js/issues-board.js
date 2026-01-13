@@ -153,20 +153,98 @@ async function loadBoard() {
   }
 }
 
+function formatDate(v) {
+  if (!v) return "—";
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return String(v);
+  return d.toLocaleString("pt-PT");
+}
+
+function openIssueModal(issue) {
+  const backdrop = document.getElementById("issueModalBackdrop");
+  const grid = document.getElementById("issueModalGrid");
+  const titleEl = document.getElementById("issueModalTitle");
+  const descEl = document.getElementById("issueModalDesc");
+  if (!backdrop || !grid || !titleEl || !descEl) return;
+
+  titleEl.textContent = issue?.title || "Detalhes da Issue";
+  descEl.textContent = issue?.description?.trim() || "—";
+
+  const fields = [
+    ["Estado", issue?.status || "—"],
+    ["Prioridade", priorityLabel(issue?.priority || "") || "—"],
+    ["Tipo", issue?.type || "—"],
+    ["Técnico", issue?.assignedToName || "—"],
+    ["Edifício", issue?.location?.building || "—"],
+    ["Piso", issue?.location?.floor || "—"],
+    ["Espaço", issue?.location?.space || "—"],
+    ["Elemento", issue?.modelLink?.element || "—"],
+    ["Criado em", formatDate(issue?.createdAt)],
+    ["Atualizado em", formatDate(issue?.updatedAt)],
+    ];
+
+  grid.innerHTML = fields.map(([label, value]) => `
+    <div class="modal-field">
+      <div class="modal-label">${escapeHtml(label)}</div>
+      <div class="modal-value">${escapeHtml(value ?? "—")}</div>
+    </div>
+  `).join("");
+
+  backdrop.classList.add("is-open");
+  backdrop.setAttribute("aria-hidden", "false");
+}
+
+function closeIssueModal() {
+  const backdrop = document.getElementById("issueModalBackdrop");
+  if (!backdrop) return;
+  backdrop.classList.remove("is-open");
+  backdrop.setAttribute("aria-hidden", "true");
+}
+
+function findIssueById(id) {
+  const all = window.__ALL_ISSUES__ || [];
+  return all.find(i => String(i._id) === String(id));
+}
+
 window.addEventListener("DOMContentLoaded", () => {
-  // carregar tudo
+  // 1) carregar tudo
   loadBoard();
 
-  // filtro edifício (já tens UI; funciona já)
+  // 2) filtro edifício
   document.getElementById("buildingFilter")?.addEventListener("change", () => {
     const all = window.__ALL_ISSUES__ || [];
     renderBoard(applyBuildingFilter(all));
   });
 
+  // 3) limpar filtro edifício
   document.getElementById("clearBuildingFilter")?.addEventListener("click", () => {
     const filterEl = document.getElementById("buildingFilter");
     if (filterEl) filterEl.value = "all";
     const all = window.__ALL_ISSUES__ || [];
     renderBoard(all);
+  });
+
+  // 4) Delegação: clique num issue-item abre modal
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".issue-item");
+    if (!btn) return;
+
+    const id = btn.getAttribute("data-id");
+    const issue = findIssueById(id);
+    if (issue) openIssueModal(issue);
+  });
+
+  // 5) Fechar modal: X e botão
+  document.getElementById("issueModalClose")?.addEventListener("click", closeIssueModal);
+  document.getElementById("issueModalClose2")?.addEventListener("click", closeIssueModal);
+
+  // 6) Fechar ao clicar fora do cartão
+  document.getElementById("issueModalBackdrop")?.addEventListener("click", (e) => {
+    if (e.target.id === "issueModalBackdrop") closeIssueModal();
+  });
+
+  // 7) Fechar com Esc
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeIssueModal();
   });
 });
