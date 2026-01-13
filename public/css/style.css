@@ -686,6 +686,13 @@ textarea { resize: vertical; }
     font-weight: 600;
     color: #374151;
     line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.issue-main {
+  min-width: 0;   
 }
 
 .issue-meta {
