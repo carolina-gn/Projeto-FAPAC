@@ -72,7 +72,6 @@ document.getElementById("btnCreateIssue")
       },
 
       modelLink: {
-        building: document.getElementById("modelBuilding").value.trim(),
         element: document.getElementById("modelElement").value.trim(),
       },
 

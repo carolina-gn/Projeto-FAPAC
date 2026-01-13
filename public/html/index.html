@@ -232,12 +232,12 @@
 
             <div class="form-row">
                 <label class="form-label" for="locFloor">Piso</label>
-                <input
-                    id="locFloor"
-                    class="form-input"
-                    type="text"
-                    placeholder="Piso 2"
-                />
+                <select id="locFloor" class="form-input">
+                    <option value="" disabled selected>Selecionar</option>
+                    <option value="Piso 1">Piso 1</option>
+                    <option value="Piso 2">Piso 2</option>
+                    <option value="Piso 3">Piso 3</option>
+                </select>
             </div>
 
             <div class="form-row">
@@ -253,15 +253,6 @@
 
         <div class="side-card">
             <div class="side-card-title">Ligação ao modelo</div>
-
-            <div class="form-row">
-                <label class="form-label" for="locBuilding">Edifício</label>
-                <select id="locBuilding" class="form-input">
-                    <option value="" disabled selected>Selecionar</option>
-                    <option value="Palacete">Palacete</option>
-                    <option value="BNU">BNU</option>
-                </select>
-            </div>
 
             <div class="form-row">
                 <label class="form-label" for="modelElement">Elemento</label>
