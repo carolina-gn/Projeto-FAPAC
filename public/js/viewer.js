@@ -69,7 +69,11 @@ class TandemViewer {
             console.log(`Facility "${facility.name}" loaded successfully.`);
         } catch (err) {
             console.error('Failed to open facility:', err);
-            alert(`Falha ao abrir o modelo "${facility.name}". Veja console.`);
+            if (facility.name == "Selecione um modelo") {
+                alert(`Selecione um modelo para carregar.`);
+            } else {
+                alert(`Falha ao abrir o modelo "${facility.name}". Veja console.`);
+            }
         }
     }
 }
