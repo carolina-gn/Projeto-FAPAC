@@ -71,6 +71,10 @@ app.get('/logout', (req, res) => {
 app.use(require('./src/routes/auth.js'));
 app.use(require('./src/routes/data-management.js'));
 app.use(require('./src/routes/projects.js'));
+app.use(express.json()); // IMPORTANTE: para ler JSON do fetch
+
+const issuesRoutes = require("./src/routes/issuesRoutes");
+app.use("/api/issues", issuesRoutes);
 
 // --- Connect to MongoDB and start server ---
 mongoose.connect(MONGO_URI)

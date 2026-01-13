@@ -115,100 +115,153 @@
         <!-- CREATE ISSUE PANEL -->
         <aside class="issue-panel">
 
-            <div class="issue-panel-header">
-                <h3>Criar novo issue</h3>
+    <div class="issue-panel-header">
+        <h3>Criar novo issue</h3>
+    </div>
+
+    <form class="form issue-form" onsubmit="return false;">
+
+        <div class="form-row">
+            <label class="form-label" for="issueTitle">Título</label>
+            <input
+                id="issueTitle"
+                class="form-input"
+                type="text"
+                placeholder="Ex: Fuga de água no WC"
+            />
+        </div>
+
+        <div class="form-row">
+            <label class="form-label" for="issueDesc">Descrição</label>
+            <textarea
+                id="issueDesc"
+                class="form-input"
+                rows="3"
+                placeholder="Descreve o problema..."
+            ></textarea>
+        </div>
+
+        <div class="form-row">
+            <label class="form-label" for="issueStatus">Estado</label>
+            <select id="issueStatus" class="form-input">
+                <option value="" disabled selected>Selecionar</option>
+                <option>Aberta</option>
+                <option>Em progresso</option>
+                <option>Resolvida</option>
+                <option>Fechada</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <label class="form-label" for="issuePriority">Prioridade</label>
+            <select id="issuePriority" class="form-input">
+                <option value="" disabled selected>Selecionar</option>
+                <option>Baixa</option>
+                <option>Média</option>
+                <option>Alta</option>
+                <option>Crítica</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <label class="form-label" for="issueType">Tipo</label>
+            <select id="issueType" class="form-input">
+                <option value="" disabled selected>Selecionar</option>
+                <option>Avaria</option>
+                <option>Pedido</option>
+                <option>Inspeção</option>
+            </select>
+        </div>
+
+        <div class="side-card">
+            <div class="side-card-title">Localização</div>
+
+            <div class="form-row">
+                <label class="form-label" for="locBuilding">Edifício</label>
+                <input
+                    id="locBuilding"
+                    class="form-input"
+                    type="text"
+                    placeholder="Edifício A"
+                />
             </div>
 
-            <form class="form issue-form">
+            <div class="form-row">
+                <label class="form-label" for="locFloor">Piso</label>
+                <input
+                    id="locFloor"
+                    class="form-input"
+                    type="text"
+                    placeholder="Piso 2"
+                />
+            </div>
 
-                <div class="form-row">
-                    <label class="form-label">Título</label>
-                    <input class="form-input" type="text" placeholder="Ex: Fuga de água no WC" />
-                </div>
+            <div class="form-row">
+                <label class="form-label" for="locSpace">Espaço</label>
+                <input
+                    id="locSpace"
+                    class="form-input"
+                    type="text"
+                    placeholder="Sala 1.01"
+                />
+            </div>
+        </div>
 
-                <div class="form-row">
-                    <label class="form-label">Descrição</label>
-                    <textarea class="form-input" rows="3" placeholder="Descreve o problema..."></textarea>
-                </div>
+        <div class="side-card">
+            <div class="side-card-title">Ligação ao modelo</div>
 
-                <div class="form-row">
-                    <label class="form-label">Estado</label>
-                    <select class="form-input">
-                        <option value="" disabled selected>Selecionar</option>
-                        <option>Aberta</option>
-                        <option>Em progresso</option>
-                        <option>Resolvida</option>
-                        <option>Fechada</option>
-                    </select>
-                </div>
+            <div class="form-row">
+                <label class="form-label" for="modelBuilding">Edifício</label>
+                <input
+                    id="modelBuilding"
+                    class="form-input"
+                    type="text"
+                    placeholder="Palacete"
+                />
+            </div>
 
-                <div class="form-row">
-                    <label class="form-label">Prioridade</label>
-                    <select class="form-input">
-                        <option value="" disabled selected>Selecionar</option>
-                        <option>Baixa</option>
-                        <option>Média</option>
-                        <option>Alta</option>
-                        <option>Crítica</option>
-                    </select>
-                </div>
+            <div class="form-row">
+                <label class="form-label" for="modelElement">Elemento</label>
+                <input
+                    id="modelElement"
+                    class="form-input"
+                    type="text"
+                    placeholder="Lâmpada 1.02"
+                />
+            </div>
+        </div>
 
-                <div class="form-row">
-                    <label class="form-label">Tipo</label>
-                    <select class="form-input">
-                        <option value="" disabled selected>Selecionar</option>
-                        <option>Avaria</option>
-                        <option>Pedido</option>
-                        <option>Inspeção</option>
-                    </select>
-                </div>
+        <div class="form-row">
+            <label class="form-label" for="assignedTo">Atribuído a</label>
+            <select id="assignedTo" class="form-input">
+                <option value="" disabled selected>Selecionar</option>
+                <option>Carolina</option>
+                <option>Leonor</option>
+                <option>Catarina</option>
+            </select>
+        </div>
 
-                <div class="side-card">
-                    <div class="side-card-title">Localização</div>
-                    <div class="form-row">
-                        <label class="form-label">Edifício</label>
-                        <input class="form-input" type="text" placeholder="Edifício A" />
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label">Piso</label>
-                        <input class="form-input" type="text" placeholder="Piso 2" />
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label">Espaço</label>
-                        <input class="form-input" type="text" placeholder="Sala 1.01" />
-                    </div>
-                </div>
+        <div class="button-group-vertical">
+            <button
+                id="btnCreateIssue"
+                class="btn"
+                type="button"
+            >
+                Criar Issue
+            </button>
 
-                <div class="side-card">
-                    <div class="side-card-title">Ligação ao modelo</div>
-                    <div class="form-row">
-                        <label class="form-label">Edificio</label>
-                        <input class="form-input" type="text" placeholder="Palacete" />
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label">Elemento</label>
-                        <input class="form-input" type="text" placeholder="Lâmpada 1.02" />
-                    </div>
-                </div>
+            <button
+                id="btnCancelIssue"
+                class="btn btn-secondary"
+                type="button"
+            >
+                Cancelar
+            </button>
+        </div>
 
-                <div class="form-row">
-                    <label class="form-label">Atribuído a</label>
-                    <select class="form-input">
-                        <option value="" disabled selected>Selecionar</option>
-                        <option>Carolina</option>
-                        <option>Leonor</option>
-                        <option>Catarina</option>
-                    </select>
-                </div>
+    </form>
 
-                <div class="button-group-vertical">
-                    <button class="btn" type="button">Criar Issue</button>
-                    <button class="btn btn-secondary" type="button">Cancelar</button>
-                </div>
-
-            </form>
-
-        </aside>
+</aside>
 
     </div> <!-- END APP LAYOUT -->
 
