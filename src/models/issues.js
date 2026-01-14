@@ -1,4 +1,4 @@
-// src/models/Issue.js
+// src/models/issues.js
 const mongoose = require("mongoose");
 
 const IssueSchema = new mongoose.Schema(
@@ -8,8 +8,8 @@ const IssueSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      required: true,
-      enum: ["aberta", "em_progresso", "resolvida", "fechada"]
+      enum: ["aberta", "em_progresso", "resolvida", "fechada"],
+      default: "aberta"
     },
 
     priority: {
@@ -24,21 +24,37 @@ const IssueSchema = new mongoose.Schema(
       enum: ["avaria", "pedido", "inspecao"]
     },
 
+    project: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project",
+      required: true
+    },
+
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    },
+
+    assignedTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null
+    },
+
     location: {
-      building: { type: String, default: "" },
-      floor: { type: String, default: "" },
-      space: { type: String, default: "" }
+      building: String,
+      floor: String,
+      space: String
     },
 
     modelLink: {
-      building: { type: String, default: "" },
-      elementId: {type: String, default: ""},
-      element: { type: String, default: "" }
-    },
-
-    assignedToName: { type: String, default: "" }
+      building: String,
+      elementId: String,
+      element: String
+    }
   },
-  { timestamps: true } // <-- cria createdAt e updatedAt automaticamente (perfeito para a tua validation)
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Issue", IssueSchema);

@@ -282,7 +282,7 @@
         </div>
 
         <!-- CREATE ISSUE PANEL -->
-        <aside class="issue-panel">
+<aside class="issue-panel">
 
     <div class="issue-panel-header">
         <h3>Criar novo issue</h3>
@@ -292,32 +292,22 @@
 
         <div class="form-row">
             <label class="form-label" for="issueTitle">Título</label>
-            <input
-                id="issueTitle"
-                class="form-input"
-                type="text"
-                placeholder="Ex: Fuga de água no WC"
-            />
+            <input id="issueTitle" class="form-input" type="text" placeholder="Ex: Fuga de água no WC" />
         </div>
 
         <div class="form-row">
             <label class="form-label" for="issueDesc">Descrição</label>
-            <textarea
-                id="issueDesc"
-                class="form-input"
-                rows="3"
-                placeholder="Descreve o problema..."
-            ></textarea>
+            <textarea id="issueDesc" class="form-input" rows="3" placeholder="Descreve o problema..."></textarea>
         </div>
 
         <div class="form-row">
             <label class="form-label" for="issueStatus">Estado</label>
             <select id="issueStatus" class="form-input">
                 <option value="" disabled selected>Selecionar</option>
-                <option>Aberta</option>
-                <option>Em progresso</option>
-                <option>Resolvida</option>
-                <option>Fechada</option>
+                <option value="aberta">Aberta</option>
+                <option value="em_progresso">Em progresso</option>
+                <option value="resolvida">Resolvida</option>
+                <option value="fechada">Fechada</option>
             </select>
         </div>
 
@@ -325,10 +315,10 @@
             <label class="form-label" for="issuePriority">Prioridade</label>
             <select id="issuePriority" class="form-input">
                 <option value="" disabled selected>Selecionar</option>
-                <option>Baixa</option>
-                <option>Média</option>
-                <option>Alta</option>
-                <option>Crítica</option>
+                <option value="baixa">Baixa</option>
+                <option value="media">Média</option>
+                <option value="alta">Alta</option>
+                <option value="critica">Crítica</option>
             </select>
         </div>
 
@@ -336,9 +326,9 @@
             <label class="form-label" for="issueType">Tipo</label>
             <select id="issueType" class="form-input">
                 <option value="" disabled selected>Selecionar</option>
-                <option>Avaria</option>
-                <option>Pedido</option>
-                <option>Inspeção</option>
+                <option value="avaria">Avaria</option>
+                <option value="pedido">Pedido</option>
+                <option value="inspecao">Inspeção</option>
             </select>
         </div>
 
@@ -347,17 +337,16 @@
 
             <div class="form-row">
                 <label class="form-label" for="locBuilding">Edifício</label>
-                <select id="locBuilding" class="form-input">
-                    <option value="" disabled selected>Selecionar</option>
-                    <option value="Palacete">Palacete</option>
-                    <option value="BNU">BNU</option>
-                </select>
+                <!-- Display selected model's building instead of dropdown -->
+                <input id="locBuilding" class="form-input" type="text" placeholder="Selecionar modelo" readonly />
             </div>
+
 
             <div class="form-row">
                 <label class="form-label" for="locFloor">Piso</label>
                 <select id="locFloor" class="form-input">
                     <option value="" disabled selected>Selecionar</option>
+                    <option value="Piso 0">Piso 0</option>
                     <option value="Piso 1">Piso 1</option>
                     <option value="Piso 2">Piso 2</option>
                     <option value="Piso 3">Piso 3</option>
@@ -366,12 +355,7 @@
 
             <div class="form-row">
                 <label class="form-label" for="locSpace">Espaço</label>
-                <input
-                    id="locSpace"
-                    class="form-input"
-                    type="text"
-                    placeholder="Sala 1.01"
-                />
+                <input id="locSpace" class="form-input" type="text" placeholder="Sala 1.01" />
             </div>
         </div>
 
@@ -397,32 +381,16 @@
             <label class="form-label" for="assignedTo">Atribuído a</label>
             <select id="assignedTo" class="form-input">
                 <option value="" disabled selected>Selecionar</option>
-                <option>Carolina</option>
-                <option>Leonor</option>
-                <option>Catarina</option>
+                <!-- Populated dynamically from project users -->
             </select>
         </div>
 
         <div class="button-group-vertical">
-            <button
-                id="btnCreateIssue"
-                class="btn"
-                type="button"
-            >
-                Criar Issue
-            </button>
-
-            <button
-                id="btnCancelIssue"
-                class="btn btn-secondary"
-                type="button"
-            >
-                Cancelar
-            </button>
+            <button id="btnCreateIssue" class="btn" type="button">Criar Issue</button>
+            <button id="btnCancelIssue" class="btn btn-secondary" type="button">Cancelar</button>
         </div>
 
     </form>
-
 </aside>
 
     </div> <!-- END APP LAYOUT -->
