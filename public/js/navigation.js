@@ -10,13 +10,11 @@
     return;
   }
 
-  // Show element: remove hidden and remove .hidden
   function show(el) {
     el.hidden = false;
     el.classList.remove("hidden");
   }
 
-  // Hide element: add hidden and .hidden
   function hide(el) {
     el.hidden = true;
     el.classList.add("hidden");
@@ -26,18 +24,24 @@
   window.showIssuesBoard = function () {
     hide(viewerWrapper);
     hide(sidePanel);
-    hide(issueCreatorPanel);     // hide the issue creator
-    show(issuesBoardPage);       // correctly show the board
+    hide(issueCreatorPanel);
+    show(issuesBoardPage);
+
+    // ✅ impede scroll fantasma no body
+    document.body.style.overflow = "hidden";
+    window.scrollTo(0, 0);
   };
 
   window.showViewer = function () {
     show(viewerWrapper);
     show(sidePanel);
-    show(issueCreatorPanel);     // show the issue creator again
-    hide(issuesBoardPage);       // hide the board
+    show(issueCreatorPanel);
+    hide(issuesBoardPage);
+
+    // ✅ repõe scroll normal
+    document.body.style.overflow = "";
   };
 
-  // SPA-like click
   const viewAllBtn = document.getElementById("viewAllIssues");
   viewAllBtn?.addEventListener("click", () => {
     window.showIssuesBoard();
