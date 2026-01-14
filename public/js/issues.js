@@ -306,6 +306,8 @@ async function createIssue() {
     ALL_ISSUES.unshift(data);   // add to local cache
     renderIssues(ALL_ISSUES);
 
+    window.dispatchEvent(new CustomEvent("issue:created", { detail: data }));
+
     // Reset form
     const form = document.querySelector(".issue-form");
     if (form) form.reset();

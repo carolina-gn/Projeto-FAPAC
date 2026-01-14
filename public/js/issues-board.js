@@ -263,4 +263,34 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("issueModalClose")?.addEventListener("click", () => {
     document.getElementById("issueModalBackdrop")?.classList.remove("is-open");
   });
+
+  window.addEventListener("issue:created", (e) => {
+  // aceita vários formatos: {detail: issue} ou {detail: {issue: issue}}
+  const created = e?.detail?.issue || e?.detail;
+  if (!created) return;
+
+  // indicador visual (para sabermos que o evento chegou)
+  const badge = document.getElementById("countOpen");
+  if (badge) badge.title = "Evento issue:created recebido ✅";
+
+  // garante array
+  const all = Array.isArray(window.__ALL_ISSUES__) ? window.__ALL_ISSUES__ : [];
+
+  // normaliza status caso venha com maiúsculas
+  if (created.status) {
+    const s = String(created.status).toLowerCase().trim();
+    created.status = (s === "em progresso") ? "em_progresso" : s;
+  }
+
+  // evita duplicados
+  const idx = all.findIndex(i => String(i._id) === String(created._id));
+  if (idx >= 0) all[idx] = created;
+  else all.unshift(created);
+
+  window.__ALL_ISSUES__ = all;
+
+  // re-render com filtro atual
+  renderBoard(applyBuildingFilter(all));
+});
+
 });
