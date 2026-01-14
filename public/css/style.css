@@ -686,6 +686,13 @@ textarea { resize: vertical; }
     font-weight: 600;
     color: #374151;
     line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.issue-main {
+  min-width: 0;   
 }
 
 .issue-meta {
@@ -983,4 +990,197 @@ textarea { resize: vertical; }
 }
 .issues-column-list::-webkit-scrollbar-track {
   background: transparent;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  z-index: 9999;
+}
+
+.modal-backdrop.is-open {
+  display: flex;
+}
+
+.modal-card {
+  width: min(720px, 96vw);
+  max-height: 86vh;
+  overflow: auto;
+
+  position: relative;
+  padding: 18px 18px 16px;
+
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.25);
+  background: linear-gradient(135deg,#e5d9ff,#dbeafe,#f1efff);
+
+
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 18px 55px rgba(0,0,0,0.25);
+
+}
+
+.modal-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: start;
+  margin-bottom: 10px;
+}
+
+.modal-close {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.28);
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 680px) {
+  .modal-grid { grid-template-columns: 1fr; }
+}
+
+.modal-field {
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.30);
+  background: rgba(255,255,255,0.18);
+  padding: 10px 12px;
+}
+
+.modal-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #6b7280;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modal-value {
+  font-size: 0.95rem;
+  color: #111827;
+  word-break: break-word;
+}
+
+.modal-desc {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.30);
+  background: rgba(255,255,255,0.18);
+}
+
+.modal-footer {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Fundo fora do cartão mais escuro para destacar */
+.modal-backdrop{
+  background: rgba(15, 23, 42, 0.55);   /* mais escuro */
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+}
+
+/* Título mais legível */
+.modal-title {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #4b5563;
+}
+
+/* Botão fechar semelhante aos teus botões/inputs */
+.modal-close{
+  background: rgba(255, 255, 255, 0.30);
+  border: 1px solid rgba(255, 255, 255, 0.40);
+  color: #374151;
+}
+.modal-close:hover{
+  background: rgba(255, 255, 255, 0.42);
+}
+
+/* Campos: mais claros, como os blocos do teu UI */
+.modal-field,
+.modal-desc{
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+/* Labels mais visíveis */
+.modal-label{
+  color: #6b7280;
+  opacity: 0.95;
+}
+
+/* Valores com mais contraste */
+.modal-value{
+  color: #111827;
+}
+
+/* Opcional: melhorar a leitura do texto dentro da descrição */
+#issueModalDesc{
+  color: #111827;
+}
+
+.modal-field,
+.modal-desc{
+  background: rgba(255,255,255,0.9);
+  border: 1px solid #d1d5db;
+}
+
+.modal-label{
+  color: #6b7280;
+}
+
+.modal-value{
+  color: #111827;
+}
+
+.modal-field .form-input{
+  width: 100%;
+}
+.modal-desc .form-input{
+  width: 100%;
+}
+
+.modal-field .form-input,
+.modal-desc .form-input{
+  width: 100%;
+}
+
+.sidepanel-logout {
+  position: absolute;
+  bottom: 5px;
+  left: 20px;
+  right: 20px;   /* 👈 isto é importante */
+}
+
+.sidepanel-logout button {
+  width: 100%;
 }

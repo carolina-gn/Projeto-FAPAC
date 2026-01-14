@@ -6,67 +6,59 @@ class TandemViewer {
 
                 const options = {
                     env: "DtProduction",
-                    api: 'dt',
-                    productId: 'Digital Twins',
+                    api: "dt",
+                    productId: "Digital Twins",
                     corsWorker: true,
                 };
 
                 av.Initializer(options, async () => {
-                    // Initialize GuiViewer3D
+                    // Initialize viewer
                     this.viewer = new av.GuiViewer3D(container, {
-                        extensions: ['Autodesk.BoxSelection'],
+                        extensions: ["Autodesk.BoxSelection"],
                         screenModeDelegate: av.NullScreenModeDelegate,
-                        theme: 'light-theme',
+                        theme: "light-theme",
                     });
                     this.viewer.start();
 
-                    // Set Authorization header for Tandem API
-                    av.endpoint.HTTP_REQUEST_HEADERS['Authorization'] = `Bearer ${token}`;
-
-                    // Initialize Tandem app
+                    // Set Tandem API auth header
+                    av.endpoint.HTTP_REQUEST_HEADERS["Authorization"] = `Bearer ${token}`;
                     this.app = new Autodesk.Tandem.DtApp();
 
                     resolve(this);
                 });
             } catch (err) {
-                console.error('Viewer initialization error:', err);
+                console.error("Viewer initialization error:", err);
                 reject(err);
             }
         });
     }
 
     async openFacility(facility) {
-        try {
-            // facility must have twinId
-            if (!facility || !facility.twinId) throw new Error('Facility must have twinId');
+        if (!facility?.twinId) throw new Error("Facility must have twinId");
 
-            // Fetch available facilities from Tandem
+        try {
             const allFacilities = [
                 ...(await this.app.getSharedFacilities()) || [],
                 ...(await this.app.getCurrentTeamsFacilities()) || []
             ];
 
-            // Match the twinId
             const target = allFacilities.find(f => f.urn === facility.twinId || f.twinId === facility.twinId);
-            if (!target) throw new Error(`Facility with twinId "${facility.twinId}" not found in Tandem`);
+            if (!target) throw new Error(`Facility "${facility.name}" not found in Tandem`);
 
             await this.app.displayFacility(target, false, this.viewer);
 
-            // Wait until model queue has at least one model
-            const impl = this.viewer.impl;
+            // Wait for at least one model
             await new Promise(resolve => {
                 const interval = setInterval(() => {
-                    if (impl.modelQueue.length > 0) {
+                    if (this.viewer.impl.modelQueue.length > 0) {
                         clearInterval(interval);
                         resolve();
                     }
                 }, 100);
             });
 
-            Autodesk.Viewing.Private.fitToView(this.viewer.impl);
             this.viewer.impl.invalidate(true);
-
-            console.log(`Facility "${facility.name}" loaded successfully.`);
+            console.log(`Facility "${facility.name}" loaded.`);
         } catch (err) {
             console.error('Failed to open facility:', err);
             if (facility.name == "Selecione um modelo") {
@@ -75,6 +67,44 @@ class TandemViewer {
                 alert(`Falha ao abrir o modelo "${facility.name}". Veja console.`);
             }
         }
+    }
+
+    /**
+     * Highlight an element by name using selector
+     */
+    highlightByName(elementName) {
+        if (!this.viewer) return console.warn("Viewer not initialized");
+
+        const models = this.viewer.getVisibleModels();
+        if (!models.length) return console.warn("No visible models");
+
+        let found = false;
+
+        models.forEach(model => {
+            const tree = model.getData().instanceTree;
+            if (!tree) return;
+
+            const dbIds = [];
+            tree.enumNodeChildren(tree.getRootId(), dbId => {
+                if (tree.getNodeName(dbId) === elementName) dbIds.push(dbId);
+            }, true);
+
+            if (!dbIds.length) return;
+            found = true;
+
+            // Highlight using selector
+            this.viewer.impl.selector.setSelection(dbIds, false, 0);
+
+            // Zoom to selected nodes
+            const bounds = this.viewer.impl.selector.getSelectionBounds();
+            if (bounds && !bounds.isEmpty()) {
+                this.viewer.navigation.fitBounds(true, bounds);
+            }
+
+            this.viewer.impl.invalidate(true);
+        });
+
+        if (!found) console.warn("Element not found:", elementName);
     }
 }
 
