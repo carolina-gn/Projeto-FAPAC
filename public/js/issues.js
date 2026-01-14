@@ -166,6 +166,32 @@ function clearFilters() {
   if (details) details.open = false;
 }
 
+function normalizeStatus(v) {
+  const s = (v || "").toLowerCase().trim();
+  if (s === "aberta") return "aberta";
+  if (s === "em progresso") return "em_progresso";
+  if (s === "resolvida") return "resolvida";
+  if (s === "fechada") return "fechada";
+  return "";
+}
+
+function normalizePriority(v) {
+  const s = (v || "").toLowerCase().trim();
+  if (s === "baixa") return "baixa";
+  if (s === "média" || s === "media") return "media";
+  if (s === "alta") return "alta";
+  if (s === "crítica" || s === "critica") return "critica";
+  return "";
+}
+
+function normalizeType(v) {
+  const s = (v || "").toLowerCase().trim();
+  if (s === "avaria") return "avaria";
+  if (s === "pedido") return "pedido";
+  if (s === "inspeção" || s === "inspecao") return "inspecao";
+  return "";
+}
+
 // ----------------------
 // Init
 // ----------------------
@@ -194,4 +220,68 @@ window.addEventListener("DOMContentLoaded", () => {
       const details = document.querySelector(".filters-sheet");
       if (details) details.open = false;
     });
+
+  document.getElementById("btnCreateIssue")
+    ?.addEventListener("click", async () => {
+      const payload = {
+        title: document.getElementById("issueTitle").value.trim(),
+        description: document.getElementById("issueDesc").value.trim(),
+
+        status: normalizeStatus(document.getElementById("issueStatus").value),
+        priority: normalizePriority(document.getElementById("issuePriority").value),
+        type: normalizeType(document.getElementById("issueType").value),
+
+        location: {
+          building: document.getElementById("locBuilding").value.trim(),
+          floor: document.getElementById("locFloor").value.trim(),
+          space: document.getElementById("locSpace").value.trim(),
+        },
+
+        modelLink: {
+          element: document.getElementById("modelElement").value.trim(),
+          // se já guardas elementId nalgum lado, mete aqui:
+          // elementId: window.selectedElementId || undefined
+        },
+
+        assignedToName: document.getElementById("assignedTo").value
+      };
+
+      if (!payload.title) return alert("Preenche o Título.");
+      if (!payload.status) return alert("Seleciona o Estado.");
+      if (!payload.priority) return alert("Seleciona a Prioridade.");
+      if (!payload.type) return alert("Seleciona o Tipo.");
+
+      try {
+        const res = await fetch("/api/issues", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          console.error(data);
+          alert("Erro ao criar issue: " + (data.error || data.message || "desconhecido"));
+          return;
+        }
+
+        alert("Issue criada!");
+
+        // limpa o form (usa a tua lógica atual)
+        const form = document.querySelector(".issue-form");
+        if (form) form.reset();
+        const modelElement = document.getElementById("modelElement");
+        if (modelElement) modelElement.value = "";
+
+        // atualiza lista imediatamente
+        ALL_ISSUES.unshift(data);
+        renderIssues(ALL_ISSUES);
+
+      } catch (err) {
+        console.error(err);
+        alert("Erro de ligação ao servidor (backend).");
+      }
+    });
+
 });
