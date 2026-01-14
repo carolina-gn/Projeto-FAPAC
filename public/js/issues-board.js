@@ -378,6 +378,24 @@ function findIssueById(id) {
   return all.find(i => String(i._id) === String(id));
 }
 
+window.addEventListener("issue:created", (e) => {
+  const created = e.detail;
+  if (!created || !created._id) return;
+
+  // Atualiza a cache do board
+  const all = Array.isArray(window.__ALL_ISSUES__) ? window.__ALL_ISSUES__ : [];
+
+  // Evita duplicados (se por acaso já existir)
+  const idx = all.findIndex(i => String(i._id) === String(created._id));
+  if (idx >= 0) all[idx] = created;
+  else all.unshift(created);
+
+  window.__ALL_ISSUES__ = all;
+
+  // Re-render respeitando o filtro do edifício atual
+  renderBoard(applyBuildingFilter(all));
+});
+
 window.addEventListener("DOMContentLoaded", () => {
   // 1) carregar tudo
   loadBoard();
