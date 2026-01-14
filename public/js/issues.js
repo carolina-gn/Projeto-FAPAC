@@ -97,14 +97,14 @@ document.addEventListener("click", e => {
     const issue = findIssue(btn.dataset.id);
     if (!issue) return;
 
-    const elementName = issue?.modelLink?.element;
-    if (!elementName) {
+    const elementId = issue?.modelLink?.elementId;
+    if (!elementId) {
         alert("Issue não tem elemento associado.");
         return;
     }
 
     if (window.tandemViewerInstance) {
-        window.tandemViewerInstance.highlightByName(elementName);
+        window.tandemViewerInstance.highlightByElementId(elementId);
     } else {
         alert("Viewer não inicializado ainda.");
     }
