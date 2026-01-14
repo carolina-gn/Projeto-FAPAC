@@ -172,11 +172,26 @@ function clearFilters() {
 window.addEventListener("DOMContentLoaded", () => {
   loadIssues();
 
-  document.getElementById("filtersApplyBtn")?.addEventListener("click", applyFilters);
-  document.getElementById("filtersClearBtn")?.addEventListener("click", clearFilters);
+  document.getElementById("filtersApplyBtn")
+    ?.addEventListener("click", applyFilters);
 
-  document.querySelector(".filters-close")?.addEventListener("click", () => {
-    const details = document.querySelector(".filters-sheet");
-    if (details) details.open = false;
-  });
+  document.getElementById("filtersClearBtn")
+    ?.addEventListener("click", clearFilters);
+
+  document.getElementById("btnCancelIssue")
+    ?.addEventListener("click", () => {
+    
+      const form = document.querySelector(".issue-form");
+      if (form) form.reset();
+
+     
+      const modelElement = document.getElementById("modelElement");
+      if (modelElement) modelElement.value = "";
+    });
+
+  document.querySelector(".filters-close")
+    ?.addEventListener("click", () => {
+      const details = document.querySelector(".filters-sheet");
+      if (details) details.open = false;
+    });
 });
