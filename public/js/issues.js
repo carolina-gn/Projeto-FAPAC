@@ -1,271 +1,124 @@
-document.getElementById('viewAllIssues')
-  ?.addEventListener('click', () => {
-    window.location.href = '/html/issues.html';
-  });
+let ALL_ISSUES = [];
 
-  // Se existir botão para ver todas as issues, mantém
-document.getElementById('viewAllIssues')
-  ?.addEventListener('click', () => {
-    window.location.href = '/html/issues.html';
-  });
-
-function normalizeStatus(v) {
-  const s = (v || "").toLowerCase().trim();
-  if (s === "aberta") return "aberta";
-  if (s === "em progresso") return "em_progresso";
-  if (s === "resolvida") return "resolvida";
-  if (s === "fechada") return "fechada";
-  return "";
+// ----------------------
+// Utilities
+// ----------------------
+function escapeHtml(str) {
+    return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 }
 
-function normalizePriority(v) {
-  const s = (v || "").toLowerCase().trim();
-  if (s === "baixa") return "baixa";
-  if (s === "média" || s === "media") return "media";
-  if (s === "alta") return "alta";
-  if (s === "crítica" || s === "critica") return "critica";
-  return "";
+function statusDotClass(status) {
+    return {
+        aberta: "issue-dot--open",
+        em_progresso: "issue-dot--progress",
+        resolvida: "issue-dot--resolved",
+        fechada: "issue-dot--closed"
+    }[status] || "issue-dot--open";
 }
 
-function normalizeType(v) {
-  const s = (v || "").toLowerCase().trim();
-  if (s === "avaria") return "avaria";
-  if (s === "pedido") return "pedido";
-  if (s === "inspeção" || s === "inspecao") return "inspecao";
-  return "";
-}
-
-function clearIssueForm() {
-  document.getElementById("issueTitle").value = "";
-  document.getElementById("issueDesc").value = "";
-  document.getElementById("issueStatus").value = "";
-  document.getElementById("issuePriority").value = "";
-  document.getElementById("issueType").value = "";
-
-  document.getElementById("locBuilding").value = "";
-  document.getElementById("locFloor").value = "";
-  document.getElementById("locSpace").value = "";
-
-  document.getElementById("modelBuilding").value = "";
-  document.getElementById("modelElement").value = "";
-
-  document.getElementById("assignedTo").value = "";
-}
-
-document.getElementById("btnCancelIssue")
-  ?.addEventListener("click", clearIssueForm);
-
-document.getElementById("btnCreateIssue")
-  ?.addEventListener("click", async () => {
-    const payload = {
-      title: document.getElementById("issueTitle").value.trim(),
-      description: document.getElementById("issueDesc").value.trim(),
-
-      status: normalizeStatus(document.getElementById("issueStatus").value),
-      priority: normalizePriority(document.getElementById("issuePriority").value),
-      type: normalizeType(document.getElementById("issueType").value),
-
-      location: {
-        building: document.getElementById("locBuilding").value.trim(),
-        floor: document.getElementById("locFloor").value.trim(),
-        space: document.getElementById("locSpace").value.trim(),
-      },
-
-      modelLink: {
-        element: document.getElementById("modelElement").value.trim(),
-      },
-
-      assignedToName: document.getElementById("assignedTo").value
-    };
-
-    // validação mínima antes de enviar
-    if (!payload.title) return alert("Preenche o Título.");
-    if (!payload.status) return alert("Seleciona o Estado.");
-    if (!payload.priority) return alert("Seleciona a Prioridade.");
-    if (!payload.type) return alert("Seleciona o Tipo.");
-
-    try {
-      const res = await fetch("/api/issues", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        console.error(data);
-        alert("Erro ao criar issue: " + (data.error || data.message || "desconhecido"));
-        return;
-      }
-
-      alert("Issue criada!");
-      clearIssueForm();
-
-      ALL_ISSUES.unshift(data);
-      renderIssues(ALL_ISSUES);
-
-    } catch (err) {
-      console.error(err);
-      alert("Erro de ligação ao servidor (backend).");
-    }
-  });
-
-  function statusDotClass(status) {
-  // status vem do Mongo: aberta | em_progresso | resolvida | fechada
-  if (status === "aberta") return "issue-dot--open";
-  if (status === "em_progresso") return "issue-dot--progress";
-  if (status === "resolvida") return "issue-dot--resolved";
-  if (status === "fechada") return "issue-dot--closed"; 
-  return "issue-dot--open";
-}
-
-function priorityBadgeClass(priority) {
-  if (priority === "critica") return "issue-badge--high";
-  if (priority === "alta") return "issue-badge--high";
-  if (priority === "media") return "issue-badge--medium";
-  if (priority === "baixa") return "issue-badge--low";
-  return "issue-badge--medium";
-}
-
-function priorityLabel(priority) {
-  if (priority === "critica") return "Crítica";
-  if (priority === "alta") return "Alta";
-  if (priority === "media") return "Média";
-  if (priority === "baixa") return "Baixa";
-  return priority || "";
+function priorityLabel(p) {
+    return {
+        critica: "Crítica",
+        alta: "Alta",
+        media: "Média",
+        baixa: "Baixa"
+    }[p] || p;
 }
 
 function buildIssueMeta(issue) {
-  const floor = issue?.location?.floor?.trim();
-  const space = issue?.location?.space?.trim();
-  const building = issue?.location?.building?.trim();
-
-  // escolhe o melhor que tiver preenchido
-  const parts = [];
-  if (floor) parts.push(floor);
-  if (space) parts.push(space);
-  else if (building) parts.push(building);
-
-  return parts.join(" · ") || "—";
+    const floor = issue?.location?.floor?.trim();
+    const space = issue?.location?.space?.trim();
+    const building = issue?.location?.building?.trim();
+    const parts = [];
+    if (floor) parts.push(floor);
+    if (space) parts.push(space);
+    else if (building) parts.push(building);
+    return parts.join(" · ") || "—";
 }
 
+// ----------------------
+// Render issues list
+// ----------------------
 function renderIssues(issues) {
-  const listEl = document.getElementById("issuesList") || document.querySelector(".issues-list");
-  if (!listEl) return;
+    const listEl = document.getElementById("issuesList");
+    if (!listEl) return;
 
-  if (!issues || issues.length === 0) {
-    listEl.innerHTML = `<div style="padding: 10px; opacity: .7;">Sem issues.</div>`;
-    return;
-  }
-
-  listEl.innerHTML = issues.map((issue) => {
-    const dot = statusDotClass(issue.status);
-    const badgeClass = priorityBadgeClass(issue.priority);
-    const meta = buildIssueMeta(issue);
-    const badgeText = priorityLabel(issue.priority);
-
-    // guarda o id no data-id para mais tarde (abrir detalhes, etc)
-    return `
-      <button class="issue-item" type="button" data-id="${issue._id}">
-        <span class="issue-dot ${dot}"></span>
-        <div class="issue-main">
-          <div class="issue-title">${escapeHtml(issue.title || "")}</div>
-          <div class="issue-meta">${escapeHtml(meta)}</div>
-        </div>
-        <span class="issue-badge ${badgeClass}">${escapeHtml(badgeText)}</span>
-      </button>
-    `;
-  }).join("");
-}
-
-// pequena proteção para não partir HTML com caracteres especiais
-function escapeHtml(str) {
-  return String(str)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-let ALL_ISSUES = [];
-
-async function loadIssues() {
-  try {
-    const res = await fetch("/api/issues");
-    const data = await res.json();
-
-    if (!res.ok) {
-      console.error(data);
-      alert("Erro a carregar issues: " + (data.message || "desconhecido"));
-      return;
+    if (!issues || !issues.length) {
+        listEl.innerHTML = `<div style="padding:10px; opacity:.6;">Sem issues</div>`;
+        return;
     }
 
-    ALL_ISSUES = Array.isArray(data) ? data : [];
-    renderIssues(ALL_ISSUES); // sem filtros ao abrir
-
-  } catch (err) {
-    console.error(err);
-    alert("Não foi possível ligar ao backend para carregar issues.");
-  }
+    listEl.innerHTML = issues.map(issue => `
+        <button class="issue-item" type="button" data-id="${issue._id}">
+            <span class="issue-dot ${statusDotClass(issue.status)}"></span>
+            <div class="issue-main">
+                <div class="issue-title">${escapeHtml(issue.title)}</div>
+                <div class="issue-meta">${escapeHtml(buildIssueMeta(issue))}</div>
+            </div>
+            <span class="issue-badge">${priorityLabel(issue.priority)}</span>
+        </button>
+    `).join("");
 }
 
-function getCheckedValues(name) {
-  return Array.from(document.querySelectorAll(`input[type="checkbox"][name="${name}"]:checked`))
-    .map(cb => cb.value);
+// ----------------------
+// Load issues from backend
+// ----------------------
+async function loadIssues() {
+    try {
+        const res = await fetch("/api/issues");
+        const data = await res.json();
+        ALL_ISSUES = Array.isArray(data) ? data : [];
+        renderIssues(ALL_ISSUES);
+    } catch (err) {
+        console.error(err);
+        alert("Não foi possível carregar as issues do backend.");
+    }
 }
 
-function applyFilters() {
-  const statuses = getCheckedValues("status");
-  const priorities = getCheckedValues("priority");
-  const types = getCheckedValues("type");
-  const buildings = getCheckedValues("building");
-  const floors = getCheckedValues("floor");
-  const assignees = getCheckedValues("assignedToName");
-
-  const filtered = ALL_ISSUES.filter((issue) => {
-    if (statuses.length && !statuses.includes(issue.status)) return false;
-    if (priorities.length && !priorities.includes(issue.priority)) return false;
-    if (types.length && !types.includes(issue.type)) return false;
-
-    const building = issue?.location?.building || "";
-    const floor = issue?.location?.floor || "";
-    const assigned = issue?.assignedToName || "";
-
-    if (buildings.length && !buildings.includes(building)) return false;
-    if (floors.length && !floors.includes(floor)) return false;
-    if (assignees.length && !assignees.includes(assigned)) return false;
-
-    return true;
-  });
-
-  renderIssues(filtered);
-
-  // fecha o painel de filtros (opcional)
-  const details = document.querySelector(".filters-sheet");
-  if (details) details.open = false;
+// ----------------------
+// Find issue by ID
+// ----------------------
+function findIssue(id) {
+    return ALL_ISSUES.find(i => String(i._id) === String(id));
 }
 
-function clearFilters() {
-  document.querySelectorAll('.filters-panel input[type="checkbox"]').forEach(cb => cb.checked = false);
-  renderIssues(ALL_ISSUES);
+// ----------------------
+// Click issue → highlight
+// ----------------------
+document.addEventListener("click", e => {
+    const btn = e.target.closest(".issue-item");
+    if (!btn) return;
 
-  const details = document.querySelector(".filters-sheet");
-  if (details) details.open = false;
-}
+    const issue = findIssue(btn.dataset.id);
+    if (!issue) return;
 
-// carrega assim que a página abre
+    const elementName = issue?.modelLink?.element;
+    if (!elementName) {
+        alert("Issue não tem elemento associado.");
+        return;
+    }
 
-window.addEventListener("DOMContentLoaded", () => {
-  loadIssues();
-
-  document.getElementById("filtersApplyBtn")?.addEventListener("click", applyFilters);
-  document.getElementById("filtersClearBtn")?.addEventListener("click", clearFilters);
-
-  // botão X fechar (se quiseres)
-  document.querySelector(".filters-close")?.addEventListener("click", () => {
-    const details = document.querySelector(".filters-sheet");
-    if (details) details.open = false;
-  });
+    if (window.tandemViewerInstance) {
+        window.tandemViewerInstance.highlightByName(elementName);
+    } else {
+        alert("Viewer não inicializado ainda.");
+    }
 });
+
+// ----------------------
+// Navigation
+// ----------------------
+document.getElementById('viewAllIssues')
+    ?.addEventListener('click', () => {
+        window.location.href = '/html/issues.html';
+    });
+
+// ----------------------
+// Init
+// ----------------------
+window.addEventListener("DOMContentLoaded", loadIssues);
