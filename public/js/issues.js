@@ -243,9 +243,6 @@ function normalizeType(v) {
 // ----------------------
 // Create issue
 // ----------------------
-// ----------------------
-// Create issue (robust)
-// ----------------------
 async function createIssue() {
   if (!currentProjectId) {
     return alert('Selecione um projeto primeiro');
@@ -265,17 +262,8 @@ async function createIssue() {
   if (!priority) return alert("Selecione a Prioridade.");
   if (!type) return alert("Selecione o Tipo.");
 
-  // Convert selected dbId → elementId
-  let elementId = '';
-  const dbId = window.selectedElementId;
-  if (dbId && window.tandemViewerInstance) {
-    try {
-      const ids = await getElementIdsFromDbIds([Number(dbId)]);
-      elementId = ids[0] || '';
-    } catch (err) {
-      console.warn("Failed to convert dbId to elementId:", err);
-    }
-  }
+  // Use selected elementId directly
+  const elementId = window.selectedElementId || '';
 
   // Build payload
   const payload = {
@@ -292,7 +280,7 @@ async function createIssue() {
     },
     modelLink: {
       element: document.getElementById("modelElement")?.value.trim() || '',
-      elementId
+      elementId // <-- correctly set
     },
     assignedTo
   };
@@ -331,6 +319,7 @@ async function createIssue() {
     alert("Erro ao criar issue: veja console.");
   }
 }
+
 
 
 // ----------------------
