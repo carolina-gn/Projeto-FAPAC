@@ -72,40 +72,31 @@ class TandemViewer {
     /**
      * Highlight an element by name using selector
      */
-    highlightByName(elementName) {
-        if (!this.viewer) return console.warn("Viewer not initialized");
+    async highlightByElementId(elementId) {
+    if (!this.viewer) return;
 
-        const models = this.viewer.getVisibleModels();
-        if (!models.length) return console.warn("No visible models");
+    const model = this.viewer.getVisibleModels()[0];
+    if (!model) return;
 
-        let found = false;
+    const dbIds = await model.getDbIdsFromElementIds([elementId]);
 
-        models.forEach(model => {
-            const tree = model.getData().instanceTree;
-            if (!tree) return;
-
-            const dbIds = [];
-            tree.enumNodeChildren(tree.getRootId(), dbId => {
-                if (tree.getNodeName(dbId) === elementName) dbIds.push(dbId);
-            }, true);
-
-            if (!dbIds.length) return;
-            found = true;
-
-            // Highlight using selector
-            this.viewer.impl.selector.setSelection(dbIds, false, 0);
-
-            // Zoom to selected nodes
-            const bounds = this.viewer.impl.selector.getSelectionBounds();
-            if (bounds && !bounds.isEmpty()) {
-                this.viewer.navigation.fitBounds(true, bounds);
-            }
-
-            this.viewer.impl.invalidate(true);
-        });
-
-        if (!found) console.warn("Element not found:", elementName);
+    if (!dbIds || !dbIds.length) {
+        console.warn("No dbIds found for elementId", elementId);
+        return;
     }
+
+    // Clear previous selection
+    this.viewer.impl.selector.clearSelection();
+
+    // Select (this highlights properly)
+    this.viewer.impl.selector.setSelection(dbIds);
+
+    // Zoom to selection
+    const bounds = this.viewer.impl.selector.getSelectionBounds();
+    if (bounds) {
+        this.viewer.navigation.fitBounds(true, bounds);
+    }
+}
 }
 
 // Attach globally

@@ -32,6 +32,7 @@ const IssueSchema = new mongoose.Schema(
 
     modelLink: {
       building: { type: String, default: "" },
+      elementId: {type: String, default: ""},
       element: { type: String, default: "" }
     },
 
