@@ -278,6 +278,8 @@ window.addEventListener("DOMContentLoaded", () => {
         ALL_ISSUES.unshift(data);
         renderIssues(ALL_ISSUES);
 
+        window.dispatchEvent(new CustomEvent("issue:created", { detail: data }));
+
       } catch (err) {
         console.error(err);
         alert("Erro de ligação ao servidor (backend).");
