@@ -1,5 +1,5 @@
 const Project = require('../models/project.js');
-const ProjectAccess = require('../models/projectAccess.js');
+const { ProjectAccess } = require('../models/projectAccess');
 
 /**
  * Middleware to check if the logged-in user has access to a project
