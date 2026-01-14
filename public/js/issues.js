@@ -47,6 +47,48 @@ function buildIssueMeta(issue) {
   return parts.join(" · ") || "—";
 }
 
+// ----------------------
+// Find issue by ID
+// ----------------------
+function findIssue(id) {
+    return ALL_ISSUES.find(i => String(i._id) === String(id));
+}
+
+// ----------------------
+// Click issue → highlight
+// ----------------------
+document.addEventListener("click", e => {
+    const btn = e.target.closest(".issue-item");
+    if (!btn) return;
+
+    const issue = findIssue(btn.dataset.id);
+    if (!issue) return;
+
+    const elementId = issue?.modelLink?.elementId;
+    if (!elementId) {
+        alert("Issue não tem elemento associado.");
+        return;
+    }
+
+    if (window.tandemViewerInstance) {
+        window.tandemViewerInstance.highlightByExternalId(elementId);
+    } else {
+        alert("Viewer não inicializado ainda.");
+    }
+});
+
+// ----------------------
+// Navigation (NO page reload)
+// ----------------------
+document.getElementById('viewAllIssues')
+    ?.addEventListener('click', () => {
+        if (typeof window.showIssuesBoard === "function") {
+            window.showIssuesBoard();
+        } else {
+            console.warn("showIssuesBoard not available");
+        }
+    });
+
 function getCheckedValues(name) {
   return Array.from(document.querySelectorAll(`input[type="checkbox"][name="${name}"]:checked`))
     .map(cb => cb.value);
@@ -283,9 +325,6 @@ async function loadSelectedModel() {
     } else {
       console.warn('locBuilding select not found!');
     }
-
-
-
 
     // Load assignees and issues first
     await loadProjectAssignees(currentProjectId);
