@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const User = require('./src/models/user.js');
-const { MONGO_URI } = require('./config.js');
+const User = require('../src/models/user.js');
+const { MONGO_URI } = require('../config.js');
 
 async function fixUserPassword() {
     try {

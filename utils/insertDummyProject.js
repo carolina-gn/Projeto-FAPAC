@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
-const { MONGO_URI } = require('./config.js');
-const User = require('./src/models/user.js');
-const Project = require('./src/models/project.js');
-const ProjectAccess = require('./src/models/projectAccess.js');
+const { MONGO_URI } = require('../config.js');
+const User = require('../src/models/user.js');
+const Project = require('../src/models/project.js');
+const ProjectAccess = require('../src/models/projectAccess.js');
 
 // Facility URN (used by the Viewer)
 const FACILITY_URN = 'urn:adsk.dtt:AvASyje2SDOxi39ioNxN5g';
