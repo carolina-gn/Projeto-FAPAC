@@ -192,7 +192,7 @@ async function loadProjectAssignees(projectId) {
         if (Array.isArray(data.users) && data.users.length) {
             data.users.forEach(user => {
                 const option = document.createElement('option');
-                option.value = user._id; // always use Mongo _id
+                option.value = user.id; // always use Mongo _id
                 option.textContent = user.name || user.email || 'Usuário';
                 select.appendChild(option);
             });
@@ -243,53 +243,95 @@ function normalizeType(v) {
 // ----------------------
 // Create issue
 // ----------------------
+// ----------------------
+// Create issue (robust)
+// ----------------------
 async function createIssue() {
-  if (!currentProjectId) return alert('Selecione um projeto primeiro');
+  if (!currentProjectId) {
+    return alert('Selecione um projeto primeiro');
+  }
 
+  // Collect form fields
+  const title = document.getElementById("issueTitle")?.value.trim();
+  const description = document.getElementById("issueDesc")?.value.trim();
+  const status = normalizeStatus(document.getElementById("issueStatus")?.value);
+  const priority = normalizePriority(document.getElementById("issuePriority")?.value);
+  const type = normalizeType(document.getElementById("issueType")?.value);
+  const assignedTo = document.getElementById("assignedTo")?.value || null;
+
+  // Validate required fields
+  if (!title) return alert("Preencha o Título.");
+  if (!status) return alert("Selecione o Estado.");
+  if (!priority) return alert("Selecione a Prioridade.");
+  if (!type) return alert("Selecione o Tipo.");
+
+  // Convert selected dbId → elementId
+  let elementId = '';
+  const dbId = window.selectedElementId;
+  if (dbId && window.tandemViewerInstance) {
+    try {
+      const ids = await getElementIdsFromDbIds([Number(dbId)]);
+      elementId = ids[0] || '';
+    } catch (err) {
+      console.warn("Failed to convert dbId to elementId:", err);
+    }
+  }
+
+  // Build payload
   const payload = {
     project: currentProjectId,
-    title: document.getElementById("issueTitle").value.trim(),
-    description: document.getElementById("issueDesc").value.trim(),
-    status: normalizeStatus(document.getElementById("issueStatus").value),
-    priority: normalizePriority(document.getElementById("issuePriority").value),
-    type: normalizeType(document.getElementById("issueType").value),
+    title,
+    description,
+    status,
+    priority,
+    type,
     location: {
-      building: document.getElementById("locBuilding").value.trim(),
-      floor: document.getElementById("locFloor").value.trim(),
-      space: document.getElementById("locSpace").value.trim(),
+      building: document.getElementById("locBuilding")?.value.trim() || '',
+      floor: document.getElementById("locFloor")?.value.trim() || '',
+      space: document.getElementById("locSpace")?.value.trim() || '',
     },
     modelLink: {
-      element: document.getElementById("modelElement").value.trim()
+      element: document.getElementById("modelElement")?.value.trim() || '',
+      elementId
     },
-    assignedTo: document.getElementById("assignedTo").value || null
+    assignedTo
   };
 
-  if (!payload.title) return alert("Preencha o Título.");
-  if (!payload.status) return alert("Seleciona o Estado.");
-  if (!payload.priority) return alert("Seleciona a Prioridade.");
-  if (!payload.type) return alert("Seleciona o Tipo.");
+  console.log("Creating issue with payload:", payload);
 
+  // Send POST request
   try {
     const res = await fetch(`/api/projects/${currentProjectId}/issues`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || data.message || 'Erro desconhecido');
 
-    alert('Issue criada!');
-    ALL_ISSUES.unshift(data);
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Failed to create issue:", data);
+      return alert(data.error || data.message || "Erro desconhecido ao criar issue");
+    }
+
+    // Success
+    ALL_ISSUES.unshift(data);   // add to local cache
     renderIssues(ALL_ISSUES);
 
+    // Reset form
     const form = document.querySelector(".issue-form");
     if (form) form.reset();
     document.getElementById("modelElement").value = '';
+    window.selectedElementId = null;
+
+    alert("Issue criada com sucesso!");
+
   } catch (err) {
-    console.error(err);
-    alert('Erro ao criar issue: veja console');
+    console.error("Error posting issue:", err);
+    alert("Erro ao criar issue: veja console.");
   }
 }
+
 
 // ----------------------
 // Load model + assignees + issues
@@ -339,6 +381,17 @@ async function loadSelectedModel() {
         await window.tandemViewerInstance.openFacility(facility);
         console.log('Viewer opened for', facility.name);
     }
+}
+
+async function getElementIdsFromDbIds(dbIds) {
+    if (!window.tandemViewerInstance) return [];
+    const viewer = window.tandemViewerInstance.viewer;
+    if (!viewer) return [];
+
+    const model = viewer.getVisibleModels()[0]; // first visible model
+    if (!model || typeof model.getElementIdsFromDbIds !== "function") return [];
+
+    return await model.getElementIdsFromDbIds(dbIds);
 }
 
 

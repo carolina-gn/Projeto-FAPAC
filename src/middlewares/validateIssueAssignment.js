@@ -1,19 +1,21 @@
-// src/middlewares/validateIssueAssignment.js
+const mongoose = require('mongoose');
 const User = require("../models/user");
-const ProjectAccess = require("../models/projectAccess");
+const { ProjectAccess } = require("../models/projectAccess");
 
 module.exports = async function validateIssueAssignment(req, res, next) {
   const { assignedTo } = req.body;
   if (!assignedTo) return next();
 
+  // Validate ObjectId
+  if (!mongoose.Types.ObjectId.isValid(assignedTo)) {
+    return res.status(400).json({ error: "Invalid assigned user ID" });
+  }
+
   try {
     const user = await User.findById(assignedTo);
-    if (!user) {
-      return res.status(400).json({ error: "Assigned user does not exist" });
-    }
+    if (!user) return res.status(400).json({ error: "Assigned user does not exist" });
 
     const projectId = req.params.projectId;
-
     const hasAccess =
       user.role === "owner" ||
       (await ProjectAccess.exists({
@@ -22,9 +24,7 @@ module.exports = async function validateIssueAssignment(req, res, next) {
       }));
 
     if (!hasAccess) {
-      return res.status(400).json({
-        error: "Assigned user has no access to this project"
-      });
+      return res.status(400).json({ error: "Assigned user has no access to this project" });
     }
 
     next();

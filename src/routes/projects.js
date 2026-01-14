@@ -4,8 +4,9 @@ const router = express.Router();
 const Project = require('../models/project.js');
 const { ProjectAccess, projectAccessMiddleware } = require('../models/projectAccess.js');
 const Issue = require('../models/issues.js');
+const issuesRoutes = require('./issuesRoutes');
 
-// Utility to format projects for frontend
+// Utility: format project for frontend
 function toClientProject(project) {
   return {
     id: project._id,
@@ -14,19 +15,13 @@ function toClientProject(project) {
   };
 }
 
-// ----------------------
 // 1️⃣ List all projects visible to user
-// GET /api/projects
-// ----------------------
 router.get('/', async (req, res) => {
   const user = req.session.user;
   if (!user) return res.status(401).json({ error: 'Not logged in' });
 
   try {
-    // Projects owned by user
     const owned = await Project.find({ owner: user.id });
-
-    // Projects where user has viewer access
     const accesses = await ProjectAccess.find({ viewer: user.id }).populate('project');
     const viewed = accesses.map(a => a.project);
 
@@ -38,10 +33,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ----------------------
 // 2️⃣ Get all issues user has access to
-// GET /api/projects/issues
-// ----------------------
 router.get('/issues', async (req, res) => {
   const user = req.session.user;
   if (!user) return res.status(401).json({ error: 'Not logged in' });
@@ -61,39 +53,17 @@ router.get('/issues', async (req, res) => {
   }
 });
 
-// ----------------------
-// 3️⃣ Get issues for a single project
-// GET /api/projects/:projectId/issues
-// ----------------------
-router.get('/:projectId/issues', projectAccessMiddleware, async (req, res) => {
-  try {
-    const issues = await Issue.find({ project: req.project._id }).sort({ updatedAt: -1 });
-    res.json(issues);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-// ----------------------
-// 4️⃣ Get single project details
-// GET /api/projects/:projectId
-// ----------------------
+// 3️⃣ Get single project details
 router.get('/:projectId', projectAccessMiddleware, async (req, res) => {
   res.json({ project: toClientProject(req.project) });
 });
 
-module.exports = router;
-
-// GET /api/projects/:projectId/users
+// 4️⃣ Get users for a project
 router.get('/:projectId/users', projectAccessMiddleware, async (req, res) => {
   try {
     const project = req.project;
 
-    // Owner first
-    const users = [project.owner];
-
-    // Add all viewers from ProjectAccess
+    const users = [project.owner]; // Owner first
     const accesses = await ProjectAccess.find({ project: project._id }).populate('viewer');
     accesses.forEach(a => {
       if (a.viewer && !users.find(u => String(u._id) === String(a.viewer._id))) {
@@ -101,7 +71,6 @@ router.get('/:projectId/users', projectAccessMiddleware, async (req, res) => {
       }
     });
 
-    // Map to frontend-friendly format
     const result = users.map(u => ({
       id: u._id,
       name: u.name || u.email || 'Usuário'
@@ -113,3 +82,9 @@ router.get('/:projectId/users', projectAccessMiddleware, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+// 5️⃣ Mount issues routes under /:projectId/issues
+// All issue routes will have req.project populated via projectAccessMiddleware
+router.use('/:projectId/issues', issuesRoutes);
+
+module.exports = router;

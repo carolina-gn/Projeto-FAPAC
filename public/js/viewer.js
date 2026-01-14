@@ -23,77 +23,45 @@ class TandemViewer {
                     const out = document.getElementById("selectedElementId");
                         if (out) out.textContent = "(clique num objeto)";
 
-                        const canvas = this.viewer.canvas; // canvas real do viewer
+                        const canvas = this.viewer.canvas;
                         if (canvas) {
-                        canvas.style.pointerEvents = "auto";
+                            canvas.style.pointerEvents = "auto";
 
-                        canvas.addEventListener("click", (ev) => {
-                            try {
-                            if (out) out.textContent = "Clique detetado…";
+                            canvas.addEventListener("click", (ev) => {
+                                try {
+                                    const rect = canvas.getBoundingClientRect();
+                                    const x = ev.clientX - rect.left;
+                                    const y = ev.clientY - rect.top;
 
-                            const rect = canvas.getBoundingClientRect();
-                            const x = ev.clientX - rect.left;
-                            const y = ev.clientY - rect.top;
+                                    const hit = this.viewer.impl.hitTest(x, y, true);
+                                    const dbId = hit?.dbId;
 
-                            const hit = this.viewer.impl.hitTest(x, y, true);
-                            const dbId = hit?.dbId;
+                                    const outEl = document.getElementById("selectedElementId");
+                                    const inputEl = document.getElementById("modelElement");
 
-                            if (!dbId && dbId !== 0) {
-                                if (out) out.textContent = "Clique no vazio (sem objeto).";
-                                return;
-                            }
+                                    if (dbId === undefined || dbId === null) {
+                                        if (outEl) outEl.textContent = "Clique no vazio (sem objeto).";
+                                        if (inputEl) inputEl.value = '';
+                                        window.selectedElementId = null;
+                                        return;
+                                    }
 
-                            if (typeof this.viewer.getProperties !== "function") {
-                            // último fallback
-                            window.selectedElementId = String(dbId);
-                            if (out) out.textContent = `dbId: ${dbId}`;
-                            const input = document.getElementById("modelElement");
-                            if (input) input.value = window.selectedElementId;
-                            return;
-                            }
+                                    // Set ID in "Elemento selecionado (ID)"
+                                    if (outEl) outEl.textContent = dbId;
+                                    window.selectedElementId = dbId;
 
-                            this.viewer.getProperties(dbId, (props) => {
-                            const externalId = props?.externalId || "";
-                            const name = props?.name || "";
+                                    // Set Elemento name — try hit.name, else fallback
+                                    const name = hit?.name || `Objeto ${dbId}`;
+                                    if (inputEl) inputEl.value = name;
 
-                            // procurar propriedades típicas sem apanhar um "Id" genérico
-                            const propsList = props?.properties || [];
-                            const pickExact = (names) => {
-                                const p = propsList.find(x => names.includes((x.displayName || "").trim().toLowerCase()));
-                                return p?.displayValue ? String(p.displayValue) : "";
-                            };
-                            const pickContains = (keywords) => {
-                                const p = propsList.find(x =>
-                                keywords.some(k => (x.displayName || "").toLowerCase().includes(k))
-                                );
-                                return p?.displayValue ? String(p.displayValue) : "";
-                            };
-
-                            const bimId =
-                                pickExact(["element id"]) ||
-                                pickContains(["uniqueid", "unique id"]) ||
-                                pickContains(["globalid", "guid"]) ||
-                                "";
-
-                            // prioridade: externalId -> bimId -> dbId
-                            const chosenId = externalId || bimId || String(dbId);
-
-                            window.selectedElementId = chosenId;
-
-                            // UI
-                            const outEl = document.getElementById("selectedElementId");
-                            if (outEl) outEl.textContent = chosenId;     // agora já não fica "dbId: ..."
-
-                            const input = document.getElementById("modelElement");
-                            if (input) input.value = name || chosenId;   // nome se existir
+                                } catch (err) {
+                                    console.error(err);
+                                    const outEl = document.getElementById("selectedElementId");
+                                    if (outEl) outEl.textContent = "Erro ao identificar o objeto (ver console).";
+                                }
                             });
+                        }
 
-                            } catch (err) {
-                            console.error(err);
-                            if (out) out.textContent = "Erro ao identificar o objeto (ver console).";
-                            }
-                        });
-                    }
 
                     // Set Tandem API auth header
                     av.endpoint.HTTP_REQUEST_HEADERS["Authorization"] = `Bearer ${token}`;
