@@ -1,4 +1,4 @@
-// src/models/Issue.js
+// src/models/issues.js
 const mongoose = require("mongoose");
 
 const IssueSchema = new mongoose.Schema(
@@ -24,6 +24,12 @@ const IssueSchema = new mongoose.Schema(
       enum: ["avaria", "pedido", "inspecao"]
     },
 
+    project: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project",
+      required: true
+    },
+
     location: {
       building: { type: String, default: "" },
       floor: { type: String, default: "" },
@@ -32,13 +38,17 @@ const IssueSchema = new mongoose.Schema(
 
     modelLink: {
       building: { type: String, default: "" },
-      elementId: {type: String, default: ""},
+      elementId: { type: String, default: "" },
       element: { type: String, default: "" }
     },
 
-    assignedToName: { type: String, default: "" }
+    assignedTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null
+    }
   },
-  { timestamps: true } // <-- cria createdAt e updatedAt automaticamente (perfeito para a tua validation)
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Issue", IssueSchema);
