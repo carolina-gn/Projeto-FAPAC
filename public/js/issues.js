@@ -111,13 +111,16 @@ document.addEventListener("click", e => {
 });
 
 // ----------------------
-// Navigation
+// Navigation (NO page reload)
 // ----------------------
 document.getElementById('viewAllIssues')
     ?.addEventListener('click', () => {
-        window.location.href = '/html/issues.html';
+        if (typeof window.showIssuesBoard === "function") {
+            window.showIssuesBoard();
+        } else {
+            console.warn("showIssuesBoard not available");
+        }
     });
-
 // ----------------------
 // Init
 // ----------------------
