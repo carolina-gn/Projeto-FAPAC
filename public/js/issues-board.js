@@ -133,19 +133,30 @@ function applyBuildingFilter(allIssues) {
 
 async function loadBoard() {
   try {
-    const res = await fetch("/api/issues");
-    const data = await res.json();
+    // 1) fetch all projects user can access
+    const projectsRes = await fetch("/api/projects");
+    const projectsData = await projectsRes.json();
+    const projects = projectsData.projects || [];
 
-    if (!res.ok) {
-      console.error(data);
-      alert("Erro a carregar issues: " + (data.message || "desconhecido"));
+    if (!projects.length) {
+      window.__ALL_ISSUES__ = [];
+      renderBoard([]);
       return;
     }
 
-    // guarda em memória para filtrar sem refetch
-    window.__ALL_ISSUES__ = data;
+    // 2) fetch issues for all projects in one request
+    // your backend now supports fetching all issues without projectId
+    const issuesRes = await fetch("/api/projects/issues"); 
+    const issuesData = await issuesRes.json();
 
-    const filtered = applyBuildingFilter(data);
+    if (!issuesRes.ok) {
+      console.error(issuesData);
+      alert("Erro ao carregar issues: " + (issuesData.message || "desconhecido"));
+      return;
+    }
+
+    window.__ALL_ISSUES__ = issuesData;
+    const filtered = applyBuildingFilter(issuesData);
     renderBoard(filtered);
   } catch (err) {
     console.error(err);
@@ -336,7 +347,7 @@ async function saveIssueEdits() {
 
     if (!res.ok) {
       console.error(data);
-      alert("Erro ao guardar: " + (data.message || "desconhecido"));
+      alert("Erro ao guardar: " + (data.error || "desconhecido"));
       return;
     }
 
@@ -344,17 +355,20 @@ async function saveIssueEdits() {
     const all = window.__ALL_ISSUES__ || [];
     const idx = all.findIndex(i => String(i._id) === String(data._id));
     if (idx >= 0) all[idx] = data;
+    else all.unshift(data);
+
     window.__ALL_ISSUES__ = all;
 
-    // re-render board respeitando filtro
+    // Re-render board respeitando filtro
     renderBoard(applyBuildingFilter(all));
 
-    // sai do edit mode, mostra read-only já com dados atualizados
+    // Sair do edit mode
     MODAL_SNAPSHOT = JSON.parse(JSON.stringify(data));
     IS_EDIT_MODE = false;
     renderModal(data, false);
 
     alert("Guardado!");
+
   } catch (err) {
     console.error(err);
     alert("Falha de ligação ao backend ao guardar.");
