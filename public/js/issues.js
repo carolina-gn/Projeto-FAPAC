@@ -71,7 +71,7 @@ document.addEventListener("click", e => {
     }
 
     if (window.tandemViewerInstance) {
-        window.tandemViewerInstance.highlightByExternalId(elementId);
+        window.tandemViewerInstance.highlightByElementId(elementId);
     } else {
         alert("Viewer não inicializado ainda.");
     }
