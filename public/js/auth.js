@@ -1,58 +1,72 @@
-async function checkAuthStatus() {
-    const statusEl = document.getElementById('authStatus');
-    const userNameEl = document.getElementById('userName');
-    const userNameValueEl = document.getElementById('userNameValue');
-    const loginBtn = document.getElementById('loginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    try {
-        const response = await fetch('/api/auth/profile');
-
-        if (response.ok) {
-            const data = await response.json();
-            statusEl.textContent = 'Authenticated';
-            userNameValueEl.textContent = data.name;
-            userNameEl.classList.remove('hidden');
-            loginBtn.classList.add('hidden');
-            logoutBtn.classList.remove('hidden');
-
-            // Initialize Tandem Viewer with 3-legged token
-            await initializeTandemViewer();
-
-        } else {
-            statusEl.textContent = 'Not authenticated';
-            userNameEl.classList.add('hidden');
-            loginBtn.classList.remove('hidden');
-            logoutBtn.classList.add('hidden');
-        }
-    } catch (error) {
-        console.error('Auth error:', error);
-        statusEl.textContent = 'Error';
-        loginBtn.classList.remove('hidden');
-    }
-}
-
+// ----------------------
+// Initialize Autodesk Tandem Viewer
+// ----------------------
 async function initializeTandemViewer() {
-    try {
-        const tokenResponse = await fetch('/api/auth/token');
-        const tokenData = await tokenResponse.json();
+  try {
+    const tokenRes = await fetch('/api/auth/token');
+    if (!tokenRes.ok) throw new Error(`Token endpoint failed: ${tokenRes.status}`);
+    const tokenData = await tokenRes.json();
+    if (!tokenData.access_token) throw new Error('No access token received');
 
-        if (!tokenData.access_token) {
-            console.error('No access token found.');
-            return;
-        }
+    const container = document.getElementById('viewerContainer');
+    window.tandemViewerInstance = await new TandemViewer(container, tokenData.access_token);
+    console.log('Viewer initialized successfully.');
 
-        const div = document.getElementById('viewerContainer');
-        // ⚠ Wait for the viewer to initialize before using
-        window.tandemViewerInstance = await new tandemViewer(div, tokenData.access_token);
+    // Populate model dropdown
+    await populateModelSelect();
 
-        document.getElementById('loadModelBtn').disabled = false;
-        console.log('Tandem viewer initialized.');
-    } catch (err) {
-        console.error('Failed to initialize Tandem viewer:', err);
-        alert('Failed to initialize viewer. Check console for details.');
-    }
+  } catch (err) {
+    console.error('Failed to initialize viewer:', err);
+    alert('Falha ao inicializar o viewer. Veja console para detalhes.');
+  }
 }
 
-// Run on page load
-checkAuthStatus();
+// ----------------------
+// Populate model dropdown
+// ----------------------
+async function populateModelSelect() {
+  const select = document.getElementById('modelSelect');
+  select.innerHTML = '<option value="" disabled selected>Carregando...</option>';
+  select.disabled = true;
+
+  try {
+    const res = await fetch('/api/projects', { credentials: 'same-origin' });
+    if (!res.ok) throw new Error(`Failed to fetch projects: ${res.status}`);
+    const data = await res.json();
+    const projects = data.projects || [];
+
+    if (!projects.length) {
+      select.innerHTML = '<option value="" disabled>Nenhum projeto disponível</option>';
+      return;
+    }
+
+    select.innerHTML = '<option value="" disabled selected>Selecione um modelo</option>';
+    projects.forEach(project => {
+      const option = document.createElement('option');
+      option.value = project.id;
+      option.dataset.twinId = project.twinId;
+      option.dataset.building = project.name;
+      option.textContent = project.name;
+      select.appendChild(option);
+    });
+
+    select.disabled = false;
+    document.getElementById('loadModelBtn').disabled = false;
+
+  } catch (err) {
+    console.error('Failed to load projects:', err);
+    select.innerHTML = '<option value="" disabled>Erro ao carregar projetos</option>';
+    alert('Não foi possível carregar os modelos disponíveis.');
+  }
+}
+
+// ----------------------
+// Initialize
+// ----------------------
+window.addEventListener("DOMContentLoaded", () => {
+  initializeTandemViewer();
+
+  // Attach button handler here so it always works
+  const loadBtn = document.getElementById('loadModelBtn');
+  if (loadBtn) loadBtn.onclick = loadSelectedModel;
+});

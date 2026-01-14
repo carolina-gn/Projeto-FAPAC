@@ -3,43 +3,405 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Example App</title>
+    <title>DTGE</title>
     <link rel="stylesheet" href="/css/style.css">
     <script src="https://tandem.autodesk.com/viewer/viewer3D.min.js"></script>
     <link href="https://tandem.autodesk.com/viewer/style.min.css" rel="stylesheet">
 </head>
+
 <body>
-    <h1>Example App</h1>
-    
-    <div class="status">
-        <p><strong>Status:</strong> <span id="authStatus">Checking...</span></p>
-        <p id="userName" class="hidden"><strong>User:</strong> <span id="userNameValue"></span></p>
+
+<div class="page-container">
+    <aside id="issuesBoardPage" hidden>
+        <div class="page-container page-container--full">
+
+    <!-- Header -->
+    <header class="issues-page-header">
+
+      <div class="issues-brand">
+        <img class="issues-logo" src="/images/logo.png" alt="DTGE Logo">
+        <div>
+          <h1 class="page-title issues-page-title">Todos os issues</h1>
+          <p class="issues-page-subtitle">Por Estado</p>
+        </div>
+      </div>
+
+      <div class="issues-page-actions">
+        <div class="issues-filters-bar">
+          <label class="issues-filter">
+            <span class="issues-filter-label">Edifício</span>
+            <select class="form-input" id="buildingFilter">
+                <option value="all" selected>Todos</option>
+                <option value="Palacete">Palacete</option>
+                <option value="BNU">BNU</option>
+            </select>
+          </label>
+
+          <button class="btn btn-secondary" type="button" id="clearBuildingFilter">
+            Limpar
+          </button>
+        </div>
+      </div>
+
+    </header>
+
+    <!-- 4 painéis -->
+    <section class="issues-board">
+
+      <!-- ABERTAS -->
+      <div class="card issues-column" data-status="aberta">
+        <div class="issues-column-header">
+          <div class="issues-column-title">
+            <span class="issue-dot issue-dot--open"></span>
+            <span>Abertas</span>
+          </div>
+          <span class="issues-count" id="countOpen">0</span>
+        </div>
+
+        <div class="issues-column-list" id="listOpen"></div>
+      </div>
+
+      <!-- EM PROGRESSO -->
+      <div class="card issues-column" data-status="em_progresso">
+        <div class="issues-column-header">
+          <div class="issues-column-title">
+            <span class="issue-dot issue-dot--progress"></span>
+            <span>Em progresso</span>
+          </div>
+          <span class="issues-count" id="countProgress">0</span>
+        </div>
+
+        <div class="issues-column-list" id="listProgress"></div>
+      </div>
+
+      <!-- RESOLVIDAS -->
+      <div class="card issues-column" data-status="resolvida">
+        <div class="issues-column-header">
+          <div class="issues-column-title">
+            <span class="issue-dot issue-dot--resolved"></span>
+            <span>Resolvidas</span>
+          </div>
+          <span class="issues-count" id="countResolved">0</span>
+        </div>
+
+        <div class="issues-column-list" id="listResolved"></div>
+      </div>
+
+      <!-- FECHADAS -->
+      <div class="card issues-column" data-status="fechada">
+        <div class="issues-column-header">
+          <div class="issues-column-title">
+            <span class="issue-dot issue-dot--closed"></span>
+            <span>Fechadas</span>
+          </div>
+          <span class="issues-count" id="countClosed">0</span>
+        </div>
+
+        <div class="issues-column-list" id="listClosed"></div>
+      </div>
+
+    </section>
+
+    <footer class="issues-page-footer">
+      <button class="btn" type="button" onclick="showViewer()">Voltar ao viewer</button>
+    </footer>
+
+  </div>
+
+  <!-- Modal de detalhes da Issue -->
+    <div class="modal-backdrop" id="issueModalBackdrop" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="issueModalTitle">
+        <div class="modal-header">
+        <div class="modal-title" id="issueModalTitle">Detalhes da Issue</div>
+        <button class="modal-close" type="button" id="issueModalClose" aria-label="Fechar">×</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="modal-grid" id="issueModalGrid"></div>
+
+            <div class="modal-desc">
+                <div class="modal-label">Descrição</div>
+                <div class="modal-value" id="issueModalDesc">—</div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn" type="button" id="issueModalClose2">Fechar</button>
+
+            <button class="btn" type="button" id="issueModalEdit">Editar</button>
+
+            <button class="btn" type="button" id="issueModalSave" style="display:none;">Guardar</button>
+            <button class="btn btn-secondary" type="button" id="issueModalCancelEdit" style="display:none;">Cancelar</button>
+        </div>
+    </div>
+    </div>
+    </aside>
+
+    <div class="app-layout">
+
+        <!-- SIDE PANEL -->
+        <div class="side-panel">
+
+            <!-- LOGO -->
+            <div class="sidepanel-logo">
+                <img src="/images/logo.png" alt="DTGE Logo">
+            </div>
+
+            <!-- MODEL LOADER CARD -->
+            <div class="side-card">
+                <p class="side-card-title">Modelo Digital Twin</p>
+                <p class="side-card-subtitle">Selecione um modelo disponível</p>
+
+                <select id="modelSelect" class="form-input" style="margin-bottom: 10px;" disabled>
+                    <option value="" selected disabled>Carregando...</option>
+                </select>
+
+                <button id="loadModelBtn" class="btn" disabled>
+                    Carregar Modelo
+                </button>
+
+                <p id="loadStatus" class="sideblock-error"></p>
+            </div>
+            <!-- ISSUES CARD -->
+            <div class="side-card">
+
+                <div class="issues-header">
+                    <p class="side-card-title">Issues</p>
+
+                    <details class="filters-sheet">
+                        <summary class="filters-trigger">Filtros</summary>
+                        <div class="filters-panel">
+
+                            <div class="filters-top">
+                                <div class="filters-title">Todos os filtros</div>
+                                <button class="filters-close" type="button" aria-label="Fechar">×</button>
+                            </div>
+
+                            <div class="filters-list">
+                                <details class="filter-group">
+                                    <summary class="filter-row-link">
+                                    <span>Estado</span>
+                                    <span class="chev">›</span>
+                                    </summary>
+                                    <div class="filter-options">
+                                    <label class="opt"><input type="checkbox" name="status" value="aberta"> Aberta</label>
+                                    <label class="opt"><input type="checkbox" name="status" value="em_progresso"> Em progresso</label>
+                                    <label class="opt"><input type="checkbox" name="status" value="resolvida"> Resolvida</label>
+                                    <label class="opt"><input type="checkbox" name="status" value="fechada"> Fechada</label>
+                                    </div>
+                                </details>
+
+                                <details class="filter-group">
+                                    <summary class="filter-row-link">
+                                    <span>Prioridade</span>
+                                    <span class="chev">›</span>
+                                    </summary>
+                                    <div class="filter-options">
+                                    <label class="opt"><input type="checkbox" name="priority" value="baixa"> Baixa</label>
+                                    <label class="opt"><input type="checkbox" name="priority" value="media"> Média</label>
+                                    <label class="opt"><input type="checkbox" name="priority" value="alta"> Alta</label>
+                                    <label class="opt"><input type="checkbox" name="priority" value="critica"> Crítica</label>
+                                    </div>
+                                </details>
+
+                                <details class="filter-group">
+                                    <summary class="filter-row-link">
+                                    <span>Tipo</span>
+                                    <span class="chev">›</span>
+                                    </summary>
+                                    <div class="filter-options">
+                                    <label class="opt"><input type="checkbox" name="type" value="avaria"> Avaria</label>
+                                    <label class="opt"><input type="checkbox" name="type" value="pedido"> Pedido</label>
+                                    <label class="opt"><input type="checkbox" name="type" value="inspecao"> Inspeção</label>
+                                    </div>
+                                </details>
+
+                                <details class="filter-group">
+                                    <summary class="filter-row-link">
+                                    <span>Edifício</span>
+                                    <span class="chev">›</span>
+                                    </summary>
+                                    <div class="filter-options">
+                                    <label class="opt"><input type="checkbox" name="building" value="Palacete"> Palacete</label>
+                                    <label class="opt"><input type="checkbox" name="building" value="BNU"> BNU</label>
+                                    </div>
+                                </details>
+
+                                <details class="filter-group">
+                                    <summary class="filter-row-link">
+                                    <span>Piso</span>
+                                    <span class="chev">›</span>
+                                    </summary>
+                                    <div class="filter-options">
+                                    <label class="opt"><input type="checkbox" name="floor" value="Piso 0"> Piso 0</label>
+                                    <label class="opt"><input type="checkbox" name="floor" value="Piso 1"> Piso 1</label>
+                                    <label class="opt"><input type="checkbox" name="floor" value="Piso 2"> Piso 2</label>
+                                    <label class="opt"><input type="checkbox" name="floor" value="Piso 3"> Piso 3</label>
+                                    </div>
+                                </details>
+
+                                <details class="filter-group">
+                                    <summary class="filter-row-link">
+                                    <span>Técnico atribuído</span>
+                                    <span class="chev">›</span>
+                                    </summary>
+                                    <div class="filter-options">
+                                    <label class="opt"><input type="checkbox" name="assignedToName" value="Carolina"> Carolina</label>
+                                    <label class="opt"><input type="checkbox" name="assignedToName" value="Leonor"> Leonor</label>
+                                    <label class="opt"><input type="checkbox" name="assignedToName" value="Catarina"> Catarina</label>
+                                    </div>
+                                </details>
+                                </div>
+
+                            <div class="filters-actions">
+                                <button class="btn btn-secondary" type="button" id="filtersClearBtn">Limpar</button>
+                                <button class="btn" type="button" id="filtersApplyBtn">Aplicar</button>
+                            </div>
+                        </div>
+                    </details>
+
+                    <button class="btn" id="viewAllIssues">Ver todos os issues</button>
+                </div>
+
+                <div class="issues-list" id="issuesList"></div>
+
+            </div>
+
+            <!-- DEBUG Logout -->
+            <div class="sidepanel-logout" style="position: absolute; bottom: 5px; ">
+                <form id="logoutForm" action="/logout" method="GET">
+                    <button type="submit" class="btn btn-logout">Logout</button>
+                </form>
+            </div>
+
+        </div> <!-- END SIDE PANEL -->
+
+        <!-- VIEWER -->
+        <div class="viewer-wrapper">
+            <div id="viewerContainer"></div>
+        </div>
+
+        <!-- CREATE ISSUE PANEL -->
+<aside class="issue-panel">
+
+    <div class="issue-panel-header">
+        <h3>Criar novo issue</h3>
     </div>
 
-    <div id="authButtons">
-        <a href="/api/auth/login" class="button hidden" id="loginBtn">Login</a>
-        <a href="/api/auth/logout" class="button logout hidden" id="logoutBtn">Logout</a>
-    </div>
+    <form class="form issue-form" onsubmit="return false;">
 
-    <h2>API Endpoints</h2>
-    <ul>
-        <li>GET /api/auth/login</li>
-        <li>GET /api/auth/logout</li>
-        <li>GET /api/auth/profile</li>
-        <li>GET /api/auth/token</li>
-    </ul>
+        <div class="form-row">
+            <label class="form-label" for="issueTitle">Título</label>
+            <input id="issueTitle" class="form-input" type="text" placeholder="Ex: Fuga de água no WC" />
+        </div>
 
-    <h2>Model Viewer</h2>
-    <div id="modelControls">
-    <input type="text" id="modelUrn" placeholder="Insert Twin ID...">
-    <button id="loadModelBtn" disabled>Load Twin</button>
-    <p id="loadStatus" style="color:red;"></p>
-    </div>
+        <div class="form-row">
+            <label class="form-label" for="issueDesc">Descrição</label>
+            <textarea id="issueDesc" class="form-input" rows="3" placeholder="Descreve o problema..."></textarea>
+        </div>
 
-    </div>
-    <div id="viewerContainer">
-    </div>
-    <script src="/js/auth.js"></script>
-    <script src="/js/viewer.js"></script>
+        <div class="form-row">
+            <label class="form-label" for="issueStatus">Estado</label>
+            <select id="issueStatus" class="form-input">
+                <option value="" disabled selected>Selecionar</option>
+                <option value="aberta">Aberta</option>
+                <option value="em_progresso">Em progresso</option>
+                <option value="resolvida">Resolvida</option>
+                <option value="fechada">Fechada</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <label class="form-label" for="issuePriority">Prioridade</label>
+            <select id="issuePriority" class="form-input">
+                <option value="" disabled selected>Selecionar</option>
+                <option value="baixa">Baixa</option>
+                <option value="media">Média</option>
+                <option value="alta">Alta</option>
+                <option value="critica">Crítica</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <label class="form-label" for="issueType">Tipo</label>
+            <select id="issueType" class="form-input">
+                <option value="" disabled selected>Selecionar</option>
+                <option value="avaria">Avaria</option>
+                <option value="pedido">Pedido</option>
+                <option value="inspecao">Inspeção</option>
+            </select>
+        </div>
+
+        <div class="side-card">
+            <div class="side-card-title">Localização</div>
+
+            <div class="form-row">
+                <label class="form-label" for="locBuilding">Edifício</label>
+                <!-- Display selected model's building instead of dropdown -->
+                <input id="locBuilding" class="form-input" type="text" placeholder="Selecionar modelo" readonly />
+            </div>
+
+
+            <div class="form-row">
+                <label class="form-label" for="locFloor">Piso</label>
+                <select id="locFloor" class="form-input">
+                    <option value="" disabled selected>Selecionar</option>
+                    <option value="Piso 0">Piso 0</option>
+                    <option value="Piso 1">Piso 1</option>
+                    <option value="Piso 2">Piso 2</option>
+                    <option value="Piso 3">Piso 3</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label class="form-label" for="locSpace">Espaço</label>
+                <input id="locSpace" class="form-input" type="text" placeholder="Sala 1.01" />
+            </div>
+        </div>
+
+        <div class="side-card">
+            <div class="side-card-title">Ligação ao modelo</div>
+
+            <div class="form-row">
+                <label class="form-label" for="modelElement">Elemento</label>
+                <input
+                    id="modelElement"
+                    class="form-input"
+                    type="text"
+                    placeholder="Lâmpada 1.02"
+                />
+                <div class="form-row">
+                    <div class="form-label">Elemento selecionado (ID)</div>
+                    <div id="selectedElementId" class="form-input" style="background:#f3f4f6;" aria-live="polite">—</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <label class="form-label" for="assignedTo">Atribuído a</label>
+            <select id="assignedTo" class="form-input">
+                <option value="" disabled selected>Selecionar</option>
+                <!-- Populated dynamically from project users -->
+            </select>
+        </div>
+
+        <div class="button-group-vertical">
+            <button id="btnCreateIssue" class="btn" type="button">Criar Issue</button>
+            <button id="btnCancelIssue" class="btn btn-secondary" type="button">Cancelar</button>
+        </div>
+
+    </form>
+</aside>
+
+    </div> <!-- END APP LAYOUT -->
+
+</div> <!-- END PAGE CONTAINER -->
+
+
+<script src="/js/viewer.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/navigation.js"></script>
+<script src="/js/issues.js"></script>
+<script src="/js/issues-board.js"></script>
 </body>
 </html>

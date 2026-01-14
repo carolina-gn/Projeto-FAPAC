@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validação de Login | DTGE</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body class="centered-page">
+    <div class="page-container">
+
+        <!-- Cartão principal -->
+        <div class="card card--narrow">
+
+            <!-- Header do cartão -->
+            <div class="card-header">
+                <img src="/images/logo.png" alt="DTGE Logo" class="card-logo">
+                <p class="card-subtitle">Estado da autenticação</p>
+            </div>
+
+            <!-- Mensagem dinâmica controlada pelo JS -->
+            <h2 id="statusTitle" class="page-title" style="text-align:center;"></h2>
+
+            <p id="statusMessage" class="validation-message"></p>
+
+            <!-- Botão dinâmico controlado pelo JS -->
+            <div style="text-align:center;">
+                <button id="actionButton" class="btn"></button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="/js/loginValidation.js"></script>
+</body>
+</html>

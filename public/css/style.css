@@ -1,52 +1,1186 @@
+/* ==========
+   Base global
+   ========== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    max-width: 600px;
-    margin: 50px auto;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: linear-gradient(135deg,#e5d9ff,#dbeafe,#f1efff);
+    color: #1f2933;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* CORRIGIDO */
+    height: 100%;
+    min-height: 100vh; /* CORRIGIDO */
+}
+
+.centered-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;   /* volta a centrar */
+    min-height: 100vh;     /* ocupar ecrã todo */
     padding: 20px;
 }
 
-h1 {
-    color: #333;
+.centered-page .page-container,
+.centered-page .card {
+    margin: 0 auto;        /* garante centragem perfeita */
 }
 
-.status {
-    padding: 10px;
-    margin: 20px 0;
-    border: 1px solid #ddd;
-    background: #f5f5f5;
+/* Wrapper geral para cada página (login, validação, home) */
+.page-container {
+    width: 100%;
+    max-width: none;   
+    padding: 12px;    
 }
 
-button, a.button {
-    padding: 10px 20px;
-    margin: 5px;
-    text-decoration: none;
-    display: inline-block;
-    background: #007bff;
-    color: white;
+/* Títulos genéricos */
+.page-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 16px;
+}
+
+/* ==========
+   Cartões / blocos
+   ========== */
+
+.card {
+    position: relative;
+
+    /* Transparência mais elegante */
+    background: rgba(255, 255, 255, 0.18);
+
+    /* Efeito glass principal */
+    backdrop-filter: blur(22px) saturate(180%);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+
+    /* Borda estilo vidro */
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+
+    /* Sombra suave */
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+
+    padding: 32px 28px;
+    width: 100%;
+}
+
+/* EFEITO DE BRILHO NAS BORDAS */
+.card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+
+    /* brilho suave nas bordas (efeito vidro iluminado) */
+    padding: 1px;
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.65),
+        rgba(255, 255, 255, 0.15) 40%,
+        rgba(255, 255, 255, 0.05)
+    );
+
+    mask:
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+
+    pointer-events: none;
+}
+
+.card--narrow {
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+
+/* Header com logo + título opcional */
+.card-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.card-logo {
+    width: 120px;
+    height: auto;
+    object-fit: contain;
+}
+
+.card-subtitle {
+    font-size: 0.92rem;
+    color: #6b7280;
+    text-align: center;
+}
+
+/* ==========
+   Formulários
+   ========== */
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+.form-input {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    background-color: #f9fafb;
+}
+
+.form-input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.4);
+    background-color: #ffffff;
+}
+
+/* ==========
+   Botões
+   ========== */
+
+.btn,
+button,
+a.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 999px;
     border: none;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 500;
     cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease, background 0.2s ease;
+    white-space: nowrap;
 }
 
+.btn:hover,
+button:hover,
+a.button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px rgba(88, 80, 236, 0.35);
+    filter: brightness(1.02);
+}
+
+.btn:active,
+button:active,
+a.button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Botão secundário (para links tipo "Tentar novamente") */
+.btn-secondary {
+    background: #e5e7eb;
+    color: #374151;
+    box-shadow: none;
+}
+
+.btn-secondary:hover {
+    background: #d1d5db;
+}
+
+/* Botão de logout específico (mantém classe existente) */
 .logout {
-    background: #dc3545;
+    background: #ef4444;
+    background: linear-gradient(135deg, #ef4444, #f97373);
 }
 
-.hidden {
-    display: none;
+/* ==========
+   Estados / mensagens
+   ========== */
+
+.status,
+.status-box {
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    font-size: 0.9rem;
+    margin-bottom: 16px;
 }
+
+.status strong,
+.status-box strong {
+    color: #111827;
+}
+
+.status--success {
+    border-color: rgba(16, 185, 129, 0.4);
+    background: rgba(16, 185, 129, 0.06);
+    color: #047857;
+}
+
+.status--error {
+    border-color: rgba(248, 113, 113, 0.5);
+    background: rgba(254, 226, 226, 0.5);
+    color: #b91c1c;
+}
+
+/* Esconder elementos via JS */
+.hidden {
+    display: none !important;
+}
+
+/* ==========
+   Listas simples (para secção de endpoints)
+   ========== */
 
 ul {
     list-style: none;
     padding: 0;
+    margin: 12px 0 0;
 }
 
 li {
-    padding: 5px 0;
-    font-family: monospace;
+    padding: 4px 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.85rem;
+    color: #4b5563;
 }
 
-#viewerContainer {
-    width: 800px;
-    height: 500px;
+/* ==========
+   Página index / viewer
+   ========== */
+
+/* Layout principal para a página do modelo */
+.app-layout {
+    display: grid;
+    grid-template-columns:
+    minmax(260px, 320px)   /* painel esquerdo */
+    1fr                    /* viewer */
+    minmax(320px, 380px);  /* painel issues */
+    gap: 20px;
+
+    /* CORRIGIDO: garante que a coluna do viewer ocupa o ecrã todo */
+    min-height: calc(100vh - 60px);
+
+    align-items: stretch;
+}
+
+/* Painel lateral (controlo de autenticação e modelo) */
+
+.side-panel {
     position: relative;
+
+    /* Mesma transparência do teu card */
+    background: rgba(255, 255, 255, 0.18);
+
+    /* Mesmo efeito glass */
+    backdrop-filter: blur(22px) saturate(180%);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+
+    /* Mesma borda do card */
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.40);
+
+    /* Sombra igual ao card, mas ligeiramente mais forte (sidebar é maior) */
+    box-shadow: 0 14px 45px rgba(0, 0, 0, 0.15);
+
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* EFEITO BRILHO NAS BORDAS (igual ao .card, adaptado à sidebar) */
+.side-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+
+    padding: 1px;
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.65),
+        rgba(255, 255, 255, 0.15) 40%,
+        rgba(255, 255, 255, 0.05)
+    );
+
+    mask:
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+
+    pointer-events: none;
+}
+
+.side-panel-section-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+}
+
+.sidepanel-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.sidepanel-logo img {
+    width: 120px;
+    opacity: 0.95;
+}
+
+/* Inputs no painel (por ex. URN do Twin) */
+.side-panel input[type="text"] {
+    width: 100%;
+}
+
+/* Botões empilhados no painel lateral */
+.button-group-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Container do viewer (lado direito) */
+.viewer-wrapper {
+    position: relative;
+
+    /* fundo transparente elegante */
+    background: rgba(17, 24, 39, 0.35);
+
+    /* efeito glass */
+    backdrop-filter: blur(26px) saturate(200%);
+    -webkit-backdrop-filter: blur(26px) saturate(200%);
+
+    /* bordas glass estilo dark */
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+
+    /* sombra suave */
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+
+    padding: 10px;
+
+    height: 100%;
+    min-height: 500px;
+    overflow: hidden;
+}
+
+/* brilho nas bordas */
+.viewer-wrapper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.20),
+        rgba(255, 255, 255, 0.05),
+        rgba(255, 255, 255, 0.02)
+    );
+
+    mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+
+    pointer-events: none;
+}
+
+/* Reflexo suave no canto superior esquerdo */
+.viewer-wrapper::after {
+    content: "";
+    position: absolute;
+    top: -6%;
+    left: -6%;
+    width: 55%;
+    height: 40%;
+
+    background: radial-gradient(
+        circle at top left,
+        rgba(255, 255, 255, 0.20),
+        transparent 70%
+    );
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+/* Mantemos o ID que o JS já usa, só melhoramos o tamanho e responsividade */
+#viewerContainer {
+    width: 100%;
+    height: 100%;       /* MUITO IMPORTANTE */
+    min-height: 480px;  /* dá corpo ao viewer */
+    border-radius: 12px;
+    overflow: hidden;   /* impede o viewer de escapar visualmente */
+    position: relative;
+}
+
+/* Texto pequeno informativo */
+.helper-text {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+/* ==========
+   Página de validação de login
+   ========== */
+
+.validation-message {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+/* ==========
+   Responsividade
+   ========== */
+
+@media (max-width: 900px) {
+    body {
+        align-items: flex-start;
+    }
+
+    .page-container {
+        padding: 24px 16px;
+    }
+
+    .app-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .viewer-wrapper {
+        margin-top: 16px;
+    }
+}
+
+#loadStatus:not(:empty) {
+    color: #b91c1c !important;
+    font-weight: 500;
+}
+
+.side-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.18);
+
+    /* Efeito vidro igual ao .card */
+    backdrop-filter: blur(22px) saturate(180%);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* brilho nas bordas — igual ao .card */
+.side-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.65),
+        rgba(255, 255, 255, 0.20),
+        rgba(255, 255, 255, 0.06)
+    );
+
+    mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+
+    pointer-events: none;
+}
+
+/* Títulos dos cartões */
+.side-card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #4b4f63;
+}
+
+/* Descrição */
+.side-card-subtitle {
+    font-size: 0.8rem;
+    color: #7a8092;
+}
+
+.issue-panel {
+    position: relative;
+
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(22px) saturate(180%);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.40);
+    box-shadow: 0 14px 45px rgba(0, 0, 0, 0.15);
+
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    /* importante: o painel não “rebenta” a página */
+    overflow-y: auto;
+    max-height: calc(100vh - 20px);
+}
+
+.issue-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.65),
+        rgba(255, 255, 255, 0.15) 40%,
+        rgba(255, 255, 255, 0.05)
+    );
+
+    mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+
+    pointer-events: none;
+}
+
+.issue-panel-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 2px;
+}
+
+.issue-panel-subtitle {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+textarea { resize: vertical; }
+
+.issues-header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.issues-filters {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.issues-filter {
+    flex: 1;
+}
+
+.issues-new {
+    padding: 9px 14px;
+}
+
+.issues-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.issues-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 999px;
+}
+
+.issues-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.issue-item {
+    width: 100%;
+    text-align: left;
+
+    display: grid;
+    grid-template-columns: 10px 1fr auto;
+    gap: 10px;
+    align-items: center;
+
+    padding: 10px 12px;
+    border-radius: 14px;
+
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.30);
+    cursor: pointer;
+
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+
+.issue-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.42);
+}
+
+.issue-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.35);
+}
+
+.issue-dot--open { background: #ef4444; }
+.issue-dot--progress { background: #f59e0b; }
+.issue-dot--resolved { background: #10b981; }
+.issue-dot--closed { background: #6b7280; }
+
+.issue-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #374151;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.issue-main {
+  min-width: 0;   
+}
+
+.issue-meta {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 2px;
+}
+
+.issue-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.35);
+    color: #374151;
+    white-space: nowrap;
+}
+
+.issue-badge--low { }
+.issue-badge--medium { }
+.issue-badge--high { }
+.issue-badge--critical { }
+
+.filters-trigger {
+  list-style: none;
+  cursor: pointer;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.22);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.filters-trigger::-webkit-details-marker { display: none; }
+
+.filters-sheet { position: relative; }
+
+.filters-panel {
+  margin-top: 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.20);
+  overflow: hidden;
+}
+
+.filters-top {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  padding: 12px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.30);
+  background: rgba(255,255,255,0.18);
+}
+
+.filters-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #374151;
+  text-align: center;
+}
+
+.filters-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.30);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.filters-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-group { border-bottom: 1px solid rgba(255,255,255,0.22); }
+
+.filter-row-link {
+  list-style: none;
+  cursor: pointer;
+  padding: 12px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  color: #374151;
+  background: rgba(255,255,255,0.10);
+}
+
+.filter-row-link::-webkit-details-marker { display: none; }
+
+.filter-row-link:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+.chev {
+  font-size: 18px;
+  color: #6b7280;
+}
+
+.filter-options {
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(255,255,255,0.12);
+}
+
+.opt {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.22);
+  font-size: 0.88rem;
+  color: #374151;
+}
+
+.opt input {
+  width: 16px;
+  height: 16px;
+}
+
+.filters-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px solid rgba(255,255,255,0.30);
+  background: rgba(255,255,255,0.18);
+}
+
+.side-panel .side-card {
+    max-height: 290px;   
+    overflow-y: auto;
+}
+
+.issues-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.issues-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.issues-logo {
+  width: 200px;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.95;
+}
+
+.issues-page-title {
+  margin: 0;
+}
+
+.issues-page-subtitle {
+  margin-top: 2px;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.issues-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(240px, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+
+.issues-column {
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: calc(100vh - 170px);
+}
+
+.issues-column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.issues-column-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.issues-count {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #374151;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.issues-column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Responsivo */
+@media (max-width: 1200px) {
+  .issues-board {
+    grid-template-columns: repeat(2, minmax(260px, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .issues-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .issues-board {
+    grid-template-columns: 1fr;
+  }
+
+  .issues-column {
+    min-height: auto;
+  }
+}
+
+.issues-filters-bar {
+  display: inline-flex;
+  align-items: end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.issues-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.issues-filter-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.issues-page-header{
+  flex-wrap: wrap;               /* permite quebrar sem estragar */
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.issues-page-actions{
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.issues-page-footer{
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.issues-column {
+  min-height: calc(100vh - 160px); /* ajusta se quiseres */
+}
+
+.issues-column-list::-webkit-scrollbar {
+  width: 6px;
+}
+.issues-column-list::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.22);
+  border-radius: 999px;
+}
+.issues-column-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  z-index: 9999;
+}
+
+.modal-backdrop.is-open {
+  display: flex;
+}
+
+.modal-card {
+  width: min(720px, 96vw);
+  max-height: 86vh;
+  overflow: auto;
+
+  position: relative;
+  padding: 18px 18px 16px;
+
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.25);
+  background: linear-gradient(135deg,#e5d9ff,#dbeafe,#f1efff);
+
+
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 18px 55px rgba(0,0,0,0.25);
+
+}
+
+.modal-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: start;
+  margin-bottom: 10px;
+}
+
+.modal-close {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.28);
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 680px) {
+  .modal-grid { grid-template-columns: 1fr; }
+}
+
+.modal-field {
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.30);
+  background: rgba(255,255,255,0.18);
+  padding: 10px 12px;
+}
+
+.modal-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #6b7280;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modal-value {
+  font-size: 0.95rem;
+  color: #111827;
+  word-break: break-word;
+}
+
+.modal-desc {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.30);
+  background: rgba(255,255,255,0.18);
+}
+
+.modal-footer {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Fundo fora do cartão mais escuro para destacar */
+.modal-backdrop{
+  background: rgba(15, 23, 42, 0.55);   /* mais escuro */
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+}
+
+/* Título mais legível */
+.modal-title {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #4b5563;
+}
+
+/* Botão fechar semelhante aos teus botões/inputs */
+.modal-close{
+  background: rgba(255, 255, 255, 0.30);
+  border: 1px solid rgba(255, 255, 255, 0.40);
+  color: #374151;
+}
+.modal-close:hover{
+  background: rgba(255, 255, 255, 0.42);
+}
+
+/* Campos: mais claros, como os blocos do teu UI */
+.modal-field,
+.modal-desc{
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+/* Labels mais visíveis */
+.modal-label{
+  color: #6b7280;
+  opacity: 0.95;
+}
+
+/* Valores com mais contraste */
+.modal-value{
+  color: #111827;
+}
+
+/* Opcional: melhorar a leitura do texto dentro da descrição */
+#issueModalDesc{
+  color: #111827;
+}
+
+.modal-field,
+.modal-desc{
+  background: rgba(255,255,255,0.9);
+  border: 1px solid #d1d5db;
+}
+
+.modal-label{
+  color: #6b7280;
+}
+
+.modal-value{
+  color: #111827;
+}
+
+.modal-field .form-input{
+  width: 100%;
+}
+.modal-desc .form-input{
+  width: 100%;
+}
+
+.modal-field .form-input,
+.modal-desc .form-input{
+  width: 100%;
+}
+
+.sidepanel-logout {
+  position: absolute;
+  bottom: 5px;
+  left: 20px;
+  right: 20px;   /* 👈 isto é importante */
+}
+
+.sidepanel-logout button {
+  width: 100%;
 }
