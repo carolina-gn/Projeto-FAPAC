@@ -121,7 +121,62 @@ document.getElementById('viewAllIssues')
             console.warn("showIssuesBoard not available");
         }
     });
+
+function getCheckedValues(name) {
+  return Array.from(document.querySelectorAll(`input[type="checkbox"][name="${name}"]:checked`))
+    .map(cb => cb.value);
+}
+
+function applyFilters() {
+  const statuses = getCheckedValues("status");
+  const priorities = getCheckedValues("priority");
+  const types = getCheckedValues("type");
+  const buildings = getCheckedValues("building");
+  const floors = getCheckedValues("floor");
+  const assignees = getCheckedValues("assignedToName");
+
+  const filtered = ALL_ISSUES.filter((issue) => {
+    if (statuses.length && !statuses.includes(issue.status)) return false;
+    if (priorities.length && !priorities.includes(issue.priority)) return false;
+    if (types.length && !types.includes(issue.type)) return false;
+
+    const building = issue?.location?.building || "";
+    const floor = issue?.location?.floor || "";
+    const assigned = issue?.assignedToName || "";
+
+    if (buildings.length && !buildings.includes(building)) return false;
+    if (floors.length && !floors.includes(floor)) return false;
+    if (assignees.length && !assignees.includes(assigned)) return false;
+
+    return true;
+  });
+
+  renderIssues(filtered);
+
+  // fechar o painel de filtros (opcional)
+  const details = document.querySelector(".filters-sheet");
+  if (details) details.open = false;
+}
+
+function clearFilters() {
+  document.querySelectorAll('.filters-panel input[type="checkbox"]').forEach(cb => cb.checked = false);
+  renderIssues(ALL_ISSUES);
+
+  const details = document.querySelector(".filters-sheet");
+  if (details) details.open = false;
+}
+
 // ----------------------
 // Init
 // ----------------------
-window.addEventListener("DOMContentLoaded", loadIssues);
+window.addEventListener("DOMContentLoaded", () => {
+  loadIssues();
+
+  document.getElementById("filtersApplyBtn")?.addEventListener("click", applyFilters);
+  document.getElementById("filtersClearBtn")?.addEventListener("click", clearFilters);
+
+  document.querySelector(".filters-close")?.addEventListener("click", () => {
+    const details = document.querySelector(".filters-sheet");
+    if (details) details.open = false;
+  });
+});
