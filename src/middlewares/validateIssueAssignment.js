@@ -1,59 +1,35 @@
+// src/middlewares/validateIssueAssignment.js
 const User = require("../models/user");
-const Project = require("../models/project");
 const ProjectAccess = require("../models/projectAccess");
 
-const ROLE_RANK = {
-  owner: 3,
-  user: 2,
-  general: 1
-};
-
 module.exports = async function validateIssueAssignment(req, res, next) {
+  const { assignedTo } = req.body;
+  if (!assignedTo) return next();
+
   try {
-    const { assignedTo, project } = req.body;
-    const requester = req.session.user;
-
-    if (!assignedTo) return next();
-    if (!requester) {
-      return res.status(401).json({ error: "Not logged in" });
-    }
-
-    const targetUser = await User.findById(assignedTo);
-    if (!targetUser) {
+    const user = await User.findById(assignedTo);
+    if (!user) {
       return res.status(400).json({ error: "Assigned user does not exist" });
     }
 
-    // 🔒 Role hierarchy enforcement
-    if (ROLE_RANK[requester.role] < ROLE_RANK[targetUser.role]) {
-      return res.status(403).json({
-        error: "You cannot assign issues to users with higher roles"
-      });
-    }
+    const projectId = req.params.projectId;
 
-    const proj = await Project.findById(project);
-    if (!proj) {
-      return res.status(400).json({ error: "Project does not exist" });
-    }
+    const hasAccess =
+      user.role === "owner" ||
+      (await ProjectAccess.exists({
+        project: projectId,
+        viewer: user._id
+      }));
 
-    // Owner always has access
-    if (proj.owner.toString() === targetUser._id.toString()) {
-      return next();
-    }
-
-    const access = await ProjectAccess.findOne({
-      project: project,
-      viewer: targetUser._id
-    });
-
-    if (!access) {
-      return res.status(403).json({
-        error: "Assigned user does not have access to this project"
+    if (!hasAccess) {
+      return res.status(400).json({
+        error: "Assigned user has no access to this project"
       });
     }
 
     next();
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Assignment validation failed" });
   }
 };

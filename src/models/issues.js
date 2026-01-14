@@ -8,8 +8,8 @@ const IssueSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      required: true,
-      enum: ["aberta", "em_progresso", "resolvida", "fechada"]
+      enum: ["aberta", "em_progresso", "resolvida", "fechada"],
+      default: "aberta"
     },
 
     priority: {
@@ -30,22 +30,28 @@ const IssueSchema = new mongoose.Schema(
       required: true
     },
 
-    location: {
-      building: { type: String, default: "" },
-      floor: { type: String, default: "" },
-      space: { type: String, default: "" }
-    },
-
-    modelLink: {
-      building: { type: String, default: "" },
-      elementId: { type: String, default: "" },
-      element: { type: String, default: "" }
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
     },
 
     assignedTo: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       default: null
+    },
+
+    location: {
+      building: String,
+      floor: String,
+      space: String
+    },
+
+    modelLink: {
+      building: String,
+      elementId: String,
+      element: String
     }
   },
   { timestamps: true }

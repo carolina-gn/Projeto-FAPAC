@@ -1,43 +1,42 @@
 // src/controllers/issuesController.js
 const Issue = require("../models/issues");
 
-// POST /api/issues
+// POST /projects/:projectId/issues
 exports.createIssue = async (req, res) => {
   try {
-    const issue = await Issue.create(req.body);
-    return res.status(201).json(issue);
+    const user = req.session.user;
+
+    const issue = await Issue.create({
+      ...req.body,
+      project: req.params.projectId,
+      createdBy: user.id
+    });
+
+    res.status(201).json(issue);
   } catch (err) {
-    return res.status(400).json({
+    res.status(400).json({
       message: "Erro ao criar issue",
       error: err.message
     });
   }
 };
 
-// GET /api/issues
+// GET /projects/:projectId/issues
 exports.listIssues = async (req, res) => {
   try {
-    const { status } = req.query;
-    const filter = status ? { status } : {};
+    const issues = await Issue.find({
+      project: req.params.projectId
+    }).sort({ updatedAt: -1 });
 
-    const issues = await Issue
-      .find(filter)
-      .sort({ updatedAt: -1 });
-
-    return res.json(issues);
+    res.json(issues);
   } catch (err) {
-    return res.status(500).json({
-      message: "Erro ao listar issues",
-      error: err.message
-    });
+    res.status(500).json({ message: "Erro ao listar issues" });
   }
 };
 
-// PATCH /api/issues/:id
+// PATCH /projects/:projectId/issues/:issueId
 exports.updateIssue = async (req, res) => {
   try {
-    const issue = req.issue; // 👈 comes from middleware
-
     const allowed = [
       "title",
       "description",
@@ -49,18 +48,20 @@ exports.updateIssue = async (req, res) => {
       "modelLink"
     ];
 
+    const update = {};
     for (const key of allowed) {
-      if (req.body[key] !== undefined) {
-        issue[key] = req.body[key];
-      }
+      if (req.body[key] !== undefined) update[key] = req.body[key];
     }
 
-    await issue.save(); // triggers validation
+    const issue = await Issue.findByIdAndUpdate(
+      req.params.issueId,
+      update,
+      { new: true, runValidators: true }
+    );
 
-    return res.json(issue);
+    res.json(issue);
   } catch (err) {
-    console.error(err);
-    return res.status(400).json({
+    res.status(400).json({
       message: "Erro ao atualizar issue",
       error: err.message
     });
