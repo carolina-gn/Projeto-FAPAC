@@ -104,7 +104,7 @@ document.addEventListener("click", e => {
     }
 
     if (window.tandemViewerInstance) {
-        window.tandemViewerInstance.highlightByElementId(elementId);
+        window.tandemViewerInstance.highlightByExternalId(elementId);
     } else {
         alert("Viewer não inicializado ainda.");
     }
@@ -232,15 +232,14 @@ window.addEventListener("DOMContentLoaded", () => {
         type: normalizeType(document.getElementById("issueType").value),
 
         location: {
-          building: document.getElementById("locBuilding").value.trim(),
-          floor: document.getElementById("locFloor").value.trim(),
-          space: document.getElementById("locSpace").value.trim(),
+            building: document.getElementById("locBuilding").value.trim(),
+            floor: document.getElementById("locFloor").value.trim(),
+            space: document.getElementById("locSpace").value.trim(),
         },
 
         modelLink: {
-          element: document.getElementById("modelElement").value.trim(),
-          // se já guardas elementId nalgum lado, mete aqui:
-          // elementId: window.selectedElementId || undefined
+            element: document.getElementById("modelElement").value.trim(),
+            elementId: window.selectedElementId || ""
         },
 
         assignedToName: document.getElementById("assignedTo").value

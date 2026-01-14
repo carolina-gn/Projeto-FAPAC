@@ -20,6 +20,81 @@ class TandemViewer {
                     });
                     this.viewer.start();
 
+                    const out = document.getElementById("selectedElementId");
+                        if (out) out.textContent = "(clique num objeto)";
+
+                        const canvas = this.viewer.canvas; // canvas real do viewer
+                        if (canvas) {
+                        canvas.style.pointerEvents = "auto";
+
+                        canvas.addEventListener("click", (ev) => {
+                            try {
+                            if (out) out.textContent = "Clique detetado…";
+
+                            const rect = canvas.getBoundingClientRect();
+                            const x = ev.clientX - rect.left;
+                            const y = ev.clientY - rect.top;
+
+                            const hit = this.viewer.impl.hitTest(x, y, true);
+                            const dbId = hit?.dbId;
+
+                            if (!dbId && dbId !== 0) {
+                                if (out) out.textContent = "Clique no vazio (sem objeto).";
+                                return;
+                            }
+
+                            if (typeof this.viewer.getProperties !== "function") {
+                            // último fallback
+                            window.selectedElementId = String(dbId);
+                            if (out) out.textContent = `dbId: ${dbId}`;
+                            const input = document.getElementById("modelElement");
+                            if (input) input.value = window.selectedElementId;
+                            return;
+                            }
+
+                            this.viewer.getProperties(dbId, (props) => {
+                            const externalId = props?.externalId || "";
+                            const name = props?.name || "";
+
+                            // procurar propriedades típicas sem apanhar um "Id" genérico
+                            const propsList = props?.properties || [];
+                            const pickExact = (names) => {
+                                const p = propsList.find(x => names.includes((x.displayName || "").trim().toLowerCase()));
+                                return p?.displayValue ? String(p.displayValue) : "";
+                            };
+                            const pickContains = (keywords) => {
+                                const p = propsList.find(x =>
+                                keywords.some(k => (x.displayName || "").toLowerCase().includes(k))
+                                );
+                                return p?.displayValue ? String(p.displayValue) : "";
+                            };
+
+                            const bimId =
+                                pickExact(["element id"]) ||
+                                pickContains(["uniqueid", "unique id"]) ||
+                                pickContains(["globalid", "guid"]) ||
+                                "";
+
+                            // prioridade: externalId -> bimId -> dbId
+                            const chosenId = externalId || bimId || String(dbId);
+
+                            window.selectedElementId = chosenId;
+
+                            // UI
+                            const outEl = document.getElementById("selectedElementId");
+                            if (outEl) outEl.textContent = chosenId;     // agora já não fica "dbId: ..."
+
+                            const input = document.getElementById("modelElement");
+                            if (input) input.value = name || chosenId;   // nome se existir
+                            });
+
+                            } catch (err) {
+                            console.error(err);
+                            if (out) out.textContent = "Erro ao identificar o objeto (ver console).";
+                            }
+                        });
+                    }
+
                     // Set Tandem API auth header
                     av.endpoint.HTTP_REQUEST_HEADERS["Authorization"] = `Bearer ${token}`;
                     this.app = new Autodesk.Tandem.DtApp();
@@ -97,6 +172,31 @@ class TandemViewer {
         this.viewer.navigation.fitBounds(true, bounds);
     }
 }
+
+async highlightByExternalId(externalId) {
+  if (!this.viewer) return;
+
+  const model = this.viewer.getVisibleModels?.()[0] || this.viewer.model;
+  if (!model || typeof model.getExternalIdMapping !== "function") return;
+
+  const map = await new Promise((resolve) => model.getExternalIdMapping(resolve));
+
+  // map é do tipo: { dbId: externalId }
+  const dbIdStr = Object.keys(map).find((k) => map[k] === externalId);
+  if (!dbIdStr) {
+    console.warn("No dbId found for externalId", externalId);
+    return;
+  }
+
+  const dbIds = [Number(dbIdStr)];
+
+  this.viewer.impl.selector.clearSelection();
+  this.viewer.impl.selector.setSelection(dbIds);
+
+  const bounds = this.viewer.impl.selector.getSelectionBounds();
+  if (bounds) this.viewer.navigation.fitBounds(true, bounds);
+}
+
 }
 
 // Attach globally
