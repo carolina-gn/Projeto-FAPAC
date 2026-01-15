@@ -186,18 +186,56 @@ function openIssueModal(issue) {
   CURRENT_MODAL_ISSUE_ID = issue?._id ? String(issue._id) : null;
   IS_EDIT_MODE = false;
   MODAL_SNAPSHOT = JSON.parse(JSON.stringify(issue || {}));
+
   renderModal(issue, false);
-  document.getElementById("issueModalBackdrop")?.classList.add("is-open");
+
+  const backdrop = document.getElementById("issueModalBackdrop");
+  backdrop?.classList.add("is-open");
+  backdrop?.setAttribute("aria-hidden", "false");
+
+  window.__CURRENT_PROJECT_ID__ = issue?.project || issue?.projectId || null;
+
+}
+
+function closeIssueModal() {
+  const backdrop = document.getElementById("issueModalBackdrop");
+  backdrop?.classList.remove("is-open");
+  backdrop?.setAttribute("aria-hidden", "true");
+
+  CURRENT_MODAL_ISSUE_ID = null;
+  IS_EDIT_MODE = false;
+  MODAL_SNAPSHOT = null;
 }
 
 function renderModal(issue, editable) {
   const grid = document.getElementById("issueModalGrid");
-  if (!grid) return;
+  const titleEl = document.getElementById("issueModalTitle");
+  const descWrap = document.getElementById("issueModalDesc");
+  if (!grid || !titleEl || !descWrap) return;
+
+  titleEl.textContent = issue?.title || "Detalhes da Issue";
+
+  const status = issue?.status || "";
+  const priority = issue?.priority || "";
+  const type = issue?.type || "";
+  const tech = issue?.assignedToName || "";
 
   const building = issue?.location?.building || "";
   const floor = issue?.location?.floor || "";
   const space = issue?.location?.space || "";
+
   const element = issue?.modelLink?.element || "";
+  const description = issue?.description?.trim() || "";
+
+  // Descrição: leitura vs edição
+  if (!editable) {
+    descWrap.textContent = description || "—";
+  } else {
+    descWrap.innerHTML = `
+      <textarea class="form-input" id="modal_description" rows="4"
+        placeholder="Descrição...">${escapeHtml(description)}</textarea>
+    `;
+  }
 
   const fieldHtml = (label, value, inputHtml) => `
     <div class="modal-field">
@@ -207,17 +245,164 @@ function renderModal(issue, editable) {
   `;
 
   grid.innerHTML = [
-    fieldHtml("Edifício", building, `<select class="form-input" id="modal_location_building"></select>`),
-    fieldHtml("Piso", floor, `<select class="form-input" id="modal_location_floor"></select>`),
-    fieldHtml("Espaço", space, `<input class="form-input" id="modal_location_space" value="${escapeHtml(space)}" />`),
-    fieldHtml("Elemento", element, `<input class="form-input" id="modal_modelLink_element" value="${escapeHtml(element)}" />`),
+    fieldHtml("Estado", status, `
+      <select class="form-input" id="modal_status">
+        <option value="aberta" ${status==="aberta" ? "selected":""}>Aberta</option>
+        <option value="em_progresso" ${status==="em_progresso" ? "selected":""}>Em progresso</option>
+        <option value="resolvida" ${status==="resolvida" ? "selected":""}>Resolvida</option>
+        <option value="fechada" ${status==="fechada" ? "selected":""}>Fechada</option>
+      </select>
+    `),
+
+    fieldHtml("Prioridade", priorityLabel(priority) || priority, `
+      <select class="form-input" id="modal_priority">
+        <option value="baixa" ${priority==="baixa" ? "selected":""}>Baixa</option>
+        <option value="media" ${priority==="media" ? "selected":""}>Média</option>
+        <option value="alta" ${priority==="alta" ? "selected":""}>Alta</option>
+        <option value="critica" ${priority==="critica" ? "selected":""}>Crítica</option>
+      </select>
+    `),
+
+    fieldHtml("Tipo", type, `
+      <select class="form-input" id="modal_type">
+        <option value="avaria" ${type==="avaria" ? "selected":""}>Avaria</option>
+        <option value="pedido" ${type==="pedido" ? "selected":""}>Pedido</option>
+        <option value="inspecao" ${type==="inspecao" ? "selected":""}>Inspeção</option>
+      </select>
+    `),
+
+    fieldHtml("Técnico", tech, `
+      <select class="form-input" id="modal_assignedToName">
+        <option value="" ${tech==="" ? "selected":""}>—</option>
+        <option value="Carolina" ${tech==="Carolina" ? "selected":""}>Carolina</option>
+        <option value="Leonor" ${tech==="Leonor" ? "selected":""}>Leonor</option>
+        <option value="Catarina" ${tech==="Catarina" ? "selected":""}>Catarina</option>
+      </select>
+    `),
+
+    fieldHtml("Edifício", building, `
+      <select class="form-input" id="modal_location_building"></select>
+    `),
+
+    fieldHtml("Piso", floor, `
+      <select class="form-input" id="modal_location_floor">
+        <option value="" ${floor==="" ? "selected":""}>—</option>
+        <option value="Piso 0" ${floor==="Piso 0" ? "selected":""}>Piso 0</option>
+        <option value="Piso 1" ${floor==="Piso 1" ? "selected":""}>Piso 1</option>
+        <option value="Piso 2" ${floor==="Piso 2" ? "selected":""}>Piso 2</option>
+        <option value="Piso 3" ${floor==="Piso 3" ? "selected":""}>Piso 3</option>
+      </select>
+    `),
+
+    fieldHtml("Espaço", space, `
+      <input class="form-input" id="modal_location_space" value="${escapeHtml(space)}" />
+    `),
+
+    fieldHtml("Elemento", element, `
+      <input class="form-input" id="modal_modelLink_element" value="${escapeHtml(element)}" />
+    `),
+
     fieldHtml("Criado em", formatDate(issue?.createdAt), `<div class="modal-value">${escapeHtml(formatDate(issue?.createdAt))}</div>`),
     fieldHtml("Atualizado em", formatDate(issue?.updatedAt), `<div class="modal-value">${escapeHtml(formatDate(issue?.updatedAt))}</div>`),
   ].join("");
 
-  // populate dynamic building dropdown
-  populateBuildingModal(document.getElementById("modal_location_building"), window.__ALL_ISSUES__, building);
+  // Preenche o select de edifícios dinamicamente
+  populateBuildingModal(
+    document.getElementById("modal_location_building"),
+    window.__ALL_ISSUES__ || [],
+    building
+  );
+
+  // Botões (toggle)
+  const btnEdit = document.getElementById("issueModalEdit");
+  const btnSave = document.getElementById("issueModalSave");
+  const btnCancelEdit = document.getElementById("issueModalCancelEdit");
+
+  if (btnEdit) btnEdit.style.display = editable ? "none" : "";
+  if (btnSave) btnSave.style.display = editable ? "" : "none";
+  if (btnCancelEdit) btnCancelEdit.style.display = editable ? "" : "none";
 }
+
+function enterEditMode() {
+  if (!CURRENT_MODAL_ISSUE_ID) return;
+  IS_EDIT_MODE = true;
+
+  const issue = findIssueById(CURRENT_MODAL_ISSUE_ID);
+  if (issue) renderModal(issue, true);
+}
+
+function cancelEditMode() {
+  IS_EDIT_MODE = false;
+
+  if (MODAL_SNAPSHOT) renderModal(MODAL_SNAPSHOT, false);
+  else {
+    const issue = findIssueById(CURRENT_MODAL_ISSUE_ID);
+    if (issue) renderModal(issue, false);
+  }
+}
+
+async function saveIssueEdits() {
+  if (!CURRENT_MODAL_ISSUE_ID || !IS_EDIT_MODE) return;
+
+  const payload = {
+    status: document.getElementById("modal_status")?.value || "",
+    priority: document.getElementById("modal_priority")?.value || "",
+    type: document.getElementById("modal_type")?.value || "",
+    assignedToName: document.getElementById("modal_assignedToName")?.value || "",
+    description: document.getElementById("modal_description")?.value?.trim() || "",
+    location: {
+      building: document.getElementById("modal_location_building")?.value || "",
+      floor: document.getElementById("modal_location_floor")?.value || "",
+      space: document.getElementById("modal_location_space")?.value?.trim() || "",
+    },
+    modelLink: {
+      element: document.getElementById("modal_modelLink_element")?.value?.trim() || "",
+    }
+  };
+
+  try {
+    const projectId = window.__CURRENT_PROJECT_ID__;
+if (!projectId) {
+  alert("Não foi possível identificar o projeto desta issue.");
+  return;
+}
+
+const res = await fetch(`/api/projects/${projectId}/issues/${CURRENT_MODAL_ISSUE_ID}`, {
+  method: "PATCH",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload)
+});
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error(data);
+      alert("Erro ao guardar: " + (data.error || data.message || "desconhecido"));
+      return;
+    }
+
+    // Atualiza cache
+    const all = Array.isArray(window.__ALL_ISSUES__) ? window.__ALL_ISSUES__ : [];
+    const idx = all.findIndex(i => String(i._id) === String(data._id));
+    if (idx >= 0) all[idx] = data;
+    else all.unshift(data);
+    window.__ALL_ISSUES__ = all;
+
+    // Re-render do board respeitando filtro
+    renderBoard(applyBuildingFilter(all));
+
+    // Sai de edição e atualiza snapshot
+    MODAL_SNAPSHOT = JSON.parse(JSON.stringify(data));
+    IS_EDIT_MODE = false;
+    renderModal(data, false);
+
+    alert("Guardado!");
+  } catch (err) {
+    console.error(err);
+    alert("Falha de ligação ao backend ao guardar.");
+  }
+}
+
 
 // ----------------------
 // LOAD BOARD
@@ -253,44 +438,47 @@ window.addEventListener("DOMContentLoaded", () => {
     renderBoard(window.__ALL_ISSUES__ || []);
   });
 
-  document.addEventListener("click", e => {
+  // Clique numa issue abre modal
+  document.addEventListener("click", (e) => {
     const btn = e.target.closest(".issue-item");
     if (!btn) return;
     const issue = findIssueById(btn.dataset.id);
     if (issue) openIssueModal(issue);
   });
 
-  document.getElementById("issueModalClose")?.addEventListener("click", () => {
-    document.getElementById("issueModalBackdrop")?.classList.remove("is-open");
+  // Fechar modal
+  document.getElementById("issueModalClose")?.addEventListener("click", closeIssueModal);
+  document.getElementById("issueModalClose2")?.addEventListener("click", closeIssueModal);
+
+  // Fechar clicando fora
+  document.getElementById("issueModalBackdrop")?.addEventListener("click", (e) => {
+    if (e.target.id === "issueModalBackdrop") closeIssueModal();
   });
 
-  window.addEventListener("issue:created", (e) => {
-  // aceita vários formatos: {detail: issue} ou {detail: {issue: issue}}
-  const created = e?.detail?.issue || e?.detail;
-  if (!created) return;
+  // Editar / Guardar / Cancelar
+  document.getElementById("issueModalEdit")?.addEventListener("click", enterEditMode);
+  document.getElementById("issueModalSave")?.addEventListener("click", saveIssueEdits);
+  document.getElementById("issueModalCancelEdit")?.addEventListener("click", cancelEditMode);
 
-  // indicador visual (para sabermos que o evento chegou)
-  const badge = document.getElementById("countOpen");
-  if (badge) badge.title = "Evento issue:created recebido ✅";
+  // Esc fecha
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeIssueModal();
+  });
 
-  // garante array
-  const all = Array.isArray(window.__ALL_ISSUES__) ? window.__ALL_ISSUES__ : [];
+  // Atualização instantânea quando crias issue no viewer
+ window.addEventListener("issue:created", (e) => {
+    const created = e?.detail?.issue || e?.detail;
+    if (!created || !created._id) return;
 
-  // normaliza status caso venha com maiúsculas
-  if (created.status) {
-    const s = String(created.status).toLowerCase().trim();
-    created.status = (s === "em progresso") ? "em_progresso" : s;
-  }
+    const all = Array.isArray(window.__ALL_ISSUES__) ? window.__ALL_ISSUES__ : [];
+    const idx = all.findIndex(i => String(i._id) === String(created._id));
+    if (idx >= 0) all[idx] = created;
+    else all.unshift(created);
 
-  // evita duplicados
-  const idx = all.findIndex(i => String(i._id) === String(created._id));
-  if (idx >= 0) all[idx] = created;
-  else all.unshift(created);
+    window.__ALL_ISSUES__ = all;
 
-  window.__ALL_ISSUES__ = all;
-
-  // re-render com filtro atual
-  renderBoard(applyBuildingFilter(all));
+    populateBuildingFilter(document.getElementById("buildingFilter"), all);
+    renderBoard(applyBuildingFilter(all));
+  });
 });
 
-});
