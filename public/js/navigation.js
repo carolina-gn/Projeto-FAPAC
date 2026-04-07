@@ -58,4 +58,9 @@
   viewAllBtn?.addEventListener("click", () => {
     window.showIssuesBoard();
   });
+
+  const openDashboardBtn = document.getElementById("openDashboardBtn");
+  openDashboardBtn?.addEventListener("click", () => {
+    window.showDashboard();
+  });
 })();

@@ -137,6 +137,65 @@
     </div>
     </aside>
 
+    <section id="dashboardPage" hidden>
+        <div class="page-container page-container--full">
+
+            <header class="dashboard-page-header">
+                <div class="dashboard-brand">
+                    <img class="dashboard-logo" src="/images/logo.png" alt="DTGE Logo">
+                    <div>
+                        <h1 class="page-title dashboard-page-title">Dashboard de Sensores</h1>
+                        <p class="dashboard-page-subtitle">Visão geral e área preparada para futuros gráficos</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-page-actions">
+                    <button class="btn" type="button" onclick="showViewer()">Voltar ao viewer</button>
+                </div>
+            </header>
+
+            <section class="dashboard-grid">
+                <div class="card dashboard-card dashboard-card--hero">
+                    <h2 class="dashboard-card-title">Visão geral</h2>
+                    <p class="dashboard-card-text">
+                        Esta área fica preparada para mostrar métricas principais dos sensores,
+                        como temperatura, humidade, CO₂, ocupação e alertas.
+                    </p>
+                </div>
+
+                <div class="card dashboard-card">
+                    <h2 class="dashboard-card-title">Gráfico principal</h2>
+                    <div class="dashboard-placeholder">
+                        Área reservada para o gráfico principal
+                    </div>
+                </div>
+
+                <div class="card dashboard-card">
+                    <h2 class="dashboard-card-title">Comparação entre sensores</h2>
+                    <div class="dashboard-placeholder">
+                        Área reservada para gráficos secundários
+                    </div>
+                </div>
+
+                <div class="card dashboard-card">
+                    <h2 class="dashboard-card-title">Filtros</h2>
+                    <p class="dashboard-card-text">
+                        Aqui podes mais tarde adicionar filtros por edifício, espaço,
+                        piso, tipo de sensor e intervalo temporal.
+                    </p>
+                </div>
+
+                <div class="card dashboard-card">
+                    <h2 class="dashboard-card-title">Resumo dos dados</h2>
+                    <div class="dashboard-placeholder">
+                        Área reservada para tabela ou indicadores
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </section>
+
     <div class="app-layout">
 
         <!-- SIDE PANEL -->
@@ -160,7 +219,7 @@
                     Carregar Modelo
                 </button>
 
-                <button class="btn btn-secondary dashboard-entry-btn" type="button" onclick="showDashboard()">
+                <button id="openDashboardBtn" class="btn btn-secondary dashboard-entry-btn" type="button">
                     Histórico de Dados
                 </button>
 
