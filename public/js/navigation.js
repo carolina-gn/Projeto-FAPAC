@@ -3,9 +3,10 @@
   const viewerWrapper = document.querySelector(".viewer-wrapper");
   const sidePanel = document.querySelector(".side-panel");
   const issuesBoardPage = document.getElementById("issuesBoardPage");
+  const dashboardPage = document.getElementById("dashboardPage");
   const issueCreatorPanel = document.querySelector("aside.issue-panel");
 
-  if (!viewerWrapper || !sidePanel || !issuesBoardPage || !issueCreatorPanel) {
+  if (!viewerWrapper || !sidePanel || !issuesBoardPage || !dashboardPage || !issueCreatorPanel) {
     console.warn("Some navigation elements were not found.");
     return;
   }
@@ -20,15 +21,25 @@
     el.classList.add("hidden");
   }
 
-  // Expose globally
   window.showIssuesBoard = function () {
     hide(viewerWrapper);
     hide(sidePanel);
     hide(issueCreatorPanel);
+    hide(dashboardPage);
     show(issuesBoardPage);
 
-    // ✅ impede scroll fantasma no body
     document.body.style.overflow = "hidden";
+    window.scrollTo(0, 0);
+  };
+
+  window.showDashboard = function () {
+    hide(viewerWrapper);
+    hide(sidePanel);
+    hide(issueCreatorPanel);
+    hide(issuesBoardPage);
+    show(dashboardPage);
+
+    document.body.style.overflow = "auto";
     window.scrollTo(0, 0);
   };
 
@@ -37,9 +48,10 @@
     show(sidePanel);
     show(issueCreatorPanel);
     hide(issuesBoardPage);
+    hide(dashboardPage);
 
-    // ✅ repõe scroll normal
     document.body.style.overflow = "";
+    window.scrollTo(0, 0);
   };
 
   const viewAllBtn = document.getElementById("viewAllIssues");
