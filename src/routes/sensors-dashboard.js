@@ -56,13 +56,17 @@ router.get('/api/sensors/dashboard/ambiente', async (req, res) => {
         `);
 
         const [co2TimeRows] = await pool.query(`
-            SELECT
-                hora,
-                AVG(co2) AS co2
-            FROM ambiente
-            GROUP BY hora
-            ORDER BY hora
-            LIMIT 120
+            SELECT hora, co2
+            FROM (
+                SELECT
+                    id,
+                    hora,
+                    co2
+                FROM ambiente
+                ORDER BY id DESC
+                LIMIT 120
+            ) AS ultimos
+            ORDER BY id ASC
         `);
 
         const [hvacTempRows] = await pool.query(`
@@ -86,24 +90,33 @@ router.get('/api/sensors/dashboard/ambiente', async (req, res) => {
         `);
 
         const [temporalRows] = await pool.query(`
-            SELECT
-                hora,
-                AVG(temperatura) AS temperatura,
-                AVG(co2) AS co2
-            FROM ambiente
-            GROUP BY hora
-            ORDER BY hora
-            LIMIT 120
+            SELECT hora, temperatura, co2
+            FROM (
+                SELECT
+                    id,
+                    hora,
+                    temperatura,
+                    co2
+                FROM ambiente
+                ORDER BY id DESC
+                LIMIT 120
+            ) AS ultimos
+            ORDER BY id ASC
         `);
 
         const [scatterRows] = await pool.query(`
-            SELECT
-                hora,
-                temperatura,
-                co2
-            FROM ambiente
-            ORDER BY hora
-            LIMIT 120
+            SELECT hora, temperatura, co2
+            FROM (
+                SELECT
+                    id,
+                    hora,
+                    temperatura,
+                    co2
+                FROM ambiente
+                ORDER BY id DESC
+                LIMIT 120
+            ) AS ultimos
+            ORDER BY id ASC
         `);
 
         const kpis = kpiRows[0] || {};

@@ -192,8 +192,8 @@
             <div class="dashboard-chart-grid">
                 <div class="card dashboard-chart-card dashboard-chart-card--wide">
                     <h2 class="dashboard-card-title">Temperatura e CO₂ ao longo do tempo</h2>
-                    <div class="dashboard-chart-placeholder" id="chartAmbienteVariaveisTempo">
-                        Gráfico principal
+                    <div class="dashboard-chart-placeholder dashboard-chart-canvas-wrap">
+                        <canvas id="chartAmbienteVariaveisTempo"></canvas>
                     </div>
                 </div>
 
@@ -603,6 +603,7 @@
 </div> <!-- END PAGE CONTAINER -->
 
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="/js/viewer.js"></script>
 <script src="/js/auth.js"></script>
 <script src="/js/navigation.js"></script>
