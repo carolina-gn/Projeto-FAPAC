@@ -1,16 +1,16 @@
 const { Scopes } = require('@aps_sdk/authentication');
-require('dotenv').config(); // Load .env once here
+require('dotenv').config();
+console.log("MYSQL_PUBLIC_URL:", process.env.MYSQL_PUBLIC_URL);
 
-// Pull environment variables
 let {
     APS_CLIENT_ID,
     APS_CLIENT_SECRET,
     SERVER_SESSION_SECRET,
     PORT,
-    MONGO_URI
+    MONGO_URI,
+    MYSQL_PUBLIC_URL
 } = process.env;
 
-// Check required variables (2-legged auth → no callback URL)
 if (
     !APS_CLIENT_ID ||
     !APS_CLIENT_SECRET ||
@@ -21,11 +21,14 @@ if (
     process.exit(1);
 }
 
-// Define APS scopes (2-legged)
+if (!MYSQL_PUBLIC_URL) {
+    console.warn('❌ Missing MYSQL_PUBLIC_URL in .env');
+    process.exit(1);
+}
+
 const INTERNAL_TOKEN_SCOPES = [Scopes.DataRead, Scopes.ViewablesRead];
 const PUBLIC_TOKEN_SCOPES = [Scopes.ViewablesRead];
 
-// Default port
 PORT = PORT || 3001;
 
 module.exports = {
@@ -35,5 +38,6 @@ module.exports = {
     INTERNAL_TOKEN_SCOPES,
     PUBLIC_TOKEN_SCOPES,
     PORT,
-    MONGO_URI
+    MONGO_URI,
+    MYSQL_PUBLIC_URL
 };

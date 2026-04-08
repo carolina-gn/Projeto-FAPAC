@@ -67,6 +67,7 @@ app.get('/logout', (req, res) => {
 // --- Your routes ---
 app.use(require('./src/routes/auth.js'));
 app.use(require('./src/routes/data-management.js'));
+app.use(require('./src/routes/sensors-dashboard.js'));
 
 // Projects routes (keep project-specific routes here)
 const projectsRoutes = require('./src/routes/projects.js');
