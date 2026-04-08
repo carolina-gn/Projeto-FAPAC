@@ -14,10 +14,14 @@
     taxaOcupacao: document.getElementById("ambienteTaxaOcupacao"),
     hvacLigado: document.getElementById("ambienteHvacLigado"),
     conforto: document.getElementById("ambienteConforto"),
-    chartVariaveisTempo: document.getElementById("chartAmbienteVariaveisTempo")
+    chartVariaveisTempo: document.getElementById("chartAmbienteVariaveisTempo"),
+    chartCo2Tempo: document.getElementById("chartAmbienteCo2Tempo"),
+    chartHvacTemperatura: document.getElementById("chartAmbienteHvacTemperatura")
   };
 
   let ambienteVariaveisChart = null;
+  let ambienteCo2Chart = null;
+  let ambienteHvacTemperaturaChart = null;
 
   if (!dashboardPage || tabButtons.length === 0) {
     console.warn("Dashboard elements not found.");
@@ -99,6 +103,74 @@
     });
   }
 
+  function renderAmbienteCo2Chart(chartData) {
+    if (!ambienteElements.chartCo2Tempo || !chartData) return;
+
+    const ctx = ambienteElements.chartCo2Tempo.getContext("2d");
+
+    if (ambienteCo2Chart) {
+        ambienteCo2Chart.destroy();
+    }
+
+    ambienteCo2Chart = new Chart(ctx, {
+        type: "line",
+        data: {
+        labels: chartData.labels || [],
+        datasets: [
+            {
+            label: "CO₂ (ppm)",
+            data: chartData.values || []
+            }
+        ]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: "index",
+            intersect: false
+        },
+        scales: {
+            y: {
+            beginAtZero: false
+            }
+        }
+        }
+    });
+    }
+
+    function renderAmbienteHvacTemperaturaChart(chartData) {
+        if (!ambienteElements.chartHvacTemperatura || !chartData) return;
+
+        const ctx = ambienteElements.chartHvacTemperatura.getContext("2d");
+
+        if (ambienteHvacTemperaturaChart) {
+            ambienteHvacTemperaturaChart.destroy();
+        }
+
+        ambienteHvacTemperaturaChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+            labels: chartData.labels || [],
+            datasets: [
+                {
+                label: "Temperatura média (°C)",
+                data: chartData.values || []
+                }
+            ]
+            },
+            options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                beginAtZero: false
+                }
+            }
+            }
+        });
+        }
+
   async function loadAmbienteCards() {
     try {
       const response = await fetch("/api/sensors/dashboard/ambiente");
@@ -118,6 +190,8 @@
       setText(ambienteElements.conforto, cards.conforto || "--");
 
       renderAmbienteVariaveisChart(charts.variaveisTempo);
+      renderAmbienteCo2Chart(charts.co2Tempo);
+      renderAmbienteHvacTemperaturaChart(charts.hvacImpactoTemperatura);
     } catch (error) {
       console.error("Erro ao carregar KPIs de ambiente:", error);
 
