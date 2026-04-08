@@ -9,19 +9,21 @@
   };
 
   const ambienteElements = {
-    temperaturaMedia: document.getElementById("ambienteTemperaturaMedia"),
-    co2Medio: document.getElementById("ambienteCo2Medio"),
-    taxaOcupacao: document.getElementById("ambienteTaxaOcupacao"),
-    hvacLigado: document.getElementById("ambienteHvacLigado"),
-    conforto: document.getElementById("ambienteConforto"),
-    chartVariaveisTempo: document.getElementById("chartAmbienteVariaveisTempo"),
-    chartCo2Tempo: document.getElementById("chartAmbienteCo2Tempo"),
-    chartHvacTemperatura: document.getElementById("chartAmbienteHvacTemperatura")
-  };
+  temperaturaMedia: document.getElementById("ambienteTemperaturaMedia"),
+  co2Medio: document.getElementById("ambienteCo2Medio"),
+  taxaOcupacao: document.getElementById("ambienteTaxaOcupacao"),
+  hvacLigado: document.getElementById("ambienteHvacLigado"),
+  conforto: document.getElementById("ambienteConforto"),
+  chartVariaveisTempo: document.querySelector("#dashboardPanelAmbiente canvas#chartAmbienteVariaveisTempo"),
+  chartCo2Tempo: document.querySelector("#dashboardPanelAmbiente canvas#chartAmbienteCo2Tempo"),
+  chartHvacTemperatura: document.querySelector("#dashboardPanelAmbiente canvas#chartAmbienteHvacTemperatura"),
+  chartOcupacaoHvac: document.querySelector("#dashboardPanelAmbiente canvas#chartAmbienteOcupacaoHvac")
+};
 
   let ambienteVariaveisChart = null;
   let ambienteCo2Chart = null;
   let ambienteHvacTemperaturaChart = null;
+  let ambienteOcupacaoHvacChart = null;
 
   if (!dashboardPage || tabButtons.length === 0) {
     console.warn("Dashboard elements not found.");
@@ -171,6 +173,44 @@
         });
         }
 
+        function renderAmbienteOcupacaoHvacChart(chartData) {
+            if (!ambienteElements.chartOcupacaoHvac || !chartData) return;
+
+            if (!(ambienteElements.chartOcupacaoHvac instanceof HTMLCanvasElement)) {
+                console.error("chartOcupacaoHvac não é um canvas:", ambienteElements.chartOcupacaoHvac);
+                return;
+            }
+
+            const ctx = ambienteElements.chartOcupacaoHvac.getContext("2d");
+
+            if (ambienteOcupacaoHvacChart) {
+                ambienteOcupacaoHvacChart.destroy();
+            }
+
+            ambienteOcupacaoHvacChart = new Chart(ctx, {
+                type: "bar",
+                data: {
+                labels: chartData.labels || [],
+                datasets: [
+                    {
+                    label: "HVAC ligado (%)",
+                    data: chartData.values || []
+                    }
+                ]
+                },
+                options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                    beginAtZero: true,
+                    max: 100
+                    }
+                }
+                }
+            });
+            }
+
   async function loadAmbienteCards() {
     try {
       const response = await fetch("/api/sensors/dashboard/ambiente");
@@ -192,6 +232,7 @@
       renderAmbienteVariaveisChart(charts.variaveisTempo);
       renderAmbienteCo2Chart(charts.co2Tempo);
       renderAmbienteHvacTemperaturaChart(charts.hvacImpactoTemperatura);
+      renderAmbienteOcupacaoHvacChart(charts.ocupacaoVsHvac);
     } catch (error) {
       console.error("Erro ao carregar KPIs de ambiente:", error);
 
