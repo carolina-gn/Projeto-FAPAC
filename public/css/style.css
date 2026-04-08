@@ -1377,3 +1377,10 @@ textarea { resize: vertical; }
     min-height: 280px;
     display: block;
 }
+
+#chartAmbienteScatter {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 280px;
+    display: block;
+}
