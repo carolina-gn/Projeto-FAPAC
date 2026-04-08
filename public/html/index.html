@@ -138,63 +138,205 @@
     </aside>
 
     <section id="dashboardPage" hidden>
-        <div class="page-container page-container--full">
+    <div class="page-container page-container--full">
 
-            <header class="dashboard-page-header">
-                <div class="dashboard-brand">
-                    <img class="dashboard-logo" src="/images/logo.png" alt="DTGE Logo">
-                    <div>
-                        <h1 class="page-title dashboard-page-title">Dashboard de Sensores</h1>
-                        <p class="dashboard-page-subtitle">Visão geral e área preparada para futuros gráficos</p>
+        <header class="dashboard-page-header">
+            <div class="dashboard-brand">
+                <img class="dashboard-logo" src="/images/logo.png" alt="DTGE Logo">
+                <div>
+                    <h1 class="page-title dashboard-page-title">Dashboard de Sensores</h1>
+                    <p class="dashboard-page-subtitle">Monitorização de ambiente, consumo, fuga e vibração</p>
+                </div>
+            </div>
+
+            <div class="dashboard-page-actions">
+                <button class="btn" type="button" onclick="showViewer()">Voltar ao viewer</button>
+            </div>
+        </header>
+
+        <section class="dashboard-tabs">
+            <button class="btn dashboard-tab-btn active" type="button" data-dashboard-tab="ambiente">Ambiente</button>
+            <button class="btn btn-secondary dashboard-tab-btn" type="button" data-dashboard-tab="consumo">Consumo</button>
+            <button class="btn btn-secondary dashboard-tab-btn" type="button" data-dashboard-tab="fuga">Fuga</button>
+            <button class="btn btn-secondary dashboard-tab-btn" type="button" data-dashboard-tab="vibracao">Vibração</button>
+        </section>
+
+        <section class="dashboard-panel" id="dashboardPanelAmbiente">
+            <div class="dashboard-kpis">
+                <div class="card dashboard-kpi-card">
+                    <div class="dashboard-kpi-label">Temperatura Média</div>
+                    <div class="dashboard-kpi-value" id="ambienteTemperaturaMedia">--</div>
+                </div>
+
+                <div class="card dashboard-kpi-card">
+                    <div class="dashboard-kpi-label">CO₂ Médio</div>
+                    <div class="dashboard-kpi-value" id="ambienteCo2Medio">--</div>
+                </div>
+
+                <div class="card dashboard-kpi-card">
+                    <div class="dashboard-kpi-label">Taxa de Ocupação</div>
+                    <div class="dashboard-kpi-value" id="ambienteTaxaOcupacao">--</div>
+                </div>
+
+                <div class="card dashboard-kpi-card">
+                    <div class="dashboard-kpi-label">HVAC Ligado</div>
+                    <div class="dashboard-kpi-value" id="ambienteHvacLigado">--</div>
+                </div>
+
+                <div class="card dashboard-kpi-card">
+                    <div class="dashboard-kpi-label">Conforto</div>
+                    <div class="dashboard-kpi-value" id="ambienteConforto">--</div>
+                </div>
+            </div>
+
+            <div class="dashboard-chart-grid">
+                <div class="card dashboard-chart-card dashboard-chart-card--wide">
+                    <h2 class="dashboard-card-title">Temperatura e CO₂ ao longo do tempo</h2>
+                    <div class="dashboard-chart-placeholder" id="chartAmbienteVariaveisTempo">
+                        Gráfico principal
                     </div>
                 </div>
 
-                <div class="dashboard-page-actions">
-                    <button class="btn" type="button" onclick="showViewer()">Voltar ao viewer</button>
-                </div>
-            </header>
-
-            <section class="dashboard-grid">
-                <div class="card dashboard-card dashboard-card--hero">
-                    <h2 class="dashboard-card-title">Visão geral</h2>
-                    <p class="dashboard-card-text">
-                        Esta área fica preparada para mostrar métricas principais dos sensores,
-                        como temperatura, humidade, CO₂, ocupação e alertas.
-                    </p>
-                </div>
-
-                <div class="card dashboard-card">
-                    <h2 class="dashboard-card-title">Gráfico principal</h2>
-                    <div class="dashboard-placeholder">
-                        Área reservada para o gráfico principal
+                <div class="card dashboard-chart-card">
+                    <h2 class="dashboard-card-title">CO₂ ao longo do tempo</h2>
+                    <div class="dashboard-chart-placeholder" id="chartAmbienteCo2Tempo">
+                        Gráfico
                     </div>
                 </div>
 
-                <div class="card dashboard-card">
-                    <h2 class="dashboard-card-title">Comparação entre sensores</h2>
-                    <div class="dashboard-placeholder">
-                        Área reservada para gráficos secundários
+                <div class="card dashboard-chart-card">
+                    <h2 class="dashboard-card-title">Impacto do HVAC na temperatura</h2>
+                    <div class="dashboard-chart-placeholder" id="chartAmbienteHvacTemperatura">
+                        Gráfico
                     </div>
                 </div>
 
-                <div class="card dashboard-card">
-                    <h2 class="dashboard-card-title">Filtros</h2>
-                    <p class="dashboard-card-text">
-                        Aqui podes mais tarde adicionar filtros por edifício, espaço,
-                        piso, tipo de sensor e intervalo temporal.
-                    </p>
-                </div>
-
-                <div class="card dashboard-card">
-                    <h2 class="dashboard-card-title">Resumo dos dados</h2>
-                    <div class="dashboard-placeholder">
-                        Área reservada para tabela ou indicadores
+                <div class="card dashboard-chart-card">
+                    <h2 class="dashboard-card-title">Ocupação vs HVAC</h2>
+                    <div class="dashboard-chart-placeholder" id="chartAmbienteOcupacaoHvac">
+                        Gráfico
                     </div>
                 </div>
-            </section>
 
-        </div>
-    </section>
+                <div class="card dashboard-chart-card">
+                    <h2 class="dashboard-card-title">Temperatura vs CO₂</h2>
+                    <div class="dashboard-chart-placeholder" id="chartAmbienteScatter">
+                        Gráfico
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-panel" id="dashboardPanelConsumo" hidden>
+            <div class="dashboard-kpis">
+                <div class="card dashboard-kpi-card">
+                    <div class="dashboard-kpi-label">Consumo Médio</div>
+                    <div class="dashboard-kpi-value" id="consumoMedio">--</div>
+                </div>
+
+                <div class="card dashboard-kpi-card">
+                    <div class="dashboard-kpi-label">Potência Média</div>
+                    <div class="dashboard-kpi-value" id="potenciaMedia">--</div>
+                </div>
+
+                <div class="card dashboard-kpi-card">
+                    <div class="dashboard-kpi-label">Circuito Principal</div>
+                    <div class="dashboard-kpi-value" id="circuitoPrincipal">--</div>
+                </div>
+            </div>
+
+            <div class="dashboard-chart-grid">
+                <div class="card dashboard-chart-card dashboard-chart-card--wide">
+                    <h2 class="dashboard-card-title">Consumo ao longo do tempo</h2>
+                    <div class="dashboard-chart-placeholder" id="chartConsumoTempo">Gráfico principal</div>
+                </div>
+
+                <div class="card dashboard-chart-card">
+                    <h2 class="dashboard-card-title">Potência ao longo do tempo</h2>
+                    <div class="dashboard-chart-placeholder" id="chartPotenciaTempo">Gráfico</div>
+                </div>
+
+                <div class="card dashboard-chart-card">
+                    <h2 class="dashboard-card-title">Consumo por circuito</h2>
+                    <div class="dashboard-chart-placeholder" id="chartConsumoCircuito">Gráfico</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-panel" id="dashboardPanelFuga" hidden>
+            <div class="dashboard-kpis">
+                <div class="card dashboard-kpi-card">
+                    <div class="dashboard-kpi-label">Humidade Média</div>
+                    <div class="dashboard-kpi-value" id="fugaHumidadeMedia">--</div>
+                </div>
+
+                <div class="card dashboard-kpi-card">
+                    <div class="dashboard-kpi-label">Locais Monitorizados</div>
+                    <div class="dashboard-kpi-value" id="fugaLocaisMonitorizados">--</div>
+                </div>
+
+                <div class="card dashboard-kpi-card">
+                    <div class="dashboard-kpi-label">Fugas Detetadas</div>
+                    <div class="dashboard-kpi-value" id="fugaDetetadas">--</div>
+                </div>
+            </div>
+
+            <div class="dashboard-chart-grid">
+                <div class="card dashboard-chart-card dashboard-chart-card--wide">
+                    <h2 class="dashboard-card-title">Humidade ao longo do tempo</h2>
+                    <div class="dashboard-chart-placeholder" id="chartFugaHumidadeTempo">Gráfico principal</div>
+                </div>
+
+                <div class="card dashboard-chart-card">
+                    <h2 class="dashboard-card-title">Humidade por local</h2>
+                    <div class="dashboard-chart-placeholder" id="chartFugaHumidadeLocal">Gráfico</div>
+                </div>
+
+                <div class="card dashboard-chart-card">
+                    <h2 class="dashboard-card-title">Estado por local</h2>
+                    <div class="dashboard-chart-placeholder" id="chartFugaEstadoLocal">Gráfico</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-panel" id="dashboardPanelVibracao" hidden>
+            <div class="dashboard-kpis">
+                <div class="card dashboard-kpi-card">
+                    <div class="dashboard-kpi-label">Vibração Média</div>
+                    <div class="dashboard-kpi-value" id="vibracaoMedia">--</div>
+                </div>
+
+                <div class="card dashboard-kpi-card">
+                    <div class="dashboard-kpi-label">Equipamentos Monitorizados</div>
+                    <div class="dashboard-kpi-value" id="vibracaoEquipamentos">--</div>
+                </div>
+
+                <div class="card dashboard-kpi-card">
+                    <div class="dashboard-kpi-label">Alertas de Vibração</div>
+                    <div class="dashboard-kpi-value" id="vibracaoAlertas">--</div>
+                </div>
+            </div>
+
+            <div class="dashboard-chart-grid">
+                <div class="card dashboard-chart-card dashboard-chart-card--wide">
+                    <h2 class="dashboard-card-title">Vibração ao longo do tempo</h2>
+                    <div class="dashboard-chart-placeholder" id="chartVibracaoTempo">Gráfico principal</div>
+                </div>
+
+                <div class="card dashboard-chart-card">
+                    <h2 class="dashboard-card-title">Vibração por equipamento</h2>
+                    <div class="dashboard-chart-placeholder" id="chartVibracaoEquipamento">Gráfico</div>
+                </div>
+
+                <div class="card dashboard-chart-card">
+                    <h2 class="dashboard-card-title">Estado por equipamento</h2>
+                    <div class="dashboard-chart-placeholder" id="chartVibracaoEstado">Gráfico</div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</section>
 
     <div class="app-layout">
 
@@ -466,5 +608,6 @@
 <script src="/js/navigation.js"></script>
 <script src="/js/issues.js"></script>
 <script src="/js/issues-board.js"></script>
+<script src="/js/dashboard.js"></script>
 </body>
 </html>
