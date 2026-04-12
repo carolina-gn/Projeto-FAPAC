@@ -62,6 +62,62 @@ async function processRoomEmptyLightsOn(row) {
   });
 }
 
+async function processVeryLowTemperatureTest(row) {
+  const temperatura = Number(row.temperatura);
+
+  if (Number.isNaN(temperatura) || temperatura >= 2) {
+    return;
+  }
+
+  const existing = await Alert.findOne({
+    ruleKey: "test-temperature-below-2",
+    sala: row.sala,
+    status: "ativo"
+  });
+
+  if (existing) {
+    existing.lastDetectedAt = new Date();
+    existing.source = {
+      table: "ambiente",
+      rowId: row.id,
+      timestamp: row.hora
+    };
+    existing.triggerData = {
+      ocupacao: row.ocupacao,
+      iluminacao: row.iluminacao,
+      hvac: row.hvac,
+      co2: Number(row.co2 ?? 0),
+      temperatura
+    };
+    await existing.save();
+    return;
+  }
+
+  await Alert.create({
+    ruleKey: "test-temperature-below-2",
+    title: "Teste de alerta: temperatura abaixo de 2°C",
+    message: `Teste: a sala ${row.sala} registou ${temperatura}°C.`,
+    category: "ambiente",
+    severity: "alta",
+    sala: row.sala,
+    source: {
+      table: "ambiente",
+      rowId: row.id,
+      timestamp: row.hora
+    },
+    triggerData: {
+      ocupacao: row.ocupacao,
+      iluminacao: row.iluminacao,
+      hvac: row.hvac,
+      co2: Number(row.co2 ?? 0),
+      temperatura
+    },
+    status: "ativo",
+    firstDetectedAt: new Date(),
+    lastDetectedAt: new Date()
+  });
+}
+
 async function checkAmbienteAlerts() {
   const [rows] = await pool.query(`
     SELECT id, hora, sala, ocupacao, temperatura, co2, iluminacao, hvac, alerta
@@ -72,6 +128,7 @@ async function checkAmbienteAlerts() {
 
   for (const row of rows) {
     await processRoomEmptyLightsOn(row);
+    await processVeryLowTemperatureTest(row);
   }
 }
 

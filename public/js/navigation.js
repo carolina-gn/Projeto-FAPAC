@@ -1,13 +1,13 @@
 // navigation.js
 (function () {
-  const viewerWrapper = document.querySelector(".viewer-wrapper");
-const sidePanel = document.querySelector(".side-panel");
-const issuesBoardPage = document.getElementById("issuesBoardPage");
-const dashboardPage = document.getElementById("dashboardPage");
-const alertsPage = document.getElementById("alertsPage");
-const issueCreatorPanel = document.querySelector("aside.issue-panel");
+  const viewerColumn = document.querySelector(".viewer-column");
+  const sidePanel = document.querySelector(".side-panel");
+  const issuesBoardPage = document.getElementById("issuesBoardPage");
+  const dashboardPage = document.getElementById("dashboardPage");
+  const alertsPage = document.getElementById("alertsPage");
+  const issueCreatorPanel = document.querySelector("aside.issue-panel");
 
-  if (!viewerWrapper || !sidePanel || !issuesBoardPage || !dashboardPage || !alertsPage || !issueCreatorPanel) {
+  if (!viewerColumn || !sidePanel || !issuesBoardPage || !dashboardPage || !issueCreatorPanel) {
     console.warn("Some navigation elements were not found.");
     return;
   }
@@ -23,7 +23,7 @@ const issueCreatorPanel = document.querySelector("aside.issue-panel");
   }
 
   window.showIssuesBoard = function () {
-    hide(viewerWrapper);
+    hide(viewerColumn);
     hide(sidePanel);
     hide(issueCreatorPanel);
     hide(dashboardPage);
@@ -34,7 +34,7 @@ const issueCreatorPanel = document.querySelector("aside.issue-panel");
   };
 
   window.showDashboard = function () {
-    hide(viewerWrapper);
+    hide(viewerColumn);
     hide(sidePanel);
     hide(issueCreatorPanel);
     hide(issuesBoardPage);
@@ -45,7 +45,7 @@ const issueCreatorPanel = document.querySelector("aside.issue-panel");
   };
 
   window.showAlertsPage = function () {
-    hide(viewerWrapper);
+    hide(viewerColumn);
     hide(sidePanel);
     hide(issueCreatorPanel);
     hide(issuesBoardPage);
@@ -57,7 +57,7 @@ const issueCreatorPanel = document.querySelector("aside.issue-panel");
   };
 
   window.showViewer = function () {
-    show(viewerWrapper);
+    show(viewerColumn);
     show(sidePanel);
     show(issueCreatorPanel);
     hide(issuesBoardPage);
