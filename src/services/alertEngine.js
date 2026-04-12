@@ -9,6 +9,14 @@ async function processRoomEmptyLightsOn(row) {
   const salaLivre = normalize(row.ocupacao) === "livre";
   const luzLigada = normalize(row.iluminacao) === "ligada";
 
+  console.log("DEBUG ALERTA REAL:", {
+    sala: row.sala,
+    ocupacao: row.ocupacao,
+    iluminacao: row.iluminacao,
+    salaLivre,
+    luzLigada
+    });
+
   if (!salaLivre || !luzLigada) {
     return;
   }
@@ -62,15 +70,15 @@ async function processRoomEmptyLightsOn(row) {
   });
 }
 
-async function processVeryLowTemperatureTest(row) {
+async function processTemperatureAboveTwoTest(row) {
   const temperatura = Number(row.temperatura);
 
-  if (Number.isNaN(temperatura) || temperatura >= 2) {
+  if (Number.isNaN(temperatura) || temperatura <= 2) {
     return;
   }
 
   const existing = await Alert.findOne({
-    ruleKey: "test-temperature-below-2",
+    ruleKey: "test-temperature-above-2",
     sala: row.sala,
     status: "ativo"
   });
@@ -94,8 +102,8 @@ async function processVeryLowTemperatureTest(row) {
   }
 
   await Alert.create({
-    ruleKey: "test-temperature-below-2",
-    title: "Teste de alerta: temperatura abaixo de 2°C",
+    ruleKey: "test-temperature-above-2",
+    title: "Teste de alerta: temperatura acima de 2°C",
     message: `Teste: a sala ${row.sala} registou ${temperatura}°C.`,
     category: "ambiente",
     severity: "alta",
@@ -127,9 +135,9 @@ async function checkAmbienteAlerts() {
   `);
 
   for (const row of rows) {
-    await processRoomEmptyLightsOn(row);
-    await processVeryLowTemperatureTest(row);
-  }
+  await processRoomEmptyLightsOn(row);
+  await processTemperatureAboveTwoTest(row);
+}
 }
 
 let isRunning = false;
