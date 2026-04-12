@@ -137,6 +137,68 @@
     </div>
     </aside>
 
+    <section id="alertsPage" hidden>
+        <div class="page-container page-container--full">
+
+            <header class="issues-page-header">
+            <div class="issues-brand">
+                <img class="issues-logo" src="/images/logo.png" alt="DTGE Logo">
+                <div>
+                <h1 class="page-title issues-page-title">Histórico de Alertas</h1>
+                <p class="issues-page-subtitle">Alertas automáticos dos sensores</p>
+                </div>
+            </div>
+
+            <div class="issues-page-actions">
+                <div class="issues-filters-bar">
+                <label class="issues-filter">
+                    <span class="issues-filter-label">Estado</span>
+                    <select class="form-input" id="alertsStatusFilter">
+                    <option value="all" selected>Todos</option>
+                    <option value="ativo">Ativos</option>
+                    <option value="resolvido">Resolvidos</option>
+                    </select>
+                </label>
+
+                <button class="btn btn-secondary" type="button" id="clearAlertsFilter">
+                    Limpar
+                </button>
+                </div>
+            </div>
+            </header>
+
+            <section class="issues-board">
+            <div class="card issues-column">
+                <div class="issues-column-header">
+                <div class="issues-column-title">
+                    <span class="issue-dot issue-dot--open"></span>
+                    <span>Ativos</span>
+                </div>
+                <span class="issues-count" id="countAlertsActive">0</span>
+                </div>
+
+                <div class="issues-column-list" id="listAlertsActive"></div>
+            </div>
+
+            <div class="card issues-column">
+                <div class="issues-column-header">
+                <div class="issues-column-title">
+                    <span class="issue-dot issue-dot--resolved"></span>
+                    <span>Resolvidos</span>
+                </div>
+                <span class="issues-count" id="countAlertsResolved">0</span>
+                </div>
+
+                <div class="issues-column-list" id="listAlertsResolved"></div>
+            </div>
+            </section>
+
+            <footer class="issues-page-footer">
+            <button class="btn" type="button" onclick="showViewer()">Voltar ao viewer</button>
+            </footer>
+        </div>
+        </section>
+
     <section id="dashboardPage" hidden>
     <div class="page-container page-container--full">
 
@@ -361,10 +423,6 @@
                     Carregar Modelo
                 </button>
 
-                <button id="openDashboardBtn" class="btn btn-secondary dashboard-entry-btn" type="button">
-                    Histórico de Dados
-                </button>
-
                 <p id="loadStatus" class="sideblock-error"></p>
             </div>
             <!-- ISSUES CARD -->
@@ -481,10 +539,28 @@
 
         </div> <!-- END SIDE PANEL -->
 
-        <!-- VIEWER -->
-        <div class="viewer-wrapper">
-            <div id="viewerContainer"></div>
-        </div>
+        <!-- VIEWER + BARRA INFERIOR -->
+            <div class="viewer-column">
+
+                <div class="viewer-wrapper">
+                    <div id="viewerContainer"></div>
+                </div>
+
+                <div class="viewer-bottom-actions">
+                    <button id="openDashboardBtn" class="btn viewer-bottom-btn" type="button">
+                        Histórico de Dados
+                    </button>
+
+                    <button id="openAlertsBtn" class="btn viewer-bottom-btn" type="button">
+                        Alertas (<span id="alertsActiveBadge">0</span>)
+                    </button>
+
+                    <button id="openAnalysisBtn" class="btn viewer-bottom-btn" type="button">
+                        Análise de Dados
+                    </button>
+                </div>
+
+            </div>
 
         <!-- CREATE ISSUE PANEL -->
 <aside class="issue-panel">
@@ -610,5 +686,6 @@
 <script src="/js/issues.js"></script>
 <script src="/js/issues-board.js"></script>
 <script src="/js/dashboard.js"></script>
+<script src="/js/alerts.js"></script>
 </body>
 </html>

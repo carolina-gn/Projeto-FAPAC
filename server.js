@@ -4,6 +4,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const { PORT, SERVER_SESSION_SECRET, MONGO_URI } = require('./config.js');
 const User = require('./src/models/user.js');
+const { startAlertEngine } = require("./src/services/alertEngine");
 
 const app = express();
 
@@ -69,6 +70,9 @@ app.use(require('./src/routes/auth.js'));
 app.use(require('./src/routes/data-management.js'));
 app.use(require('./src/routes/sensors-dashboard.js'));
 
+const alertsRoutes = require("./src/routes/alertsRoutes");
+app.use("/api/alerts", requireLogin, alertsRoutes);
+
 // Projects routes (keep project-specific routes here)
 const projectsRoutes = require('./src/routes/projects.js');
 app.use("/api/projects", requireLogin, projectsRoutes);
@@ -87,6 +91,7 @@ app.use((err, req, res, next) => {
 mongoose.connect(MONGO_URI)
     .then(() => {
         console.log('✅ MongoDB connected');
+        startAlertEngine();
         app.listen(PORT, () => console.log(`Server listening on port ${PORT}...`));
     })
     .catch(err => {

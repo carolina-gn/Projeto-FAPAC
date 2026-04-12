@@ -20,9 +20,10 @@ body {
     color: #1f2933;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* CORRIGIDO */
+    align-items: flex-start;
     height: 100%;
-    min-height: 100vh; /* CORRIGIDO */
+    min-height: 100vh;
+    overflow: hidden;
 }
 
 .centered-page {
@@ -285,14 +286,11 @@ li {
 .app-layout {
     display: grid;
     grid-template-columns:
-    minmax(260px, 320px)   /* painel esquerdo */
-    1fr                    /* viewer */
-    minmax(320px, 380px);  /* painel issues */
+    minmax(280px, 340px)
+    minmax(0, 1fr)
+    minmax(340px, 400px);
     gap: 20px;
-
-    /* CORRIGIDO: garante que a coluna do viewer ocupa o ecrã todo */
-    min-height: calc(100vh - 60px);
-
+    height: calc(100vh - 24px);
     align-items: stretch;
 }
 
@@ -300,25 +298,18 @@ li {
 
 .side-panel {
     position: relative;
-
-    /* Mesma transparência do teu card */
     background: rgba(255, 255, 255, 0.18);
-
-    /* Mesmo efeito glass */
     backdrop-filter: blur(22px) saturate(180%);
     -webkit-backdrop-filter: blur(22px) saturate(180%);
-
-    /* Mesma borda do card */
     border-radius: 22px;
     border: 1px solid rgba(255, 255, 255, 0.40);
-
-    /* Sombra igual ao card, mas ligeiramente mais forte (sidebar é maior) */
     box-shadow: 0 14px 45px rgba(0, 0, 0, 0.15);
-
     padding: 24px 20px;
     display: flex;
     flex-direction: column;
     gap: 18px;
+    height: 100%;
+    min-height: 0;
 }
 
 /* EFEITO BRILHO NAS BORDAS (igual ao .card, adaptado à sidebar) */
@@ -380,26 +371,17 @@ li {
 /* Container do viewer (lado direito) */
 .viewer-wrapper {
     position: relative;
-
-    /* fundo transparente elegante */
     background: rgba(17, 24, 39, 0.35);
-
-    /* efeito glass */
     backdrop-filter: blur(26px) saturate(200%);
     -webkit-backdrop-filter: blur(26px) saturate(200%);
-
-    /* bordas glass estilo dark */
     border-radius: 22px;
     border: 1px solid rgba(255, 255, 255, 0.10);
-
-    /* sombra suave */
     box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
-
     padding: 10px;
-
     height: 100%;
-    min-height: 500px;
+    min-height: 0;
     overflow: hidden;
+    display: flex;
 }
 
 /* brilho nas bordas */
@@ -447,11 +429,59 @@ li {
 /* Mantemos o ID que o JS já usa, só melhoramos o tamanho e responsividade */
 #viewerContainer {
     width: 100%;
-    height: 100%;       /* MUITO IMPORTANTE */
-    min-height: 480px;  /* dá corpo ao viewer */
+    height: 100%;
+    min-height: 0;
     border-radius: 12px;
-    overflow: hidden;   /* impede o viewer de escapar visualmente */
+    overflow: hidden;
     position: relative;
+    flex: 1;
+}
+
+.viewer-bottom-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+
+    padding: 8px 10px;
+    min-height: 58px;
+
+    align-items: center;
+
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(16px) saturate(170%);
+    -webkit-backdrop-filter: blur(16px) saturate(170%);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.10);
+}
+
+.viewer-bottom-btn {
+    width: 100%;
+    height: 36px;
+    min-height: 36px;
+    padding: 0 14px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 0.9rem;
+    line-height: 1;
+
+    background: linear-gradient(135deg, #475569, #64748b);
+    color: #ffffff;
+    border: 1px solid rgba(255,255,255,0.16);
+    box-shadow: 0 6px 14px rgba(51, 65, 85, 0.14);
+}
+
+.viewer-bottom-btn:hover {
+    background: linear-gradient(135deg, #64748b, #94a3b8);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(51, 65, 85, 0.18);
+}
+
+.viewer-bottom-btn:active {
+    transform: translateY(0);
 }
 
 /* Texto pequeno informativo */
@@ -490,6 +520,15 @@ li {
     .viewer-wrapper {
         margin-top: 16px;
     }
+}
+
+.viewer-column {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 14px;
+    min-height: 0;
+    height: 100%;
+    align-self: stretch;
 }
 
 #loadStatus:not(:empty) {
@@ -555,23 +594,19 @@ li {
 
 .issue-panel {
     position: relative;
-
     background: rgba(255, 255, 255, 0.18);
     backdrop-filter: blur(22px) saturate(180%);
     -webkit-backdrop-filter: blur(22px) saturate(180%);
-
     border-radius: 22px;
     border: 1px solid rgba(255, 255, 255, 0.40);
     box-shadow: 0 14px 45px rgba(0, 0, 0, 0.15);
-
     padding: 24px 20px;
     display: flex;
     flex-direction: column;
     gap: 18px;
-
-    /* importante: o painel não “rebenta” a página */
     overflow-y: auto;
-    max-height: calc(100vh - 20px);
+    height: 100%;
+    min-height: 0;
 }
 
 .issue-panel::before {
@@ -1383,4 +1418,36 @@ textarea { resize: vertical; }
     height: 100% !important;
     min-height: 280px;
     display: block;
+}
+
+.alerts-toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alert-toast {
+  min-width: 280px;
+  max-width: 360px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-left: 6px solid #f59e0b;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 14px 16px;
+}
+
+.alert-toast-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #111827;
+}
+
+.alert-toast-message {
+  font-size: 14px;
+  color: #374151;
 }
