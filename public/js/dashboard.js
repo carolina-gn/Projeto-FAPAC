@@ -21,6 +21,19 @@
   chartScatter: document.querySelector("#dashboardPanelAmbiente canvas#chartAmbienteScatter")
 };
 
+const consumoElements = {
+  consumoMedio: document.getElementById("consumoMedio"),
+  potenciaMedia: document.getElementById("potenciaMedia"),
+  circuitoPrincipal: document.getElementById("circuitoPrincipal"),
+
+  chartConsumoTempo: document.getElementById("chartConsumoTempo"),
+  chartPotenciaTempo: document.getElementById("chartPotenciaTempo"),
+  chartConsumoCircuito: document.getElementById("chartConsumoCircuito")
+};
+
+    let consumoTempoChart = null;
+    let potenciaTempoChart = null;
+    let consumoCircuitoChart = null;
   let ambienteVariaveisChart = null;
   let ambienteCo2Chart = null;
   let ambienteHvacTemperaturaChart = null;
@@ -31,6 +44,78 @@
     console.warn("Dashboard elements not found.");
     return;
   }
+
+  function renderConsumoChart(el, chartRef, type, label, labels, values) {
+    if (!el) return;
+
+    if (!(el instanceof HTMLCanvasElement)) {
+        el.innerHTML = `<canvas></canvas>`;
+        el = el.querySelector("canvas");
+    }
+
+    const ctx = el.getContext("2d");
+
+    if (chartRef.current) chartRef.current.destroy();
+
+    chartRef.current = new Chart(ctx, {
+        type,
+        data: {
+            labels,
+            datasets: [{
+                label,
+                data: values,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+    }
+
+    async function loadConsumoCards() {
+        try {
+            const response = await fetch("/api/sensors/dashboard/consumo");
+            const result = await response.json();
+
+            if (!result.ok) throw new Error(result.error);
+
+            setText(consumoElements.consumoMedio, `${formatNumber(result.cards.consumoMedio)} kWh`);
+            setText(consumoElements.potenciaMedia, `${formatNumber(result.cards.potenciaMedia)} kW`);
+            setText(consumoElements.circuitoPrincipal, result.cards.circuitoPrincipal);
+
+            renderConsumoChart(
+                consumoElements.chartConsumoTempo,
+                { current: consumoTempoChart },
+                "line",
+                "Consumo",
+                result.charts.consumoTempo.labels,
+                result.charts.consumoTempo.values
+            );
+
+            renderConsumoChart(
+                consumoElements.chartPotenciaTempo,
+                { current: potenciaTempoChart },
+                "line",
+                "Potência",
+                result.charts.potenciaTempo.labels,
+                result.charts.potenciaTempo.values
+            );
+
+            renderConsumoChart(
+                consumoElements.chartConsumoCircuito,
+                { current: consumoCircuitoChart },
+                "bar",
+                "Consumo Médio",
+                result.charts.consumoCircuito.labels,
+                result.charts.consumoCircuito.values
+            );
+
+        } catch (err) {
+            console.error("Erro Consumo:", err);
+        }
+    }
 
   function setActiveTab(tabName) {
     tabButtons.forEach((button) => {
@@ -339,5 +424,6 @@
   };
 
   setActiveTab("ambiente");
-  loadAmbienteCards();
+    loadAmbienteCards();
+    loadConsumoCards();
 })();

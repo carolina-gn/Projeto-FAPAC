@@ -175,4 +175,82 @@ router.get('/api/sensors/dashboard/ambiente', async (req, res) => {
     }
 });
 
+router.get('/api/sensors/dashboard/consumo', async (req, res) => {
+    try {
+        const [kpiRows] = await pool.query(`
+            SELECT
+                AVG(consumo) AS consumo_medio,
+                AVG(potencia) AS potencia_media
+            FROM consumo
+        `);
+
+        const [mainCircuitRow] = await pool.query(`
+            SELECT circuito, AVG(consumo) AS media
+            FROM consumo
+            GROUP BY circuito
+            ORDER BY media DESC
+            LIMIT 1
+        `);
+
+        const [consumoTempoRows] = await pool.query(`
+            SELECT hora, consumo
+            FROM (
+                SELECT id, hora, consumo
+                FROM consumo
+                ORDER BY id DESC
+                LIMIT 120
+            ) x
+            ORDER BY id ASC
+        `);
+
+        const [potenciaTempoRows] = await pool.query(`
+            SELECT hora, potencia
+            FROM (
+                SELECT id, hora, potencia
+                FROM consumo
+                ORDER BY id DESC
+                LIMIT 120
+            ) x
+            ORDER BY id ASC
+        `);
+
+        const [circuitoRows] = await pool.query(`
+            SELECT circuito, AVG(consumo) AS valor
+            FROM consumo
+            GROUP BY circuito
+            ORDER BY valor DESC
+        `);
+
+        res.json({
+            ok: true,
+            page: "consumo",
+            cards: {
+                consumoMedio: toNumber(kpiRows[0]?.consumo_medio),
+                potenciaMedia: toNumber(kpiRows[0]?.potencia_media),
+                circuitoPrincipal: mainCircuitRow[0]?.circuito || "--"
+            },
+            charts: {
+                consumoTempo: {
+                    labels: consumoTempoRows.map(r => r.hora),
+                    values: consumoTempoRows.map(r => toNumber(r.consumo))
+                },
+                potenciaTempo: {
+                    labels: potenciaTempoRows.map(r => r.hora),
+                    values: potenciaTempoRows.map(r => toNumber(r.potencia))
+                },
+                consumoCircuito: {
+                    labels: circuitoRows.map(r => r.circuito),
+                    values: circuitoRows.map(r => toNumber(r.valor))
+                }
+            }
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            ok: false,
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;
