@@ -31,6 +31,24 @@ const consumoElements = {
   chartConsumoCircuito: document.getElementById("chartConsumoCircuito")
 };
 
+const fugaElements = {
+  humidadeMedia: document.getElementById("fugaHumidadeMedia"),
+  locaisMonitorizados: document.getElementById("fugaLocaisMonitorizados"),
+  fugaDetetadas: document.getElementById("fugaDetetadas"),
+  chartHumidadeTempo: document.getElementById("chartFugaHumidadeTempo"),
+  chartHumidadeLocal: document.getElementById("chartFugaHumidadeLocal"),
+  chartEstadoLocal: document.getElementById("chartFugaEstadoLocal")
+};
+
+const vibracaoElements = {
+  vibracaoMedia: document.getElementById("vibracaoMedia"),
+  equipamentos: document.getElementById("vibracaoEquipamentos"),
+  alertas: document.getElementById("vibracaoAlertas"),
+  chartTempo: document.getElementById("chartVibracaoTempo"),
+  chartEquipamento: document.getElementById("chartVibracaoEquipamento"),
+  chartEstado: document.getElementById("chartVibracaoEstado")
+};
+
     let consumoTempoChart = null;
     let potenciaTempoChart = null;
     let consumoCircuitoChart = null;
@@ -39,6 +57,13 @@ const consumoElements = {
   let ambienteHvacTemperaturaChart = null;
   let ambienteOcupacaoHvacChart = null;
   let ambienteScatterChart = null;
+    let fugaHumidadeChart = null;
+    let fugaLocalChart = null;
+    let fugaEstadoChart = null;
+
+    let vibracaoTempoChart = null;
+    let vibracaoEquipamentoChart = null;
+    let vibracaoEstadoChart = null;
 
   if (!dashboardPage || tabButtons.length === 0) {
     console.warn("Dashboard elements not found.");
@@ -116,6 +141,112 @@ const consumoElements = {
             console.error("Erro Consumo:", err);
         }
     }
+
+    function renderSimpleChart(canvas, chartRef, type, label, labels, values) {
+  if (!canvas) return null;
+
+  const ctx = canvas.getContext("2d");
+
+  if (chartRef) chartRef.destroy();
+
+  return new Chart(ctx, {
+    type,
+    data: {
+      labels,
+      datasets: [{
+        label,
+        data: values,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+}
+
+async function loadFugaCards() {
+  try {
+    const response = await fetch("/api/sensors/dashboard/fuga");
+    const result = await response.json();
+
+    setText(fugaElements.humidadeMedia, `${formatNumber(result.cards.humidadeMedia)} %`);
+    setText(fugaElements.locaisMonitorizados, result.cards.locaisMonitorizados);
+    setText(fugaElements.fugaDetetadas, result.cards.fugasDetetadas);
+
+    fugaHumidadeChart = renderSimpleChart(
+      fugaElements.chartHumidadeTempo,
+      fugaHumidadeChart,
+      "line",
+      "Humidade",
+      result.charts.humidadeTempo.labels,
+      result.charts.humidadeTempo.values
+    );
+
+    fugaLocalChart = renderSimpleChart(
+      fugaElements.chartHumidadeLocal,
+      fugaLocalChart,
+      "bar",
+      "Humidade Média",
+      result.charts.humidadeLocal.labels,
+      result.charts.humidadeLocal.values
+    );
+
+    fugaEstadoChart = renderSimpleChart(
+      fugaElements.chartEstadoLocal,
+      fugaEstadoChart,
+      "bar",
+      "Alertas",
+      result.charts.estadoLocal.labels,
+      result.charts.estadoLocal.values
+    );
+
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function loadVibracaoCards() {
+  try {
+    const response = await fetch("/api/sensors/dashboard/vibracao");
+    const result = await response.json();
+
+    setText(vibracaoElements.vibracaoMedia, formatNumber(result.cards.vibracaoMedia));
+    setText(vibracaoElements.equipamentos, result.cards.equipamentos);
+    setText(vibracaoElements.alertas, result.cards.alertas);
+
+    vibracaoTempoChart = renderSimpleChart(
+      vibracaoElements.chartTempo,
+      vibracaoTempoChart,
+      "line",
+      "Vibração",
+      result.charts.vibracaoTempo.labels,
+      result.charts.vibracaoTempo.values
+    );
+
+    vibracaoEquipamentoChart = renderSimpleChart(
+      vibracaoElements.chartEquipamento,
+      vibracaoEquipamentoChart,
+      "bar",
+      "Média",
+      result.charts.vibracaoEquipamento.labels,
+      result.charts.vibracaoEquipamento.values
+    );
+
+    vibracaoEstadoChart = renderSimpleChart(
+      vibracaoElements.chartEstado,
+      vibracaoEstadoChart,
+      "bar",
+      "Alertas",
+      result.charts.estado.labels,
+      result.charts.estado.values
+    );
+
+  } catch (err) {
+    console.error(err);
+  }
+}
 
   function setActiveTab(tabName) {
     tabButtons.forEach((button) => {
@@ -426,4 +557,6 @@ const consumoElements = {
   setActiveTab("ambiente");
     loadAmbienteCards();
     loadConsumoCards();
+    loadFugaCards();
+    loadVibracaoCards();
 })();

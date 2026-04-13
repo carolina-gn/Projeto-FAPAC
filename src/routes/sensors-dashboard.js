@@ -253,4 +253,116 @@ router.get('/api/sensors/dashboard/consumo', async (req, res) => {
     }
 });
 
+router.get('/api/sensors/dashboard/fuga', async (req, res) => {
+  try {
+    const [kpi] = await pool.query(`
+      SELECT AVG(humidade) media,
+             COUNT(DISTINCT local) locais,
+             SUM(CASE WHEN estado <> 'normal' THEN 1 ELSE 0 END) alertas
+      FROM fuga
+    `);
+
+    const [tempo] = await pool.query(`
+      SELECT hora, humidade
+      FROM (
+        SELECT id,hora,humidade FROM fuga ORDER BY id DESC LIMIT 100
+      ) x ORDER BY id ASC
+    `);
+
+    const [local] = await pool.query(`
+      SELECT local, AVG(humidade) valor
+      FROM fuga
+      GROUP BY local
+    `);
+
+    const [estado] = await pool.query(`
+      SELECT local, SUM(CASE WHEN estado <> 'normal' THEN 1 ELSE 0 END) valor
+      FROM fuga
+      GROUP BY local
+    `);
+
+    res.json({
+      ok: true,
+      cards: {
+        humidadeMedia: toNumber(kpi[0].media),
+        locaisMonitorizados: kpi[0].locais,
+        fugasDetetadas: kpi[0].alertas
+      },
+      charts: {
+        humidadeTempo: {
+          labels: tempo.map(r => r.hora),
+          values: tempo.map(r => toNumber(r.humidade))
+        },
+        humidadeLocal: {
+          labels: local.map(r => r.local),
+          values: local.map(r => toNumber(r.valor))
+        },
+        estadoLocal: {
+          labels: estado.map(r => r.local),
+          values: estado.map(r => toNumber(r.valor))
+        }
+      }
+    });
+
+  } catch (e) {
+    res.status(500).json({ ok:false,error:e.message });
+  }
+});
+
+router.get('/api/sensors/dashboard/vibracao', async (req, res) => {
+  try {
+    const [kpi] = await pool.query(`
+      SELECT AVG(vibracao) media,
+             COUNT(DISTINCT equipamento) eqs,
+             SUM(CASE WHEN estado <> 'normal' THEN 1 ELSE 0 END) alertas
+      FROM vibracao
+    `);
+
+    const [tempo] = await pool.query(`
+      SELECT hora, vibracao
+      FROM (
+        SELECT id,hora,vibracao FROM vibracao ORDER BY id DESC LIMIT 100
+      ) x ORDER BY id ASC
+    `);
+
+    const [equip] = await pool.query(`
+      SELECT equipamento, AVG(vibracao) valor
+      FROM vibracao
+      GROUP BY equipamento
+    `);
+
+    const [estado] = await pool.query(`
+      SELECT equipamento, SUM(CASE WHEN estado <> 'normal' THEN 1 ELSE 0 END) valor
+      FROM vibracao
+      GROUP BY equipamento
+    `);
+
+    res.json({
+      ok: true,
+      cards: {
+        vibracaoMedia: toNumber(kpi[0].media),
+        equipamentos: kpi[0].eqs,
+        alertas: kpi[0].alertas
+      },
+      charts: {
+        vibracaoTempo: {
+          labels: tempo.map(r => r.hora),
+          values: tempo.map(r => toNumber(r.vibracao))
+        },
+        vibracaoEquipamento: {
+          labels: equip.map(r => r.equipamento),
+          values: equip.map(r => toNumber(r.valor))
+        },
+        estado: {
+          labels: estado.map(r => r.equipamento),
+          values: estado.map(r => toNumber(r.valor))
+        }
+      }
+    });
+
+  } catch (e) {
+    res.status(500).json({ ok:false,error:e.message });
+  }
+});
+
 module.exports = router;
