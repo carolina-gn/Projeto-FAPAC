@@ -51,11 +51,12 @@
     hide(issueCreatorPanel);
     hide(issuesBoardPage);
     hide(dashboardPage);
+    hide(analysisPage);
     show(alertsPage);
 
-    document.body.style.overflow = "auto";
-      window.scrollTo(0, 0);
-    };
+    document.body.style.overflow = "hidden";
+    window.scrollTo(0, 0);
+  };
 
     window.showAnalysisPage = function () {
     hide(viewerColumn);
@@ -83,7 +84,7 @@
     hide(alertsPage);
     hide(analysisPage);
 
-    document.body.style.overflow = "";
+    document.body.style.overflow = "hidden";
     window.scrollTo(0, 0);
   };
 

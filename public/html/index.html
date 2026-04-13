@@ -167,31 +167,55 @@
             </div>
             </header>
 
-            <section class="issues-board">
-            <div class="card issues-column">
-                <div class="issues-column-header">
-                <div class="issues-column-title">
-                    <span class="issue-dot issue-dot--open"></span>
-                    <span>Ativos</span>
-                </div>
-                <span class="issues-count" id="countAlertsActive">0</span>
+            <section class="alerts-layout">
+
+                <div class="alerts-main">
+
+                    <article class="card alerts-column">
+                    <div class="alerts-column-header">
+                        <div class="issues-column-title">
+                        <span class="issue-dot issue-dot--open"></span>
+                        <span>Ativos</span>
+                        </div>
+                        <span class="issues-count" id="countAlertsActive">0</span>
+                    </div>
+
+                    <div id="listAlertsActive" class="alerts-scroll-list"></div>
+                    </article>
+
+                    <article class="card alerts-column">
+                    <div class="alerts-column-header">
+                        <div class="issues-column-title">
+                        <span class="issue-dot issue-dot--resolved"></span>
+                        <span>Resolvidos</span>
+                        </div>
+                        <span class="issues-count" id="countAlertsResolved">0</span>
+                    </div>
+
+                    <div id="listAlertsResolved" class="alerts-scroll-list"></div>
+                    </article>
+
                 </div>
 
-                <div class="issues-column-list" id="listAlertsActive"></div>
-            </div>
+                <aside class="alerts-side">
 
-            <div class="card issues-column">
-                <div class="issues-column-header">
-                <div class="issues-column-title">
-                    <span class="issue-dot issue-dot--resolved"></span>
-                    <span>Resolvidos</span>
-                </div>
-                <span class="issues-count" id="countAlertsResolved">0</span>
-                </div>
+                    <article class="card alerts-chart-card">
+                    <h3 class="dashboard-card-title">Por Severidade</h3>
+                    <div class="dashboard-chart-placeholder dashboard-chart-canvas-wrap">
+                        <canvas id="alertsSeverityChart"></canvas>
+                    </div>
+                    </article>
 
-                <div class="issues-column-list" id="listAlertsResolved"></div>
-            </div>
-            </section>
+                    <article class="card alerts-chart-card">
+                    <h3 class="dashboard-card-title">Últimos 7 Dias</h3>
+                    <div class="dashboard-chart-placeholder dashboard-chart-canvas-wrap">
+                        <canvas id="alertsTrendChart"></canvas>
+                    </div>
+                    </article>
+
+                </aside>
+
+                </section>
 
             <footer class="issues-page-footer">
             <button class="btn" type="button" onclick="showViewer()">Voltar ao viewer</button>
@@ -786,5 +810,6 @@
 <script src="/js/issues-board.js"></script>
 <script src="/js/dashboard.js"></script>
 <script src="/js/alerts.js"></script>
+<script src="/js/issues-analytics.js"></script>
 </body>
 </html>

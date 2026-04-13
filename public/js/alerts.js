@@ -27,22 +27,24 @@ function alertSeverityLabel(severity) {
 }
 
 function buildAlertButtonHtml(alert) {
-  const statusText = alert.status === "resolvido" ? "Resolvido" : "Ativo";
   const meta = `${alert.sala || "—"} · ${alertSeverityLabel(alert.severity)} · ${formatDateTime(alert.lastDetectedAt)}`;
+
+  const actionHtml =
+    alert.status === "ativo"
+      ? `<button class="btn resolve-alert-btn" type="button" data-id="${alert._id}">Resolver</button>`
+      : `<span class="issue-badge">Resolvido</span>`;
 
   return `
     <div class="issue-item" data-id="${alert._id}">
       <span class="issue-dot ${alert.status === "resolvido" ? "issue-dot--resolved" : "issue-dot--open"}"></span>
+
       <div class="issue-main">
         <div class="issue-title">${escapeHtml(alert.title)}</div>
         <div class="issue-meta">${escapeHtml(meta)}</div>
         <div class="issue-meta">${escapeHtml(alert.message || "")}</div>
       </div>
-      ${
-        alert.status === "ativo"
-          ? `<button class="btn btn-secondary resolve-alert-btn" type="button" data-id="${alert._id}">Resolver</button>`
-          : `<span class="issue-badge">${statusText}</span>`
-      }
+
+      ${actionHtml}
     </div>
   `;
 }
@@ -68,9 +70,11 @@ function renderAlerts(alerts) {
   const countResolved = document.getElementById("countAlertsResolved");
   const badge = document.getElementById("alertsActiveBadge");
 
-  if (countActive) countActive.textContent = String(active.length);
-  if (countResolved) countResolved.textContent = String(resolved.length);
-  if (badge) badge.textContent = String(active.length);
+    if (countActive) countActive.textContent = String(active.length);
+    if (countResolved) countResolved.textContent = String(resolved.length);
+    if (badge) badge.textContent = String(active.length);
+
+    renderAlertsCharts(alerts);
 }
 
 function applyAlertsFilter() {
@@ -167,6 +171,155 @@ document.getElementById("clearAlertsFilter")?.addEventListener("click", () => {
   if (filter) filter.value = "all";
   renderAlerts(ALL_ALERTS);
 });
+
+let alertsSeverityChart = null;
+let alertsTrendChart = null;
+
+function destroyAlertsCharts() {
+  if (alertsSeverityChart) alertsSeverityChart.destroy();
+  if (alertsTrendChart) alertsTrendChart.destroy();
+}
+
+function renderAlertsCharts(alerts) {
+  destroyAlertsCharts();
+
+  const severityMap = {
+    baixa: 0,
+    media: 0,
+    alta: 0,
+    critica: 0
+  };
+
+  alerts.forEach(alert => {
+    const key = String(alert.severity || "").toLowerCase();
+    if (severityMap[key] !== undefined) {
+      severityMap[key]++;
+    }
+  });
+
+  const chartText = "#4b5563";
+  const chartGrid = "rgba(99, 102, 241, 0.10)";
+  const chartBorder = "rgba(99, 102, 241, 0.18)";
+
+  const severityCanvas = document.getElementById("alertsSeverityChart");
+  if (severityCanvas) {
+    alertsSeverityChart = new Chart(severityCanvas.getContext("2d"), {
+      type: "doughnut",
+      data: {
+        labels: ["Baixa", "Média", "Alta", "Crítica"],
+        datasets: [{
+          data: [
+            severityMap.baixa,
+            severityMap.media,
+            severityMap.alta,
+            severityMap.critica
+          ],
+          backgroundColor: [
+            "#93c5fd",  // azul suave
+            "#c4b5fd",  // lilás
+            "#f59e0b",  // âmbar
+            "#f87171"   // vermelho suave
+          ],
+          borderColor: "rgba(255,255,255,0.65)",
+          borderWidth: 3,
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "52%",
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: {
+              color: chartText,
+              padding: 14,
+              boxWidth: 14,
+              usePointStyle: true,
+              pointStyle: "circle"
+            }
+          }
+        }
+      }
+    });
+  }
+
+  const trendMap = new Map();
+
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    trendMap.set(d.toISOString().slice(0, 10), 0);
+  }
+
+  alerts.forEach(alert => {
+    if (!alert.createdAt) return;
+    const key = new Date(alert.createdAt).toISOString().slice(0, 10);
+    if (trendMap.has(key)) {
+      trendMap.set(key, trendMap.get(key) + 1);
+    }
+  });
+
+  const trendCanvas = document.getElementById("alertsTrendChart");
+  if (trendCanvas) {
+    alertsTrendChart = new Chart(trendCanvas.getContext("2d"), {
+      type: "line",
+      data: {
+        labels: Array.from(trendMap.keys()).map(v => v.slice(5)),
+        datasets: [{
+          label: "Alertas",
+          data: Array.from(trendMap.values()),
+          tension: 0.35,
+          fill: true,
+          borderColor: "#7c3aed",
+          backgroundColor: "rgba(124, 58, 237, 0.12)",
+          pointBackgroundColor: "#8b5cf6",
+          pointBorderColor: "#ffffff",
+          pointBorderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 5,
+          borderWidth: 3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              color: chartGrid
+            },
+            ticks: {
+              color: chartText
+            },
+            border: {
+              color: chartBorder
+            }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              precision: 0,
+              color: chartText
+            },
+            grid: {
+              color: chartGrid
+            },
+            border: {
+              color: chartBorder
+            }
+          }
+        }
+      }
+    });
+  }
+}
 
 window.addEventListener("load", () => {
   loadAlerts(false);

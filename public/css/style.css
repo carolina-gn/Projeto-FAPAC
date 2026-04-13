@@ -1475,3 +1475,164 @@ textarea { resize: vertical; }
     grid-template-columns: 1fr;
   }
 }
+
+/* ===================================
+   ALERTS PAGE - LAYOUT FINAL
+=================================== */
+
+#alertsPage {
+  height: 100vh;
+  overflow: hidden;
+}
+
+#alertsPage .page-container {
+  height: 100vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 16px;
+  padding: 18px 18px 14px;
+}
+
+#alertsPage .issues-page-header {
+  margin-bottom: 0;
+}
+
+#alertsPage .issues-page-footer {
+  margin-top: 0;
+  justify-content: flex-end;
+}
+
+.alerts-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 20px;
+  min-height: 0;
+  height: 100%;
+}
+
+.alerts-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  min-height: 0;
+}
+
+.alerts-column {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 18px 16px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+.alerts-column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.alerts-scroll-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.alerts-scroll-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.alerts-scroll-list::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.22);
+  border-radius: 999px;
+}
+
+.alerts-scroll-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.alerts-side {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+  min-height: 0;
+}
+
+.alerts-chart-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 18px 16px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+.alerts-chart-card .dashboard-card-title {
+  margin-bottom: 10px;
+}
+
+.alerts-chart-card .dashboard-chart-placeholder {
+  flex: 1;
+  min-height: 0;
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.alerts-chart-card canvas {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+#alertsPage .issue-item {
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+#alertsPage .issue-item:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+#alertsPage .btn.resolve-alert-btn,
+#alertsPage .issue-badge {
+  min-width: 92px;
+}
+
+@media (max-width: 1200px) {
+  #alertsPage {
+    overflow: auto;
+  }
+
+  #alertsPage .page-container {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+    grid-template-rows: auto auto auto;
+  }
+
+  .alerts-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .alerts-main {
+    grid-template-columns: 1fr;
+  }
+
+  .alerts-side {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+}
+
+@media (max-width: 700px) {
+  .alerts-side {
+    grid-template-columns: 1fr;
+  }
+}
