@@ -312,36 +312,36 @@ router.get('/api/sensors/dashboard/fuga', async (req, res) => {
 router.get('/api/sensors/dashboard/vibracao', async (req, res) => {
   try {
     const [kpi] = await pool.query(`
-      SELECT AVG(vibracao) media,
-             COUNT(DISTINCT equipamento) eqs,
-             SUM(CASE WHEN estado <> 'normal' THEN 1 ELSE 0 END) alertas
+      SELECT 
+        AVG(vibracao) media,
+        COUNT(*) total,
+        SUM(CASE WHEN alerta <> 'OK' THEN 1 ELSE 0 END) alertas
       FROM vibracao
     `);
 
     const [tempo] = await pool.query(`
       SELECT hora, vibracao
       FROM (
-        SELECT id,hora,vibracao FROM vibracao ORDER BY id DESC LIMIT 100
-      ) x ORDER BY id ASC
+        SELECT id, hora, vibracao
+        FROM vibracao
+        ORDER BY id DESC
+        LIMIT 100
+      ) x
+      ORDER BY id ASC
     `);
 
-    const [equip] = await pool.query(`
-      SELECT equipamento, AVG(vibracao) valor
+    const [alertaRows] = await pool.query(`
+      SELECT alerta, COUNT(*) valor
       FROM vibracao
-      GROUP BY equipamento
-    `);
-
-    const [estado] = await pool.query(`
-      SELECT equipamento, SUM(CASE WHEN estado <> 'normal' THEN 1 ELSE 0 END) valor
-      FROM vibracao
-      GROUP BY equipamento
+      GROUP BY alerta
+      ORDER BY valor DESC
     `);
 
     res.json({
       ok: true,
       cards: {
         vibracaoMedia: toNumber(kpi[0].media),
-        equipamentos: kpi[0].eqs,
+        equipamentos: kpi[0].total,
         alertas: kpi[0].alertas
       },
       charts: {
@@ -350,18 +350,21 @@ router.get('/api/sensors/dashboard/vibracao', async (req, res) => {
           values: tempo.map(r => toNumber(r.vibracao))
         },
         vibracaoEquipamento: {
-          labels: equip.map(r => r.equipamento),
-          values: equip.map(r => toNumber(r.valor))
+          labels: alertaRows.map(r => r.alerta),
+          values: alertaRows.map(r => Number(r.valor))
         },
         estado: {
-          labels: estado.map(r => r.equipamento),
-          values: estado.map(r => toNumber(r.valor))
+          labels: alertaRows.map(r => r.alerta),
+          values: alertaRows.map(r => Number(r.valor))
         }
       }
     });
 
   } catch (e) {
-    res.status(500).json({ ok:false,error:e.message });
+    res.status(500).json({
+      ok: false,
+      error: e.message
+    });
   }
 });
 

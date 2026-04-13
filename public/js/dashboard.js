@@ -142,8 +142,13 @@ const vibracaoElements = {
         }
     }
 
-    function renderSimpleChart(canvas, chartRef, type, label, labels, values) {
+function renderSimpleChart(canvas, chartRef, type, label, labels, values) {
   if (!canvas) return null;
+
+  if (!(canvas instanceof HTMLCanvasElement)) {
+    canvas.innerHTML = "<canvas></canvas>";
+    canvas = canvas.querySelector("canvas");
+  }
 
   const ctx = canvas.getContext("2d");
 
@@ -164,7 +169,7 @@ const vibracaoElements = {
       maintainAspectRatio: false
     }
   });
-}
+}   
 
 async function loadFugaCards() {
   try {
@@ -211,10 +216,12 @@ async function loadVibracaoCards() {
   try {
     const response = await fetch("/api/sensors/dashboard/vibracao");
     const result = await response.json();
+    const cards = result.cards || {};
+    const charts = result.charts || {};
 
-    setText(vibracaoElements.vibracaoMedia, formatNumber(result.cards.vibracaoMedia));
-    setText(vibracaoElements.equipamentos, result.cards.equipamentos);
-    setText(vibracaoElements.alertas, result.cards.alertas);
+    setText(vibracaoElements.vibracaoMedia, `${formatNumber(cards.vibracaoMedia)} mm/s`);
+    setText(vibracaoElements.equipamentos, cards.equipamentos ?? "--");
+    setText(vibracaoElements.alertas, cards.alertas ?? "--");
 
     vibracaoTempoChart = renderSimpleChart(
       vibracaoElements.chartTempo,
@@ -244,7 +251,7 @@ async function loadVibracaoCards() {
     );
 
   } catch (err) {
-    console.error(err);
+    console.error("Erro Vibração:", err);
   }
 }
 
