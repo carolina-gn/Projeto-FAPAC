@@ -400,6 +400,105 @@
     </div>
 </section>
 
+<section id="analysisPage" hidden>
+  <div class="page-container page-container--full">
+
+    <header class="dashboard-page-header">
+      <div class="dashboard-brand">
+        <img class="dashboard-logo" src="/images/logo.png" alt="DTGE Logo">
+        <div>
+          <h1 class="page-title dashboard-page-title">Análise de Issues</h1>
+          <p class="dashboard-page-subtitle">Resumo operacional semelhante ao Infraspeak</p>
+        </div>
+      </div>
+
+      <div class="dashboard-page-actions">
+        <button class="btn" type="button" onclick="showViewer()">Voltar ao viewer</button>
+      </div>
+    </header>
+
+    <section class="dashboard-kpis issue-analytics-kpis">
+      <div class="card dashboard-kpi-card">
+        <div class="dashboard-kpi-label">Total de Issues</div>
+        <div class="dashboard-kpi-value" id="issuesAnalyticsTotal">--</div>
+      </div>
+
+      <div class="card dashboard-kpi-card">
+        <div class="dashboard-kpi-label">Abertas</div>
+        <div class="dashboard-kpi-value" id="issuesAnalyticsOpen">--</div>
+      </div>
+
+      <div class="card dashboard-kpi-card">
+        <div class="dashboard-kpi-label">Em Progresso</div>
+        <div class="dashboard-kpi-value" id="issuesAnalyticsProgress">--</div>
+      </div>
+
+      <div class="card dashboard-kpi-card">
+        <div class="dashboard-kpi-label">Resolvidas</div>
+        <div class="dashboard-kpi-value" id="issuesAnalyticsResolved">--</div>
+      </div>
+
+      <div class="card dashboard-kpi-card">
+        <div class="dashboard-kpi-label">Fechadas</div>
+        <div class="dashboard-kpi-value" id="issuesAnalyticsClosed">--</div>
+      </div>
+
+      <div class="card dashboard-kpi-card">
+        <div class="dashboard-kpi-label">Criadas nos últimos 30 dias</div>
+        <div class="dashboard-kpi-value" id="issuesAnalyticsCreated30">--</div>
+      </div>
+
+      <div class="card dashboard-kpi-card">
+        <div class="dashboard-kpi-label">Taxa de Resolução</div>
+        <div class="dashboard-kpi-value" id="issuesAnalyticsResolutionRate">--</div>
+      </div>
+
+      <div class="card dashboard-kpi-card">
+        <div class="dashboard-kpi-label">Tempo Médio até fecho/resolução</div>
+        <div class="dashboard-kpi-value" id="issuesAnalyticsAvgResolution">--</div>
+      </div>
+    </section>
+
+    <section class="dashboard-chart-grid issue-analytics-grid">
+      <article class="card dashboard-chart-card">
+        <h3 class="dashboard-card-title">Issues por Estado</h3>
+        <div class="dashboard-chart-placeholder dashboard-chart-canvas-wrap">
+          <canvas id="issuesStatusChart"></canvas>
+        </div>
+      </article>
+
+      <article class="card dashboard-chart-card">
+        <h3 class="dashboard-card-title">Issues por Prioridade</h3>
+        <div class="dashboard-chart-placeholder dashboard-chart-canvas-wrap">
+          <canvas id="issuesPriorityChart"></canvas>
+        </div>
+      </article>
+
+      <article class="card dashboard-chart-card">
+        <h3 class="dashboard-card-title">Issues por Tipo</h3>
+        <div class="dashboard-chart-placeholder dashboard-chart-canvas-wrap">
+          <canvas id="issuesTypeChart"></canvas>
+        </div>
+      </article>
+
+      <article class="card dashboard-chart-card">
+        <h3 class="dashboard-card-title">Issues por Edifício</h3>
+        <div class="dashboard-chart-placeholder dashboard-chart-canvas-wrap">
+          <canvas id="issuesBuildingChart"></canvas>
+        </div>
+      </article>
+
+      <article class="card dashboard-chart-card dashboard-chart-card--wide">
+        <h3 class="dashboard-card-title">Issues Criadas por Mês</h3>
+        <div class="dashboard-chart-placeholder dashboard-chart-canvas-wrap">
+          <canvas id="issuesCreatedTrendChart"></canvas>
+        </div>
+      </article>
+    </section>
+
+  </div>
+</section>
+
     <div class="app-layout">
 
         <!-- SIDE PANEL -->

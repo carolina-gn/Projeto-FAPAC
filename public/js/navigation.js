@@ -5,9 +5,10 @@
   const issuesBoardPage = document.getElementById("issuesBoardPage");
   const dashboardPage = document.getElementById("dashboardPage");
   const alertsPage = document.getElementById("alertsPage");
+  const analysisPage = document.getElementById("analysisPage");
   const issueCreatorPanel = document.querySelector("aside.issue-panel");
 
-  if (!viewerColumn || !sidePanel || !issuesBoardPage || !dashboardPage || !issueCreatorPanel) {
+  if (!viewerColumn || !sidePanel || !issuesBoardPage || !dashboardPage || !alertsPage || !analysisPage || !issueCreatorPanel) {
     console.warn("Some navigation elements were not found.");
     return;
   }
@@ -53,7 +54,24 @@
     show(alertsPage);
 
     document.body.style.overflow = "auto";
+      window.scrollTo(0, 0);
+    };
+
+    window.showAnalysisPage = function () {
+    hide(viewerColumn);
+    hide(sidePanel);
+    hide(issueCreatorPanel);
+    hide(issuesBoardPage);
+    hide(dashboardPage);
+    hide(alertsPage);
+    show(analysisPage);
+
+    document.body.style.overflow = "auto";
     window.scrollTo(0, 0);
+
+    if (typeof window.loadIssuesAnalytics === "function") {
+      window.loadIssuesAnalytics();
+    }
   };
 
   window.showViewer = function () {
@@ -63,6 +81,7 @@
     hide(issuesBoardPage);
     hide(dashboardPage);
     hide(alertsPage);
+    hide(analysisPage);
 
     document.body.style.overflow = "";
     window.scrollTo(0, 0);
@@ -82,4 +101,9 @@
     openAlertsBtn?.addEventListener("click", () => {
       window.showAlertsPage();
    });
+
+  const openAnalysisBtn = document.getElementById("openAnalysisBtn");
+  openAnalysisBtn?.addEventListener("click", () => {
+    window.showAnalysisPage();
+  });
 })();

@@ -1451,3 +1451,27 @@ textarea { resize: vertical; }
   font-size: 14px;
   color: #374151;
 }
+
+.issue-analytics-kpis {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.issue-analytics-grid .dashboard-chart-card {
+  min-height: 320px;
+}
+
+.issue-analytics-grid .dashboard-chart-card--wide {
+  min-height: 380px;
+}
+
+@media (max-width: 1200px) {
+  .issue-analytics-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .issue-analytics-kpis {
+    grid-template-columns: 1fr;
+  }
+}
