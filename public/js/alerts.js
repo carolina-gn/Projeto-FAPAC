@@ -1,5 +1,83 @@
+async function requestBrowserNotificationPermission() {
+  if (!("Notification" in window)) {
+    console.warn("Este browser não suporta notificações.");
+    return false;
+  }
+
+  if (Notification.permission === "granted") {
+    return true;
+  }
+
+  if (Notification.permission === "denied") {
+    console.warn("Permissão de notificações foi negada.");
+    return false;
+  }
+
+  try {
+    const permission = await Notification.requestPermission();
+    return permission === "granted";
+  } catch (error) {
+    console.error("Erro ao pedir permissão para notificações:", error);
+    return false;
+  }
+}
+
+async function showBrowserNotification(alert) {
+  if (!("Notification" in window)) return;
+  if (Notification.permission !== "granted") return;
+
+  const title = alert.title || "Novo alerta";
+  const body = alert.message || "Foi detetado um novo alerta.";
+
+  try {
+    if (alertsServiceWorkerRegistration) {
+      await alertsServiceWorkerRegistration.showNotification(title, {
+        body,
+        icon: "/images/logo.png",
+        badge: "/images/logo.png",
+        tag: `alert-${alert._id}`,
+        data: {
+          alertId: alert._id
+        }
+      });
+      return;
+    }
+
+    const notification = new Notification(title, {
+      body,
+      icon: "/images/logo.png",
+      tag: `alert-${alert._id}`
+    });
+
+    notification.onclick = () => {
+      window.focus();
+      notification.close();
+    };
+  } catch (error) {
+    console.error("Erro ao mostrar notificação:", error);
+  }
+}
+
+async function registerAlertsServiceWorker() {
+  if (!("serviceWorker" in navigator)) {
+    console.warn("Service Worker não suportado neste browser.");
+    return null;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.register("/service-worker.js");
+    alertsServiceWorkerRegistration = registration;
+    console.log("Service Worker registado com sucesso.");
+    return registration;
+  } catch (error) {
+    console.error("Erro ao registar Service Worker:", error);
+    return null;
+  }
+}
+
 let ALL_ALERTS = [];
 let KNOWN_ALERT_IDS = new Set();
+let alertsServiceWorkerRegistration = null;
 
 function escapeHtml(str) {
   return String(str || "")
@@ -101,6 +179,7 @@ async function loadAlerts(showToasts = false) {
       for (const alert of activeAlerts) {
         if (!KNOWN_ALERT_IDS.has(String(alert._id))) {
           showAlertToast(alert);
+          showBrowserNotification(alert);
         }
       }
     }
@@ -321,7 +400,8 @@ function renderAlertsCharts(alerts) {
   }
 }
 
-window.addEventListener("load", () => {
+window.addEventListener("load", async () => {
+  await requestBrowserNotificationPermission();
   loadAlerts(false);
   setInterval(() => loadAlerts(true), 30000);
 });
