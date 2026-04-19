@@ -92,3 +92,5 @@ module.exports = {
   deleteSubscription,
   sendPushToAllUsers
 };
+
+console.log("VAPID_PUBLIC_KEY:", process.env.VAPID_PUBLIC_KEY);

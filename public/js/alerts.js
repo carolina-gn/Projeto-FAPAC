@@ -455,6 +455,7 @@ function renderAlertsCharts(alerts) {
 
 window.addEventListener("load", async () => {
   await registerAlertsServiceWorker();
+
   const granted = await requestBrowserNotificationPermission();
 
   if (granted) {
