@@ -73,6 +73,9 @@ app.use(require('./src/routes/sensors-dashboard.js'));
 const alertsRoutes = require("./src/routes/alertsRoutes");
 app.use("/api/alerts", requireLogin, alertsRoutes);
 
+const pushRoutes = require("./src/routes/pushRoutes");
+app.use("/api/push", requireLogin, pushRoutes);
+
 // Projects routes (keep project-specific routes here)
 const projectsRoutes = require('./src/routes/projects.js');
 app.use("/api/projects", requireLogin, projectsRoutes);

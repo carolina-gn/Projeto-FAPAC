@@ -75,6 +75,59 @@ async function registerAlertsServiceWorker() {
   }
 }
 
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
+
+  const rawData = window.atob(base64);
+  return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
+}
+
+async function subscribeUserToPush() {
+  if (!alertsServiceWorkerRegistration) {
+    return null;
+  }
+
+  try {
+    const existingSubscription = await alertsServiceWorkerRegistration.pushManager.getSubscription();
+    if (existingSubscription) {
+      return existingSubscription;
+    }
+
+    const keyRes = await fetch("/api/push/public-key");
+    if (!keyRes.ok) {
+      throw new Error("Não foi possível obter a chave pública.");
+    }
+
+    const keyData = await keyRes.json();
+    const publicKey = keyData.publicKey;
+
+    const subscription = await alertsServiceWorkerRegistration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(publicKey)
+    });
+
+    const saveRes = await fetch("/api/push/subscribe", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(subscription)
+    });
+
+    if (!saveRes.ok) {
+      throw new Error("Não foi possível guardar a subscrição push.");
+    }
+
+    return subscription;
+  } catch (error) {
+    console.error("Erro na subscrição push:", error);
+    return null;
+  }
+}
+
 let ALL_ALERTS = [];
 let KNOWN_ALERT_IDS = new Set();
 let alertsServiceWorkerRegistration = null;
@@ -401,7 +454,13 @@ function renderAlertsCharts(alerts) {
 }
 
 window.addEventListener("load", async () => {
-  await requestBrowserNotificationPermission();
-  loadAlerts(false);
+  await registerAlertsServiceWorker();
+  const granted = await requestBrowserNotificationPermission();
+
+  if (granted) {
+    await subscribeUserToPush();
+  }
+
+  await loadAlerts(false);
   setInterval(() => loadAlerts(true), 30000);
 });

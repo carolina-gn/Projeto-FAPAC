@@ -8,7 +8,10 @@ let {
     SERVER_SESSION_SECRET,
     PORT,
     MONGO_URI,
-    MYSQL_PUBLIC_URL
+    MYSQL_PUBLIC_URL,
+    VAPID_PUBLIC_KEY,
+    VAPID_PRIVATE_KEY,
+    VAPID_SUBJECT
 } = process.env;
 
 if (
@@ -39,5 +42,8 @@ module.exports = {
     PUBLIC_TOKEN_SCOPES,
     PORT,
     MONGO_URI,
-    MYSQL_PUBLIC_URL
+    MYSQL_PUBLIC_URL,
+    VAPID_PUBLIC_KEY,
+    VAPID_PRIVATE_KEY,
+    VAPID_SUBJECT
 };
