@@ -1,11 +1,42 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db/mysql');
+const SensorReading = require("../models/sensorReading");
 
 function toNumber(value, decimals = 2) {
     const num = Number(value ?? 0);
     return Number.isFinite(num) ? Number(num.toFixed(decimals)) : 0;
 }
+
+router.post("/api/sensors/ingest", async (req, res) => {
+    try {
+        const data = req.body;
+
+        if (!data.tipo) {
+            return res.status(400).json({
+                ok: false,
+                error: "Campo tipo é obrigatório"
+            });
+        }
+
+        const created = await SensorReading.create({
+            ...data,
+            receivedAt: new Date()
+        });
+
+        res.json({
+            ok: true,
+            message: "Dados guardados no MongoDB",
+            id: created._id
+        });
+
+    } catch (error) {
+        console.error("Erro ao guardar sensor:", error);
+        res.status(500).json({
+            ok: false,
+            error: error.message
+        });
+    }
+});
 
 router.get('/api/sensors/test', async (req, res) => {
     try {

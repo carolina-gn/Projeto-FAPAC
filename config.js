@@ -1,6 +1,6 @@
 const { Scopes } = require('@aps_sdk/authentication');
 require('dotenv').config();
-console.log("MYSQL_PUBLIC_URL:", process.env.MYSQL_PUBLIC_URL);
+console.log("MYSQL_PUBLIC_URL:", process.env.MYSQL_PUBLIC_URL ? "definido" : "em falta");
 
 let {
     APS_CLIENT_ID,
@@ -21,11 +21,6 @@ if (
     !MONGO_URI
 ) {
     console.warn('❌ Missing some required environment variables.');
-    process.exit(1);
-}
-
-if (!MYSQL_PUBLIC_URL) {
-    console.warn('❌ Missing MYSQL_PUBLIC_URL in .env');
     process.exit(1);
 }
 

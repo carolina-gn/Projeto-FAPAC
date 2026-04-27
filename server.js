@@ -4,7 +4,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const { PORT, SERVER_SESSION_SECRET, MONGO_URI } = require('./config.js');
 const User = require('./src/models/user.js');
-const { startAlertEngine } = require("./src/services/alertEngine");
+//const { startAlertEngine } = require("./src/services/alertEngine");
 
 const app = express();
 
@@ -94,7 +94,7 @@ app.use((err, req, res, next) => {
 mongoose.connect(MONGO_URI)
     .then(() => {
         console.log('✅ MongoDB connected');
-        startAlertEngine();
+        //startAlertEngine();
         app.listen(PORT, () => console.log(`Server listening on port ${PORT}...`));
     })
     .catch(err => {
