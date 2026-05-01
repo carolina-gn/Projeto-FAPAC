@@ -1,26 +1,26 @@
-const pool = require("../db/mysql");
 const Alert = require("../models/alert");
+const SensorReading = require("../models/sensorReading");
 const { sendPushToAllUsers } = require("./pushService");
 
 function normalize(value) {
   return String(value || "").trim().toLowerCase();
 }
 
+function isRoomEmpty(value) {
+  const v = normalize(value);
+  return v === "livre" || v === "0" || v === "false" || v === "vazio";
+}
+
+function isLightOn(value) {
+  const v = normalize(value);
+  return v === "ligada" || v === "ligado" || v === "1" || v === "true";
+}
+
 async function processRoomEmptyLightsOn(row) {
-  const salaLivre = normalize(row.ocupacao) === "livre";
-  const luzLigada = normalize(row.iluminacao) === "ligada";
+  const salaLivre = isRoomEmpty(row.ocupacao);
+  const luzLigada = isLightOn(row.iluminacao);
 
-  console.log("DEBUG ALERTA REAL:", {
-    sala: row.sala,
-    ocupacao: row.ocupacao,
-    iluminacao: row.iluminacao,
-    salaLivre,
-    luzLigada
-    });
-
-  if (!salaLivre || !luzLigada) {
-    return;
-  }
+  if (!salaLivre || !luzLigada) return;
 
   const existing = await Alert.findOne({
     ruleKey: "room-empty-lights-on",
@@ -31,9 +31,9 @@ async function processRoomEmptyLightsOn(row) {
   if (existing) {
     existing.lastDetectedAt = new Date();
     existing.source = {
-      table: "ambiente",
-      rowId: row.id,
-      timestamp: row.hora
+      table: "sensorreadings",
+      rowId: row._id,
+      timestamp: row.timestamp || row.createdAt
     };
     existing.triggerData = {
       ocupacao: row.ocupacao,
@@ -46,7 +46,7 @@ async function processRoomEmptyLightsOn(row) {
     return;
   }
 
-    const createdAlert = await Alert.create({
+  const createdAlert = await Alert.create({
     ruleKey: "room-empty-lights-on",
     title: "Luzes ligadas com sala desocupada",
     message: `A sala ${row.sala} está sem ocupação e com iluminação ligada.`,
@@ -54,9 +54,9 @@ async function processRoomEmptyLightsOn(row) {
     severity: "media",
     sala: row.sala,
     source: {
-      table: "ambiente",
-      rowId: row.id,
-      timestamp: row.hora
+      table: "sensorreadings",
+      rowId: row._id,
+      timestamp: row.timestamp || row.createdAt
     },
     triggerData: {
       ocupacao: row.ocupacao,
@@ -82,9 +82,7 @@ async function processRoomEmptyLightsOn(row) {
 async function processTemperatureAboveTwoTest(row) {
   const temperatura = Number(row.temperatura);
 
-  if (Number.isNaN(temperatura) || temperatura <= 2) {
-    return;
-  }
+  if (Number.isNaN(temperatura) || temperatura <= 2) return;
 
   const existing = await Alert.findOne({
     ruleKey: "test-temperature-above-2",
@@ -95,9 +93,9 @@ async function processTemperatureAboveTwoTest(row) {
   if (existing) {
     existing.lastDetectedAt = new Date();
     existing.source = {
-      table: "ambiente",
-      rowId: row.id,
-      timestamp: row.hora
+      table: "sensorreadings",
+      rowId: row._id,
+      timestamp: row.timestamp || row.createdAt
     };
     existing.triggerData = {
       ocupacao: row.ocupacao,
@@ -110,7 +108,7 @@ async function processTemperatureAboveTwoTest(row) {
     return;
   }
 
-    const createdAlert = await Alert.create({
+  const createdAlert = await Alert.create({
     ruleKey: "test-temperature-above-2",
     title: "Teste de alerta: temperatura acima de 2°C",
     message: `Teste: a sala ${row.sala} registou ${temperatura}°C.`,
@@ -118,9 +116,9 @@ async function processTemperatureAboveTwoTest(row) {
     severity: "alta",
     sala: row.sala,
     source: {
-      table: "ambiente",
-      rowId: row.id,
-      timestamp: row.hora
+      table: "sensorreadings",
+      rowId: row._id,
+      timestamp: row.timestamp || row.createdAt
     },
     triggerData: {
       ocupacao: row.ocupacao,
@@ -144,17 +142,15 @@ async function processTemperatureAboveTwoTest(row) {
 }
 
 async function checkAmbienteAlerts() {
-  const [rows] = await pool.query(`
-    SELECT id, hora, sala, ocupacao, temperatura, co2, iluminacao, hvac, alerta
-    FROM ambiente
-    ORDER BY id DESC
-    LIMIT 30
-  `);
+  const rows = await SensorReading.find({ tipo: "ambiente" })
+    .sort({ createdAt: -1 })
+    .limit(30)
+    .lean();
 
   for (const row of rows) {
-  await processRoomEmptyLightsOn(row);
-  await processTemperatureAboveTwoTest(row);
-}
+    await processRoomEmptyLightsOn(row);
+    await processTemperatureAboveTwoTest(row);
+  }
 }
 
 let isRunning = false;

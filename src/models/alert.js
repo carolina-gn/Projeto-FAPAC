@@ -36,7 +36,7 @@ const AlertSchema = new mongoose.Schema(
 
     source: {
       table: { type: String, default: "ambiente" },
-      rowId: { type: Number, default: null },
+      rowId: { type: String, default: "" },
       timestamp: { type: String, default: "" }
     },
 
