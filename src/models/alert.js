@@ -35,17 +35,34 @@ const AlertSchema = new mongoose.Schema(
     },
 
     source: {
-      table: { type: String, default: "ambiente" },
+      table: { type: String, default: "sensorreadings" },
       rowId: { type: String, default: "" },
       timestamp: { type: String, default: "" }
     },
 
     triggerData: {
-      ocupacao: { type: String, default: "" },
-      iluminacao: { type: String, default: "" },
+      tipo: { type: String, default: "" },
+      sub_tipo: { type: String, default: "" },
+
+      ocupacao: { type: Number, default: null },
+      iluminacao: { type: Number, default: null },
       hvac: { type: String, default: "" },
+
       co2: { type: Number, default: null },
-      temperatura: { type: Number, default: null }
+      temperatura: { type: Number, default: null },
+
+      consumo: { type: Number, default: null },
+      potencia: { type: Number, default: null },
+
+      humidade: { type: Number, default: null },
+      estado: { type: String, default: "" },
+
+      vibracao: { type: Number, default: null },
+      alerta: { type: String, default: "" },
+
+      local: { type: String, default: "" },
+      circuito: { type: String, default: "" },
+      equipamento: { type: String, default: "" }
     },
 
     status: {
