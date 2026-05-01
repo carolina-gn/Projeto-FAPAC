@@ -8,25 +8,32 @@ const sensorReadingSchema = new mongoose.Schema(
       enum: ["ambiente", "consumo", "fuga", "vibracao"]
     },
 
+    sub_tipo: String, // iluminação / avac
+
     sala: String,
     local: String,
     circuito: String,
     equipamento: String,
 
-    ocupacao: String,
+    ocupacao: Number, // mudar para Number (estava String)
     temperatura: Number,
     co2: Number,
-    iluminacao: String,
+    iluminacao: Number,
     hvac: String,
 
     consumo: Number,
     potencia: Number,
+
+    ligado: Number, // iluminação
+    ativo: Number,  // avac
 
     humidade: Number,
     estado: String,
 
     vibracao: Number,
     alerta: String,
+
+    timestamp: Date, // timestamp real do sensor
 
     receivedAt: {
       type: Date,

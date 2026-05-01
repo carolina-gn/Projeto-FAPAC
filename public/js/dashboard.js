@@ -561,9 +561,15 @@ async function loadVibracaoCards() {
     setActiveTab(tabName);
   };
 
-  setActiveTab("ambiente");
+    function refreshDashboardData() {
     loadAmbienteCards();
     loadConsumoCards();
     loadFugaCards();
     loadVibracaoCards();
+  }
+
+  setActiveTab("ambiente");
+  refreshDashboardData();
+
+  setInterval(refreshDashboardData, 300000); // 5 minutos
 })();
