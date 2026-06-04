@@ -2,20 +2,28 @@ class TandemViewer {
   constructor(container, token) {
     return new Promise((resolve, reject) => {
       try {
-        const av = Autodesk.Viewing;
+        const av = Autodesk.Tandem;
 
         const options = {
           env: "DtProduction",
           api: "dt",
           productId: "Digital Twins",
           corsWorker: true,
+          accessToken: token,
+          getAccessToken: function (onTokenReady) {
+            onTokenReady(token, 3599);
+          }
         };
 
         av.Initializer(options, async () => {
           // Initialize viewer
-          this.viewer = new av.GuiViewer3D(container, {
-            extensions: ["Autodesk.BoxSelection"],
-            screenModeDelegate: av.NullScreenModeDelegate,
+          this.viewer = new Autodesk.Tandem.DtGuiViewer3D(container, {
+            extensions: [
+              "Autodesk.Tandem.Section",
+              "Autodesk.Tandem.Measure",
+              "Autodesk.BimWalk"
+            ],
+            screenModeDelegate: Autodesk.Viewing.NullScreenModeDelegate,
             theme: "light-theme",
           });
           this.viewer.start();
@@ -69,7 +77,7 @@ class TandemViewer {
           }
 
           // Set Tandem API auth header
-          av.endpoint.HTTP_REQUEST_HEADERS["Authorization"] = `Bearer ${token}`;
+          Autodesk.Tandem.endpoint.HTTP_REQUEST_HEADERS["Authorization"] = `Bearer ${token}`;
           this.app = new Autodesk.Tandem.DtApp();
 
           resolve(this);
@@ -93,7 +101,7 @@ class TandemViewer {
       const target = allFacilities.find(f => f.urn === facility.twinId || f.twinId === facility.twinId);
       if (!target) throw new Error(`Facility "${facility.name}" not found in Tandem`);
 
-      await this.app.displayFacility(target, false, this.viewer);
+      await this.app.displayFacility(target, null, this.viewer);
 
       // Wait for at least one model
       await new Promise(resolve => {
