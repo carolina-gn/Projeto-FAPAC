@@ -1702,10 +1702,21 @@ textarea { resize: vertical; }
 }
 
 /* espaço entre filtros e lista */
-#sideIssuesTab {
+#sideIssuesTab:not([hidden]) {
     display: flex;
     flex-direction: column;
     gap: 12px;
+}
+
+#sideAlertsTab:not([hidden]) {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#sideIssuesTab[hidden],
+#sideAlertsTab[hidden] {
+    display: none !important;
 }
 
 /* botão filtros um pouco mais escuro */
