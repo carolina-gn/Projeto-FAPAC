@@ -1743,3 +1743,7 @@ textarea { resize: vertical; }
     flex-direction: column;
     gap: 8px;
 }
+
+#dashboardPage:not([hidden]) ~ .app-layout {
+    display: none;
+}

@@ -7,8 +7,10 @@
   const alertsPage = document.getElementById("alertsPage");
   const analysisPage = document.getElementById("analysisPage");
   const issueCreatorPanel = document.querySelector("aside.issue-panel");
+  const appLayout = document.querySelector(".app-layout");
+  const viewerBottomActions = document.querySelector(".viewer-bottom-actions");
 
-  if (!viewerColumn || !sidePanel || !issuesBoardPage || !dashboardPage || !alertsPage || !analysisPage || !issueCreatorPanel) {
+  if (!viewerColumn || !sidePanel || !issuesBoardPage || !dashboardPage || !alertsPage || !analysisPage || !issueCreatorPanel || !appLayout || !viewerBottomActions) {
     console.warn("Some navigation elements were not found.");
     return;
   }
@@ -39,7 +41,15 @@
     hide(sidePanel);
     hide(issueCreatorPanel);
     hide(issuesBoardPage);
+    hide(alertsPage);
+    hide(analysisPage);
     show(dashboardPage);
+
+    appLayout.style.display = "block";
+    appLayout.style.height = "auto";
+    appLayout.style.minHeight = "0";
+
+    viewerBottomActions.style.display = "none";
 
     document.body.style.overflow = "auto";
     window.scrollTo(0, 0);
@@ -54,6 +64,12 @@
     hide(analysisPage);
     show(alertsPage);
 
+    appLayout.style.display = "block";
+    appLayout.style.height = "auto";
+    appLayout.style.minHeight = "0";
+
+    viewerBottomActions.style.display = "none";
+
     document.body.style.overflow = "hidden";
     window.scrollTo(0, 0);
   };
@@ -66,6 +82,12 @@
     hide(dashboardPage);
     hide(alertsPage);
     show(analysisPage);
+
+    appLayout.style.display = "block";
+    appLayout.style.height = "auto";
+    appLayout.style.minHeight = "0";
+
+    viewerBottomActions.style.display = "none";
 
     document.body.style.overflow = "auto";
     window.scrollTo(0, 0);
@@ -83,6 +105,12 @@
     hide(dashboardPage);
     hide(alertsPage);
     hide(analysisPage);
+
+    appLayout.style.display = "grid";
+    appLayout.style.height = "calc(100vh - 24px)";
+    appLayout.style.minHeight = "";
+
+    viewerBottomActions.style.display = "grid";
 
     document.body.style.overflow = "hidden";
     window.scrollTo(0, 0);

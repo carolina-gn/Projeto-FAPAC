@@ -14,11 +14,10 @@
   taxaOcupacao: document.getElementById("ambienteTaxaOcupacao"),
   hvacLigado: document.getElementById("ambienteHvacLigado"),
   conforto: document.getElementById("ambienteConforto"),
-  chartVariaveisTempo: document.querySelector("#dashboardPanelAmbiente canvas#chartAmbienteVariaveisTempo"),
-  chartCo2Tempo: document.querySelector("#dashboardPanelAmbiente canvas#chartAmbienteCo2Tempo"),
-  chartHvacTemperatura: document.querySelector("#dashboardPanelAmbiente canvas#chartAmbienteHvacTemperatura"),
-  chartOcupacaoHvac: document.querySelector("#dashboardPanelAmbiente canvas#chartAmbienteOcupacaoHvac"),
-  chartScatter: document.querySelector("#dashboardPanelAmbiente canvas#chartAmbienteScatter")
+  chartTempHumidade: document.querySelector("#dashboardPanelAmbiente canvas#chartAmbienteTempHumidade"),
+  chartTempOcupacao: document.querySelector("#dashboardPanelAmbiente canvas#chartAmbienteTempOcupacao"),
+  chartCo2Ocupacao: document.querySelector("#dashboardPanelAmbiente canvas#chartAmbienteCo2Ocupacao"),
+  chartHvacTemperaturaTempo: document.querySelector("#dashboardPanelAmbiente canvas#chartAmbienteHvacTemperaturaTempo")
 };
 
 const consumoElements = {
@@ -52,11 +51,10 @@ const vibracaoElements = {
     let consumoTempoChart = null;
     let potenciaTempoChart = null;
     let consumoCircuitoChart = null;
-  let ambienteVariaveisChart = null;
-  let ambienteCo2Chart = null;
-  let ambienteHvacTemperaturaChart = null;
-  let ambienteOcupacaoHvacChart = null;
-  let ambienteScatterChart = null;
+    let ambienteTempHumidadeChart = null;
+    let ambienteTempOcupacaoChart = null;
+    let ambienteCo2OcupacaoChart = null;
+    let ambienteHvacTemperaturaTempoChart = null;
     let fugaHumidadeChart = null;
     let fugaLocalChart = null;
     let fugaEstadoChart = null;
@@ -278,239 +276,126 @@ async function loadVibracaoCards() {
     element.textContent = value;
   }
 
-  function renderAmbienteVariaveisChart(chartData) {
-    if (!ambienteElements.chartVariaveisTempo || !chartData) return;
+  function renderDualLineChart(canvas, chartRef, chartData, labelA, fieldA, axisA, labelB, fieldB, axisB) {
+  if (!canvas || !chartData) return chartRef;
 
-    const ctx = ambienteElements.chartVariaveisTempo.getContext("2d");
+  const ctx = canvas.getContext("2d");
 
-    if (ambienteVariaveisChart) {
-      ambienteVariaveisChart.destroy();
-    }
+  if (chartRef) {
+    chartRef.destroy();
+  }
 
-    ambienteVariaveisChart = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: chartData.labels || [],
-        datasets: [
-          {
-            label: "Temperatura (°C)",
-            data: chartData.temperatura || [],
-            yAxisID: "y"
-          },
-          {
-            label: "CO₂ (ppm)",
-            data: chartData.co2 || [],
-            yAxisID: "y1"
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-          mode: "index",
-          intersect: false
+  return new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: chartData.labels || [],
+      datasets: [
+        {
+          label: labelA,
+          data: chartData[fieldA] || [],
+          yAxisID: "y"
         },
-        scales: {
-          y: {
-            type: "linear",
-            position: "left",
-            beginAtZero: false
+        {
+          label: labelB,
+          data: chartData[fieldB] || [],
+          yAxisID: "y1"
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: "index",
+        intersect: false
+      },
+      scales: {
+        y: {
+          type: "linear",
+          position: "left",
+          title: {
+            display: true,
+            text: axisA
+          }
+        },
+        y1: {
+          type: "linear",
+          position: "right",
+          title: {
+            display: true,
+            text: axisB
           },
-          y1: {
-            type: "linear",
-            position: "right",
-            beginAtZero: false,
-            grid: {
-              drawOnChartArea: false
-            }
+          grid: {
+            drawOnChartArea: false
           }
         }
       }
-    });
+    }
+  });
+}
+
+function renderAmbienteHvacTemperaturaTempoChart(chartData) {
+  if (!ambienteElements.chartHvacTemperaturaTempo || !chartData) return;
+
+  const ctx = ambienteElements.chartHvacTemperaturaTempo.getContext("2d");
+
+  if (ambienteHvacTemperaturaTempoChart) {
+    ambienteHvacTemperaturaTempoChart.destroy();
   }
 
-  function renderAmbienteCo2Chart(chartData) {
-    if (!ambienteElements.chartCo2Tempo || !chartData) return;
-
-    const ctx = ambienteElements.chartCo2Tempo.getContext("2d");
-
-    if (ambienteCo2Chart) {
-        ambienteCo2Chart.destroy();
-    }
-
-    ambienteCo2Chart = new Chart(ctx, {
-        type: "line",
-        data: {
-        labels: chartData.labels || [],
-        datasets: [
-            {
-            label: "CO₂ (ppm)",
-            data: chartData.values || []
-            }
-        ]
+  ambienteHvacTemperaturaTempoChart = new Chart(ctx, {
+    data: {
+      labels: chartData.labels || [],
+      datasets: [
+        {
+          type: "bar",
+          label: "HVAC ligado",
+          data: chartData.hvac || [],
+          yAxisID: "y1",
+          order: 2,
+          barPercentage: 1,
+          categoryPercentage: 1,
+          backgroundColor: "rgba(59, 130, 246, 0.18)",
+          borderWidth: 0
         },
-        options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-            mode: "index",
-            intersect: false
+        {
+          type: "line",
+          label: "Temperatura (°C)",
+          data: chartData.temperatura || [],
+          yAxisID: "y",
+          order: 1,
+          tension: 0.25
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: "index",
+        intersect: false
+      },
+      scales: {
+        y: {
+          position: "left",
+          title: {
+            display: true,
+            text: "Temperatura (°C)"
+          }
         },
-        scales: {
-            y: {
-            beginAtZero: false
-            }
+        y1: {
+          position: "right",
+          min: 0,
+          max: 1,
+          display: false,
+          grid: {
+            drawOnChartArea: false
+          }
         }
-        }
-    });
+      }
     }
-
-    function renderAmbienteHvacTemperaturaChart(chartData) {
-        if (!ambienteElements.chartHvacTemperatura || !chartData) return;
-
-        const ctx = ambienteElements.chartHvacTemperatura.getContext("2d");
-
-        if (ambienteHvacTemperaturaChart) {
-            ambienteHvacTemperaturaChart.destroy();
-        }
-
-        ambienteHvacTemperaturaChart = new Chart(ctx, {
-            type: "bar",
-            data: {
-            labels: chartData.labels || [],
-            datasets: [
-                {
-                label: "Temperatura média (°C)",
-                data: chartData.values || []
-                }
-            ]
-            },
-            options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                beginAtZero: false
-                }
-            }
-            }
-        });
-        }
-
-        function renderAmbienteOcupacaoHvacChart(chartData) {
-            console.log("renderAmbienteOcupacaoHvacChart -> element:", ambienteElements.chartOcupacaoHvac);
-            console.log("renderAmbienteOcupacaoHvacChart -> data:", chartData);
-
-            if (!ambienteElements.chartOcupacaoHvac || !chartData) {
-                console.warn("Gráfico Ocupação vs HVAC não pôde ser renderizado.");
-                return;
-            }
-
-            if (!(ambienteElements.chartOcupacaoHvac instanceof HTMLCanvasElement)) {
-                console.error("chartOcupacaoHvac não é um canvas:", ambienteElements.chartOcupacaoHvac);
-                return;
-            }
-
-            const ctx = ambienteElements.chartOcupacaoHvac.getContext("2d");
-
-            if (!ctx) {
-                console.error("Não foi possível obter o contexto 2D do canvas.");
-                return;
-            }
-
-            if (ambienteOcupacaoHvacChart) {
-                ambienteOcupacaoHvacChart.destroy();
-            }
-
-            ambienteOcupacaoHvacChart = new Chart(ctx, {
-                type: "bar",
-                data: {
-                labels: chartData.labels || [],
-                datasets: [
-                    {
-                    label: "HVAC ligado (%)",
-                    data: chartData.values || [],
-                    backgroundColor: ["rgba(99, 102, 241, 0.65)", "rgba(139, 92, 246, 0.65)"],
-                    borderColor: ["rgba(99, 102, 241, 1)", "rgba(139, 92, 246, 1)"],
-                    borderWidth: 1
-                    }
-                ]
-                },
-                options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: false,
-                plugins: {
-                    legend: {
-                    display: true
-                    }
-                },
-                scales: {
-                    y: {
-                    beginAtZero: true,
-                    max: 100
-                    }
-                }
-                }
-            });
-
-            console.log("Gráfico Ocupação vs HVAC criado:", ambienteOcupacaoHvacChart);
-            }
-
-    function renderAmbienteScatterChart(chartData) {
-        if (!ambienteElements.chartScatter || !chartData) return;
-
-        if (!(ambienteElements.chartScatter instanceof HTMLCanvasElement)) {
-            console.error("chartScatter não é um canvas:", ambienteElements.chartScatter);
-            return;
-        }
-
-        const ctx = ambienteElements.chartScatter.getContext("2d");
-
-        if (!ctx) {
-            console.error("Não foi possível obter o contexto 2D do scatter.");
-            return;
-        }
-
-        if (ambienteScatterChart) {
-            ambienteScatterChart.destroy();
-        }
-
-        ambienteScatterChart = new Chart(ctx, {
-            type: "scatter",
-            data: {
-            datasets: [
-                {
-                label: "Temperatura vs CO₂",
-                data: chartData || [],
-                backgroundColor: "rgba(99, 102, 241, 0.65)",
-                borderColor: "rgba(99, 102, 241, 1)"
-                }
-            ]
-            },
-            options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: false,
-            scales: {
-                x: {
-                type: "linear",
-                title: {
-                    display: true,
-                    text: "Temperatura (°C)"
-                }
-                },
-                y: {
-                title: {
-                    display: true,
-                    text: "CO₂ (ppm)"
-                }
-                }
-            }
-            }
-        });
-        }
+  });
+}
 
   async function loadAmbienteCards() {
     try {
@@ -530,11 +415,43 @@ async function loadVibracaoCards() {
       setText(ambienteElements.hvacLigado, `${formatNumber(cards.hvacLigadoPercent)} %`);
       setText(ambienteElements.conforto, cards.conforto || "--");
 
-      renderAmbienteVariaveisChart(charts.variaveisTempo);
-      renderAmbienteCo2Chart(charts.co2Tempo);
-      renderAmbienteHvacTemperaturaChart(charts.hvacImpactoTemperatura);
-      renderAmbienteOcupacaoHvacChart(charts.ocupacaoVsHvac);
-      renderAmbienteScatterChart(charts.scatterTempCo2);
+      ambienteTempHumidadeChart = renderDualLineChart(
+        ambienteElements.chartTempHumidade,
+        ambienteTempHumidadeChart,
+        charts.tempHumidade,
+        "Temperatura (°C)",
+        "temperatura",
+        "Temperatura (°C)",
+        "Humidade (%)",
+        "humidade",
+        "Humidade (%)"
+      );
+
+      ambienteTempOcupacaoChart = renderDualLineChart(
+        ambienteElements.chartTempOcupacao,
+        ambienteTempOcupacaoChart,
+        charts.tempOcupacao,
+        "Temperatura (°C)",
+        "temperatura",
+        "Temperatura (°C)",
+        "Ocupação",
+        "ocupacao",
+        "Ocupação"
+      );
+
+      ambienteCo2OcupacaoChart = renderDualLineChart(
+        ambienteElements.chartCo2Ocupacao,
+        ambienteCo2OcupacaoChart,
+        charts.co2Ocupacao,
+        "CO₂ (ppm)",
+        "co2",
+        "CO₂ (ppm)",
+        "Ocupação",
+        "ocupacao",
+        "Ocupação"
+      );
+
+      renderAmbienteHvacTemperaturaTempoChart(charts.hvacTemperaturaTempo);
     } catch (error) {
       console.error("Erro ao carregar KPIs de ambiente:", error);
 

@@ -123,31 +123,31 @@ router.get("/api/sensors/dashboard/ambiente", async (req, res) => {
         conforto
       },
       charts: {
-        co2Tempo: {
-          labels: chronological.map(labelTime),
-          values: chronological.map(r => toNumber(r.co2))
-        },
-        hvacImpactoTemperatura: {
-          labels: Object.keys(hvacGroups),
-          values: Object.values(hvacGroups).map(group => avg(group, "temperatura"))
-        },
-        ocupacaoVsHvac: {
-          labels: Object.keys(ocupacaoGroups),
-          values: Object.values(ocupacaoGroups).map(group => {
-            const ligados = group.filter(r => String(r.hvac) === "1" || String(r.hvac).toLowerCase() === "ligado").length;
-            return group.length ? toNumber((ligados / group.length) * 100) : 0;
-          })
-        },
-        variaveisTempo: {
+        tempHumidade: {
           labels: chronological.map(labelTime),
           temperatura: chronological.map(r => toNumber(r.temperatura)),
-          co2: chronological.map(r => toNumber(r.co2))
+          humidade: chronological.map(r => toNumber(r.humidade))
         },
-        scatterTempCo2: chronological.map(r => ({
-          x: toNumber(r.temperatura),
-          y: toNumber(r.co2),
-          hora: labelTime(r)
-        }))
+
+        tempOcupacao: {
+          labels: chronological.map(labelTime),
+          temperatura: chronological.map(r => toNumber(r.temperatura)),
+          ocupacao: chronological.map(r => toNumber(r.ocupacao))
+        },
+
+        co2Ocupacao: {
+          labels: chronological.map(labelTime),
+          co2: chronological.map(r => toNumber(r.co2)),
+          ocupacao: chronological.map(r => toNumber(r.ocupacao))
+        },
+
+        hvacTemperaturaTempo: {
+          labels: chronological.map(labelTime),
+          temperatura: chronological.map(r => toNumber(r.temperatura)),
+          hvac: chronological.map(r =>
+            String(r.hvac) === "1" || String(r.hvac).toLowerCase() === "ligado" ? 1 : 0
+          )
+        }
       }
     });
   } catch (error) {
