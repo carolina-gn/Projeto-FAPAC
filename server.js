@@ -29,19 +29,19 @@ app.post('/login', async (req, res) => {
         const user = await User.findOne({ username });
         if (user && await user.validatePassword(password)) {
             req.session.user = { id: user._id, name: user.name, username: user.username, role: user.role };
-            return res.redirect('/login-validation?status=success');
+            return res.redirect('/');
         }
 
         if (username === "admin" && password === "admin") {
             req.session.user = { id: "admin", name: "Administrator", username: "admin", role: "owner" };
-            return res.redirect('/login-validation?status=success');
+            return res.redirect('/');
         }
 
-        res.redirect('/login-validation?status=fail');
+        res.redirect('/login?error=1');
 
     } catch (err) {
         console.error(err);
-        res.redirect('/login-validation?status=fail');
+        res.redirect('/login?error=1');
     }
 });
 

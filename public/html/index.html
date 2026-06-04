@@ -539,8 +539,7 @@
 
             <!-- MODEL LOADER CARD -->
             <div class="side-card">
-                <p class="side-card-title">Modelo Digital Twin</p>
-                <p class="side-card-subtitle">Selecione um modelo disponível</p>
+                <p class="side-card-title">Selecione o Edificio</p>
 
                 <select id="modelSelect" class="form-input" style="margin-bottom: 10px;" disabled>
                     <option value="" selected disabled>Carregando...</option>
@@ -552,14 +551,20 @@
 
                 <p id="loadStatus" class="sideblock-error"></p>
             </div>
+
             <!-- ISSUES CARD -->
             <div class="side-card">
 
-                <div class="issues-header">
-                    <p class="side-card-title">Issues</p>
+                <div class="side-tabs">
+                    <button class="side-tab active" type="button" data-tab="issues">Issues</button>
+                    <button class="side-tab" type="button" data-tab="alerts">Alertas</button>
+                </div>
+
+                <div id="sideIssuesTab">
 
                     <details class="filters-sheet">
                         <summary class="filters-trigger">Filtros</summary>
+
                         <div class="filters-panel">
 
                             <div class="filters-top">
@@ -568,102 +573,100 @@
                             </div>
 
                             <div class="filters-list">
+
                                 <details class="filter-group">
                                     <summary class="filter-row-link">
-                                    <span>Estado</span>
-                                    <span class="chev">›</span>
+                                        <span>Estado</span>
+                                        <span class="chev">›</span>
                                     </summary>
                                     <div class="filter-options">
-                                    <label class="opt"><input type="checkbox" name="status" value="aberta"> Aberta</label>
-                                    <label class="opt"><input type="checkbox" name="status" value="em_progresso"> Em progresso</label>
-                                    <label class="opt"><input type="checkbox" name="status" value="resolvida"> Resolvida</label>
-                                    <label class="opt"><input type="checkbox" name="status" value="fechada"> Fechada</label>
+                                        <label class="opt"><input type="checkbox" name="status" value="aberta"> Aberta</label>
+                                        <label class="opt"><input type="checkbox" name="status" value="em_progresso"> Em progresso</label>
+                                        <label class="opt"><input type="checkbox" name="status" value="resolvida"> Resolvida</label>
+                                        <label class="opt"><input type="checkbox" name="status" value="fechada"> Fechada</label>
                                     </div>
                                 </details>
 
                                 <details class="filter-group">
                                     <summary class="filter-row-link">
-                                    <span>Prioridade</span>
-                                    <span class="chev">›</span>
+                                        <span>Prioridade</span>
+                                        <span class="chev">›</span>
                                     </summary>
                                     <div class="filter-options">
-                                    <label class="opt"><input type="checkbox" name="priority" value="baixa"> Baixa</label>
-                                    <label class="opt"><input type="checkbox" name="priority" value="media"> Média</label>
-                                    <label class="opt"><input type="checkbox" name="priority" value="alta"> Alta</label>
-                                    <label class="opt"><input type="checkbox" name="priority" value="critica"> Crítica</label>
+                                        <label class="opt"><input type="checkbox" name="priority" value="baixa"> Baixa</label>
+                                        <label class="opt"><input type="checkbox" name="priority" value="media"> Média</label>
+                                        <label class="opt"><input type="checkbox" name="priority" value="alta"> Alta</label>
+                                        <label class="opt"><input type="checkbox" name="priority" value="critica"> Crítica</label>
                                     </div>
                                 </details>
 
                                 <details class="filter-group">
                                     <summary class="filter-row-link">
-                                    <span>Tipo</span>
-                                    <span class="chev">›</span>
+                                        <span>Tipo</span>
+                                        <span class="chev">›</span>
                                     </summary>
                                     <div class="filter-options">
-                                    <label class="opt"><input type="checkbox" name="type" value="avaria"> Avaria</label>
-                                    <label class="opt"><input type="checkbox" name="type" value="pedido"> Pedido</label>
-                                    <label class="opt"><input type="checkbox" name="type" value="inspecao"> Inspeção</label>
+                                        <label class="opt"><input type="checkbox" name="type" value="avaria"> Avaria</label>
+                                        <label class="opt"><input type="checkbox" name="type" value="pedido"> Pedido</label>
+                                        <label class="opt"><input type="checkbox" name="type" value="inspecao"> Inspeção</label>
                                     </div>
                                 </details>
 
                                 <details class="filter-group">
                                     <summary class="filter-row-link">
-                                    <span>Edifício</span>
-                                    <span class="chev">›</span>
+                                        <span>Edifício</span>
+                                        <span class="chev">›</span>
                                     </summary>
                                     <div class="filter-options">
-                                    <label class="opt"><input type="checkbox" name="building" value="Palacete"> Palacete</label>
-                                    <label class="opt"><input type="checkbox" name="building" value="BNU"> BNU</label>
+                                        <label class="opt"><input type="checkbox" name="building" value="Palacete"> Palacete</label>
+                                        <label class="opt"><input type="checkbox" name="building" value="BNU"> BNU</label>
                                     </div>
                                 </details>
 
                                 <details class="filter-group">
                                     <summary class="filter-row-link">
-                                    <span>Piso</span>
-                                    <span class="chev">›</span>
+                                        <span>Piso</span>
+                                        <span class="chev">›</span>
                                     </summary>
                                     <div class="filter-options">
-                                    <label class="opt"><input type="checkbox" name="floor" value="Piso 0"> Piso 0</label>
-                                    <label class="opt"><input type="checkbox" name="floor" value="Piso 1"> Piso 1</label>
-                                    <label class="opt"><input type="checkbox" name="floor" value="Piso 2"> Piso 2</label>
-                                    <label class="opt"><input type="checkbox" name="floor" value="Piso 3"> Piso 3</label>
+                                        <label class="opt"><input type="checkbox" name="floor" value="Piso 0"> Piso 0</label>
+                                        <label class="opt"><input type="checkbox" name="floor" value="Piso 1"> Piso 1</label>
+                                        <label class="opt"><input type="checkbox" name="floor" value="Piso 2"> Piso 2</label>
+                                        <label class="opt"><input type="checkbox" name="floor" value="Piso 3"> Piso 3</label>
                                     </div>
                                 </details>
 
                                 <details class="filter-group">
                                     <summary class="filter-row-link">
-                                    <span>Técnico atribuído</span>
-                                    <span class="chev">›</span>
+                                        <span>Técnico atribuído</span>
+                                        <span class="chev">›</span>
                                     </summary>
                                     <div class="filter-options">
-                                    <label class="opt"><input type="checkbox" name="assignedToName" value="Carolina"> Carolina</label>
-                                    <label class="opt"><input type="checkbox" name="assignedToName" value="Leonor"> Leonor</label>
-                                    <label class="opt"><input type="checkbox" name="assignedToName" value="Catarina"> Catarina</label>
+                                        <label class="opt"><input type="checkbox" name="assignedToName" value="Carolina"> Carolina</label>
+                                        <label class="opt"><input type="checkbox" name="assignedToName" value="Leonor"> Leonor</label>
+                                        <label class="opt"><input type="checkbox" name="assignedToName" value="Catarina"> Catarina</label>
                                     </div>
                                 </details>
-                                </div>
+
+                            </div>
 
                             <div class="filters-actions">
                                 <button class="btn btn-secondary" type="button" id="filtersClearBtn">Limpar</button>
                                 <button class="btn" type="button" id="filtersApplyBtn">Aplicar</button>
                             </div>
+
                         </div>
                     </details>
 
-                    <button class="btn" id="viewAllIssues">Ver todos os issues</button>
+                    <div class="issues-list" id="issuesList"></div>
+
                 </div>
 
-                <div class="issues-list" id="issuesList"></div>
+                <div id="sideAlertsTab" hidden>
+                    <div class="issues-list" id="sideAlertsList"></div>
+                </div>
 
             </div>
-
-            <!-- DEBUG Logout -->
-            <div class="sidepanel-logout" style="position: absolute; bottom: 5px; ">
-                <form id="logoutForm" action="/logout" method="GET">
-                    <button type="submit" class="btn btn-logout">Logout</button>
-                </form>
-            </div>
-
         </div> <!-- END SIDE PANEL -->
 
         <!-- VIEWER + BARRA INFERIOR -->
@@ -673,133 +676,145 @@
                     <div id="viewerContainer"></div>
                 </div>
 
-                <div class="viewer-bottom-actions">
-                    <button id="openDashboardBtn" class="btn viewer-bottom-btn" type="button">
-                        Histórico de Dados
-                    </button>
-
-                    <button id="openAlertsBtn" class="btn viewer-bottom-btn" type="button">
-                        Alertas (<span id="alertsActiveBadge">0</span>)
-                    </button>
-
-                    <button id="openAnalysisBtn" class="btn viewer-bottom-btn" type="button">
-                        Análise de Dados
-                    </button>
-                </div>
-
             </div>
 
         <!-- CREATE ISSUE PANEL -->
-<aside class="issue-panel">
+        <aside class="issue-panel">
 
-    <div class="issue-panel-header">
-        <h3>Criar novo issue</h3>
-    </div>
-
-    <form class="form issue-form" onsubmit="return false;">
-
-        <div class="form-row">
-            <label class="form-label" for="issueTitle">Título</label>
-            <input id="issueTitle" class="form-input" type="text" placeholder="Ex: Fuga de água no WC" />
-        </div>
-
-        <div class="form-row">
-            <label class="form-label" for="issueDesc">Descrição</label>
-            <textarea id="issueDesc" class="form-input" rows="3" placeholder="Descreve o problema..."></textarea>
-        </div>
-
-        <div class="form-row">
-            <label class="form-label" for="issueStatus">Estado</label>
-            <select id="issueStatus" class="form-input">
-                <option value="" disabled selected>Selecionar</option>
-                <option value="aberta">Aberta</option>
-                <option value="em_progresso">Em progresso</option>
-                <option value="resolvida">Resolvida</option>
-                <option value="fechada">Fechada</option>
-            </select>
-        </div>
-
-        <div class="form-row">
-            <label class="form-label" for="issuePriority">Prioridade</label>
-            <select id="issuePriority" class="form-input">
-                <option value="" disabled selected>Selecionar</option>
-                <option value="baixa">Baixa</option>
-                <option value="media">Média</option>
-                <option value="alta">Alta</option>
-                <option value="critica">Crítica</option>
-            </select>
-        </div>
-
-        <div class="form-row">
-            <label class="form-label" for="issueType">Tipo</label>
-            <select id="issueType" class="form-input">
-                <option value="" disabled selected>Selecionar</option>
-                <option value="avaria">Avaria</option>
-                <option value="pedido">Pedido</option>
-                <option value="inspecao">Inspeção</option>
-            </select>
-        </div>
-
-        <div class="side-card">
-            <div class="side-card-title">Localização</div>
-
-            <div class="form-row">
-                <label class="form-label" for="locBuilding">Edifício</label>
-                <!-- Display selected model's building instead of dropdown -->
-                <input id="locBuilding" class="form-input" type="text" placeholder="Selecionar modelo" readonly />
+            <div class="issue-panel-header">
+                <h3>Criar novo issue</h3>
             </div>
 
+            <form class="form issue-form" onsubmit="return false;">
 
-            <div class="form-row">
-                <label class="form-label" for="locFloor">Piso</label>
-                <select id="locFloor" class="form-input">
-                    <option value="" disabled selected>Selecionar</option>
-                    <option value="Piso 0">Piso 0</option>
-                    <option value="Piso 1">Piso 1</option>
-                    <option value="Piso 2">Piso 2</option>
-                    <option value="Piso 3">Piso 3</option>
-                </select>
-            </div>
-
-            <div class="form-row">
-                <label class="form-label" for="locSpace">Espaço</label>
-                <input id="locSpace" class="form-input" type="text" placeholder="Sala 1.01" />
-            </div>
-        </div>
-
-        <div class="side-card">
-            <div class="side-card-title">Ligação ao modelo</div>
-
-            <div class="form-row">
-                <label class="form-label" for="modelElement">Elemento</label>
-                <input
-                    id="modelElement"
-                    class="form-input"
-                    type="text"
-                    placeholder="Lâmpada 1.02"
-                />
                 <div class="form-row">
-                    <div class="form-label">Elemento selecionado (ID)</div>
-                    <div id="selectedElementId" class="form-input" style="background:#f3f4f6;" aria-live="polite">—</div>
+                    <label class="form-label" for="issueTitle">Título</label>
+                    <input id="issueTitle" class="form-input" type="text" placeholder="Ex: Fuga de água no WC" />
                 </div>
-            </div>
-        </div>
 
-        <div class="form-row">
-            <label class="form-label" for="assignedTo">Atribuído a</label>
-            <select id="assignedTo" class="form-input">
-                <option value="" disabled selected>Selecionar</option>
-                <!-- Populated dynamically from project users -->
-            </select>
-        </div>
+                <div class="form-row">
+                    <label class="form-label" for="issueDesc">Descrição</label>
+                    <textarea id="issueDesc" class="form-input" rows="3" placeholder="Descreve o problema..."></textarea>
+                </div>
 
-        <div class="button-group-vertical">
-            <button id="btnCreateIssue" class="btn" type="button">Criar Issue</button>
-            <button id="btnCancelIssue" class="btn btn-secondary" type="button">Cancelar</button>
-        </div>
+                <div class="form-row">
+                    <label class="form-label" for="issueStatus">Estado</label>
+                    <select id="issueStatus" class="form-input">
+                        <option value="" disabled selected>Selecionar</option>
+                        <option value="aberta">Aberta</option>
+                        <option value="em_progresso">Em progresso</option>
+                        <option value="resolvida">Resolvida</option>
+                        <option value="fechada">Fechada</option>
+                    </select>
+                </div>
 
-    </form>
-</aside>
+                <div class="form-row">
+                    <label class="form-label" for="issuePriority">Prioridade</label>
+                    <select id="issuePriority" class="form-input">
+                        <option value="" disabled selected>Selecionar</option>
+                        <option value="baixa">Baixa</option>
+                        <option value="media">Média</option>
+                        <option value="alta">Alta</option>
+                        <option value="critica">Crítica</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <label class="form-label" for="issueType">Tipo</label>
+                    <select id="issueType" class="form-input">
+                        <option value="" disabled selected>Selecionar</option>
+                        <option value="avaria">Avaria</option>
+                        <option value="pedido">Pedido</option>
+                        <option value="inspecao">Inspeção</option>
+                    </select>
+                </div>
+
+                <div class="side-card">
+                    <div class="side-card-title">Localização</div>
+
+                    <div class="form-row">
+                        <label class="form-label" for="locBuilding">Edifício</label>
+                        <!-- Display selected model's building instead of dropdown -->
+                        <input id="locBuilding" class="form-input" type="text" placeholder="Selecionar modelo" readonly />
+                    </div>
+
+
+                    <div class="form-row">
+                        <label class="form-label" for="locFloor">Piso</label>
+                        <select id="locFloor" class="form-input">
+                            <option value="" disabled selected>Selecionar</option>
+                            <option value="Piso 0">Piso 0</option>
+                            <option value="Piso 1">Piso 1</option>
+                            <option value="Piso 2">Piso 2</option>
+                            <option value="Piso 3">Piso 3</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label" for="locSpace">Espaço</label>
+                        <input id="locSpace" class="form-input" type="text" placeholder="Sala 1.01" />
+                    </div>
+                </div>
+
+                <div class="side-card">
+                    <div class="side-card-title">Ligação ao modelo</div>
+
+                    <div class="form-row">
+                        <label class="form-label" for="modelElement">Elemento</label>
+                        <input
+                            id="modelElement"
+                            class="form-input"
+                            type="text"
+                            placeholder="Lâmpada 1.02"
+                        />
+                        <div class="form-row">
+                            <div class="form-label">Elemento selecionado (ID)</div>
+                            <div id="selectedElementId" class="form-input" style="background:#f3f4f6;" aria-live="polite">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label class="form-label" for="assignedTo">Atribuído a</label>
+                    <select id="assignedTo" class="form-input">
+                        <option value="" disabled selected>Selecionar</option>
+                        <!-- Populated dynamically from project users -->
+                    </select>
+                </div>
+
+                <div class="button-group-vertical">
+                    <button id="btnCreateIssue" class="btn" type="button">Criar Issue</button>
+                    <button id="btnCancelIssue" class="btn btn-secondary" type="button">Cancelar</button>
+                </div>
+
+            </form>
+        </aside>
+
+        <div class="viewer-bottom-actions">
+
+            <button id="viewAllIssues" class="btn viewer-bottom-btn" type="button">
+                Issues
+            </button>
+
+            <button id="openAlertsBtn" class="btn viewer-bottom-btn" type="button">
+                Alertas (<span id="alertsActiveBadge">0</span>)
+            </button>
+
+            <button id="openDashboardBtn" class="btn viewer-bottom-btn" type="button">
+                Histórico de Dados
+            </button>
+
+            <button id="openAnalysisBtn" class="btn viewer-bottom-btn" type="button">
+                Análise de Dados
+            </button>
+
+            <form id="logoutForm" action="/logout" method="GET">
+                <button type="submit" class="btn viewer-bottom-btn btn-logout">
+                    Logout
+                </button>
+            </form>
+
+        </div>
 
     </div> <!-- END APP LAYOUT -->
 

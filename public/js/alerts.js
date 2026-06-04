@@ -180,6 +180,33 @@ function buildAlertButtonHtml(alert) {
   `;
 }
 
+function renderSideAlerts(alerts) {
+  const listEl = document.getElementById("sideAlertsList");
+  if (!listEl) return;
+
+  const activeAlerts = alerts.filter(alert => alert.status === "ativo");
+
+  if (!activeAlerts.length) {
+    listEl.innerHTML = `<div style="padding:10px; opacity:.6;">Sem alertas ativos</div>`;
+    return;
+  }
+
+  listEl.innerHTML = activeAlerts.map(alert => `
+    <div class="issue-item">
+      <span class="issue-dot issue-dot--open"></span>
+
+      <div class="issue-main">
+        <div class="issue-title">${escapeHtml(alert.title || "Alerta")}</div>
+        <div class="issue-meta">
+          ${escapeHtml(alert.sala || "—")} · ${escapeHtml(alertSeverityLabel(alert.severity))}
+        </div>
+      </div>
+
+      <span class="issue-badge">${escapeHtml(alert.status)}</span>
+    </div>
+  `).join("");
+}
+
 function renderAlerts(alerts) {
   const activeList = document.getElementById("listAlertsActive");
   const resolvedList = document.getElementById("listAlertsResolved");
@@ -205,6 +232,7 @@ function renderAlerts(alerts) {
     if (countResolved) countResolved.textContent = String(resolved.length);
     if (badge) badge.textContent = String(active.length);
 
+    renderSideAlerts(alerts);
     renderAlertsCharts(alerts);
 }
 

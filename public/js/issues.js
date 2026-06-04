@@ -427,4 +427,18 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById('viewAllIssues')?.addEventListener('click', () => {
     if (typeof window.showIssuesBoard === "function") window.showIssuesBoard();
   });
+
+  document.querySelectorAll(".side-tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    const selectedTab = tab.dataset.tab;
+
+    document.querySelectorAll(".side-tab").forEach(t => {
+      t.classList.toggle("active", t === tab);
+    });
+
+    document.getElementById("sideIssuesTab").hidden = selectedTab !== "issues";
+    document.getElementById("sideAlertsTab").hidden = selectedTab !== "alerts";
+  });
+});
+
 });

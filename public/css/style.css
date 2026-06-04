@@ -286,9 +286,10 @@ li {
 .app-layout {
     display: grid;
     grid-template-columns:
-    minmax(280px, 340px)
-    minmax(0, 1fr)
-    minmax(340px, 400px);
+        minmax(280px, 340px)
+        minmax(0, 1fr)
+        minmax(340px, 400px);
+    grid-template-rows: minmax(0, 1fr) auto;
     gap: 20px;
     height: calc(100vh - 24px);
     align-items: stretch;
@@ -310,6 +311,7 @@ li {
     gap: 18px;
     height: 100%;
     min-height: 0;
+    overflow: visible;
 }
 
 /* EFEITO BRILHO NAS BORDAS (igual ao .card, adaptado à sidebar) */
@@ -438,12 +440,15 @@ li {
 }
 
 .viewer-bottom-actions {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
+    grid-column: 1 / -1;
+    grid-row: 2;
 
-    padding: 8px 10px;
-    min-height: 58px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+
+    padding: 10px 12px;
+    min-height: 60px;
 
     align-items: center;
 
@@ -453,6 +458,14 @@ li {
     -webkit-backdrop-filter: blur(16px) saturate(170%);
     border: 1px solid rgba(255, 255, 255, 0.24);
     box-shadow: 0 8px 22px rgba(0, 0, 0, 0.10);
+}
+
+.viewer-bottom-actions form {
+    width: 100%;
+}
+
+.viewer-bottom-actions form button {
+    width: 100%;
 }
 
 .viewer-bottom-btn {
@@ -523,9 +536,6 @@ li {
 }
 
 .viewer-column {
-    display: grid;
-    grid-template-rows: minmax(0, 1fr) auto;
-    gap: 14px;
     min-height: 0;
     height: 100%;
     align-self: stretch;
@@ -552,7 +562,7 @@ li {
     padding: 20px 16px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 7px;
 }
 
 /* brilho nas bordas — igual ao .card */
@@ -868,8 +878,7 @@ textarea { resize: vertical; }
 }
 
 .side-panel .side-card {
-    max-height: 290px;   
-    overflow-y: auto;
+    overflow: hidden;
 }
 
 .issues-page-header {
@@ -1635,4 +1644,59 @@ textarea { resize: vertical; }
   .alerts-side {
     grid-template-columns: 1fr;
   }
+}
+
+.login-error {
+    color: #b00020;
+    background: #ffe6e9;
+    border: 1px solid #ffb3bd;
+    border-radius: 10px;
+    padding: 10px 12px;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.side-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.side-tab {
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.22);
+    color: #374151;
+    border-radius: 999px;
+    padding: 9px 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.side-tab.active {
+    background: linear-gradient(135deg, #625cf6, #8b5cf6);
+    color: white;
+}
+
+.side-panel {
+    overflow: visible !important;
+}
+
+.side-panel > .side-card:first-of-type {
+    flex-shrink: 0 !important;
+    height: auto !important;
+    min-height: fit-content !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+.side-panel > .side-card:first-of-type #loadModelBtn {
+    flex-shrink: 0 !important;
+}
+
+.side-panel > .side-card:last-of-type {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }

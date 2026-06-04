@@ -22,6 +22,10 @@
             <!-- Formulário -->
             <form action="/login" method="POST" class="form">
 
+                <p id="loginError" class="login-error" hidden>
+                    Credenciais incorretas.
+                </p>
+
                 <div class="form-row">
                     <label class="form-label">Utilizador</label>
                     <input type="text" name="username" required class="form-input" placeholder="Nome de utilizador">
@@ -38,5 +42,13 @@
         </div>
 
     </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("error") === "1") {
+            document.getElementById("loginError").hidden = false;
+        }
+    </script>
+
 </body>
 </html>
