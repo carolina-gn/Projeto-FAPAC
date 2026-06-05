@@ -5,6 +5,7 @@
 // Globals
 let ALL_ISSUES = [];
 let currentProjectId = null;
+let currentBuilding = "";
 
 // ----------------------
 // Utilities
@@ -255,15 +256,17 @@ async function createIssue() {
   const priority = normalizePriority(document.getElementById("issuePriority")?.value);
   const type = normalizeType(document.getElementById("issueType")?.value);
   const assignedTo = document.getElementById("assignedTo")?.value || null;
+  const building = document.getElementById("locBuilding")?.value?.trim() || "";
+  const element = document.getElementById("modelElement")?.value?.trim() || "";
+  const elementId = window.selectedElementId || '';
 
   // Validate required fields
   if (!title) return alert("Preencha o Título.");
   if (!status) return alert("Selecione o Estado.");
   if (!priority) return alert("Selecione a Prioridade.");
   if (!type) return alert("Selecione o Tipo.");
-
-  // Use selected elementId directly
-  const elementId = window.selectedElementId || '';
+  if (!building) return alert("Selecione um edifício antes de criar a issue.");
+  if (!element || !elementId) return alert("Selecione um elemento do modelo antes de criar a issue.");
 
   // Build payload
   const payload = {
@@ -274,13 +277,13 @@ async function createIssue() {
     priority,
     type,
     location: {
-      building: document.getElementById("locBuilding")?.value.trim() || '',
+      building,
       floor: document.getElementById("locFloor")?.value.trim() || '',
       space: document.getElementById("locSpace")?.value.trim() || '',
     },
     modelLink: {
-      element: document.getElementById("modelElement")?.value.trim() || '',
-      elementId // <-- correctly set
+      element,
+      elementId
     },
     assignedTo
   };
@@ -311,7 +314,13 @@ async function createIssue() {
     // Reset form
     const form = document.querySelector(".issue-form");
     if (form) form.reset();
-    document.getElementById("modelElement").value = '';
+
+    const locBuilding = document.getElementById("locBuilding");
+    if (locBuilding && currentBuilding) {
+      locBuilding.value = currentBuilding;
+    }
+
+    document.getElementById("modelElement").value = "";
     window.selectedElementId = null;
 
     alert("Issue criada com sucesso!");
@@ -333,6 +342,7 @@ async function loadSelectedModel() {
     if (!selectedOption) return alert('Selecione um modelo');
 
     currentProjectId = selectedOption.value;
+    currentBuilding = selectedOption.dataset.building || "";
     console.log('Selected projectId:', currentProjectId);
 
     // --------------------------
