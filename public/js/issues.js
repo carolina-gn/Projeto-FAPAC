@@ -377,7 +377,7 @@ async function loadSelectedModel() {
     if (window.tandemViewerInstance) {
         const facility = {
             twinId: selectedOption.dataset.twinId,
-            name: selectedOption.dataset.tandemName || selectedOption.textContent
+            name: selectedOption.textContent
         };
         await window.tandemViewerInstance.openFacility(facility);
         console.log('Viewer opened for', facility.name);
