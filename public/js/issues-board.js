@@ -343,6 +343,7 @@ function cancelEditMode() {
 
 async function saveIssueEdits() {
   if (!CURRENT_MODAL_ISSUE_ID || !IS_EDIT_MODE) return;
+  const originalIssue = findIssueById(CURRENT_MODAL_ISSUE_ID) || MODAL_SNAPSHOT || {};
 
   const payload = {
     status: document.getElementById("modal_status")?.value || "",
@@ -356,7 +357,10 @@ async function saveIssueEdits() {
       space: document.getElementById("modal_location_space")?.value?.trim() || "",
     },
     modelLink: {
+      ...(originalIssue.modelLink || {}),
       element: document.getElementById("modal_modelLink_element")?.value?.trim() || "",
+      elementId: originalIssue.modelLink?.elementId || "",
+      building: originalIssue.modelLink?.building || ""
     }
   };
 
